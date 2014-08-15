@@ -27,15 +27,12 @@ var url, jsraw, info, parsedInfo;
 
 var draw = function(){
 	// console.log(info);
-	if(!$("#additional-info").length){
-		$("#script-content").append(
-			'<div id="additional-info">\
-				<h3>Author\'s Description</h3>\
-				<div></div>\
-			</div>'
-		);
-	}
-	
+	$("#script-content").append(
+		'<div id="additional-info">\
+			<h3>Author\'s Description</h3>\
+			<div></div>\
+		</div>'
+	);
 	$("#additional-info>div").html(parsedInfo);
 };
 
@@ -67,7 +64,7 @@ var getJS = function(){
 };
 
 var checkJS = function(){
-	if(!$(".install-link").length){
+	if(!$(".install-link").length || $("#additional-info").length){
 		return;
 	}
 	url = $(".install-link").prop("href");
