@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Grease Info
-// @version     1.1
+// @version     1.1.1
 // @namespace   eight04.blogspot.com
 // @description Parse markdown info in userjs.
 // @include     https://greasyfork.org/scripts/*
@@ -15,8 +15,12 @@
 Experiment implementation!
 
 ## Version History
-### Version 1.0 (Aug 16, 2014)
-*	First release.
+*	Version 1.1.1 (Aug 16, 2014)
+	- Update this history.
+*	Version 1.1 (Aug 16, 2014)
+	- Add markdown support.
+*	Version 1.0 (Aug 16, 2014)
+	- First release.
 *******************************************************************************/
 
 var url, jsraw, info, parsedInfo;
