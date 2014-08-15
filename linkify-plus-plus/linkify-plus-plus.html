@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Linkify Plus Plus</title>
+	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+</head>
+<body>
+
+Original from <a href="http://piro.sakura.ne.jp/xul/textlink/index.html.en#testcases">here</a>
+
+Testcases
+
+There are testcases for Text Link.
+
+Mozilla(http://www.mozilla.org/) started as a project of next generation www-browser of Netscape(http://www.netscape.com/). See http://www.mozilla.org/src-faq.html#1. Mozilla were planned to be released as "Netscape Communicator 5.0", but the new layout engine "NGLayout" ttp://www.mozilla.org/newlayout/gecko.html prevented it. Netscape 6 ttp://ftp.netscape.com/pub/netscape6/ was released after 2 years from the deciding.And now, the Firefox(h**p://www.mozilla.com/firefox/) web browser is released from the Mozilla Corporation(h++p://www.mozilla.com/).
+
+Now, TextLink can parse splitted text nodes as joined texts. Mozilla(http://www.mozilla.org/) started as a project of next generation www-browser of Netscape(http://www.netscape.com/). See http://www.mozilla.org/src-faq.html#1. Mozilla were planned to be released as "Netscape Communicator 5.0", but the new layout engine "NGLayout" ttp://www.mozilla.org/newlayout/gecko.html prevented it. Netscape 6 ttp://ftp.netscape.com/pub/netscape6/ was released after 2 years from the deciding.
+
+There are relative links. Firefox www.mozilla.org/products/firefox/ is a new type www-browser and it very extendable. You can find many extensions from update.mozilla.org. I also release some extensions. TBE ./tabextensions/index.html.en and PopupALT _popupalt.html.en are parts of them. (Text Link ignores relative pathes which includes only a filename like "_popupalt.html.en", because strings with the pattern usually indicates only filenames, not relative pathes.) See the parent page ../xul/xul.html to find other extensions in this website.
+
+There are links including multi-byte characters. The URI of this website is "ｈｔｔｐ：／／ｐｉｒｏ．ｓａｋｕｒａ．ｎｅ．ｊｐ／", but you can use the secondary URI, "ｔｔｐ：／／ｗｗｗ９８．ｓａｋｕｒａ．ｎｅ．ｊｐ／￣ｐｉｒｏ／" too.
+<p>
+	Also I don't want these: http://ptt.cc/1234ＷＩＴＨＵＮＩＣＯＤＥ, http://example.org/, http://example.org/,http://example.org, 127.0.0.1, http://127.0.0.1, telnet://ptt.cc, ＡＦＴＥＲＵＮＩＣＯＤＥhttp://example.org, I'm so happy www, www.sohappywwwhaha, www....
+</p>
+
+
+<script src="linkify-plus-plus.user.js"></script>
+<script>
+var insertNewText = function(){
+	$("body").append("http://google.com,http://yahoo.com");
+};
+setTimeout(insertNewText, 10000);
+</script>
+</body>
+</html>

@@ -1,2 +1,3 @@
-UserJS-and-Bookmarklet
-======================
+# Bunch of JavaScript
+
+Feel free to use them.
