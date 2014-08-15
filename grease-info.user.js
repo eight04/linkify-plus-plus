@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Grease Info
-// @version     1.0
+// @version     1.1
 // @namespace   eight04.blogspot.com
 // @description Parse markdown info in userjs.
 // @include     https://greasyfork.org/scripts/*
