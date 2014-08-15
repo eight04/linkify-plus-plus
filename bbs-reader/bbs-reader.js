@@ -1,68 +1,82 @@
 
-function start(){
-
-	function Element(name, attributes){
-		var ele = document.createElement(name);
-		for(var att in attributes){
-			ele.setAttribute(att, attributes[att]);
+var bbsReader = function(){
+	var quoteData = {
+		"&": "&amp;",
+		"<": "&lt;",
+		">": "&gt;",
+	};
+	var quote = function(text){
+		var key;
+		for(key in quoteData){
+			text = text.split(key).join(quoteData[key]);
 		}
-		return ele;
-	}
-	
-	function Text(s){
-		var t = document.createTextNode(s);
-		return t;
-	}
-	
-	var canvas = document.querySelector("#bbsContainer");
-	var source = document.querySelector("#bbsSource").value;
-	console.log(source);
-	canvas.innerHTML = "";	// clear output
-	
-	source = source.replace(/ /g, "\u00A0");
-	source = source.replace(/\?\[[\d\;]*?m/g, "_"); //掉字
-	var lines = source.split(/\r?\n/);
-	console.log(lines);
-	var i;
-	for (i = 0; i < lines.length; i++) {
-		// var line = document.createElement("div");
-		// line.className = "line";
-		var line = Element("div", {class: "line"});
-		var texts = lines[i].split(/\x1B\[[\d\;]*?m/);
-		var controls = lines[i].match(/\x1B\[[\d\;]*?m/g);
-		if (!controls){
-			line.appendChild(Text(texts));
-		}else{
-			var ctClasses = [];
-			var lightenFlag = 0;
-			var color = 37;
-			var bgColor = 40;
-			for (var j = 0; j < controls.length; j++) {
-				var cs = controls[j].substr(2, controls[j].length - 3);
-				cs = cs.split(/\;/);
-				for (var k = 0; k < cs.length; k++) {
-					cs[k] *= 1;
-					if (cs[k] == "")
-						lightenFlag = 0, color = 37, bgColor = 40;
-					else if (cs[k] < 2)
-						lightenFlag = cs[k];
-					else if (cs[k] < 40)
-						color = cs[k];
-					else if (cs[k] < 50)
-						bgColor = cs[k];
-				}
-				ctClasses[j] = "c" + color + lightenFlag + " b" + bgColor;
-			}
+		return text;
+	};
 
-			for (var j = 0; j < texts.length; j++) {
-				var tt = document.createTextNode(texts[j]);
-				var tp = document.createElement("span");
-				tp.className = ctClasses[j - 1] ? ctClasses[j - 1] : "";
-
-				tp.appendChild(tt);
-				line.appendChild(tp);
+	var className = function(c){
+		return "c" + c.fg + c.light + " b" + c.bg;
+	};
+	
+	var apply = function(colorState, ctrl){
+		var newState = extract(ctrl), key, state = {};
+		for(key in newState){
+			if(newState[key] !== null){
+				state[key] = newState[key];
+			}else{
+				state[key] = colorState[key];
 			}
 		}
-		canvas.appendChild(line);
-	}
-}
+		return state;
+	};
+	
+	var extract = function(c){
+		var i, ct = {light: null, fg: null, bg: null};
+		c = c.split(";");
+		for(i = 0; i < c.length; i++){
+			if(c[i] == 0){
+				ct = {light: 0, fg: 37, bg: 40};
+			}else if (c[i] == 1){
+				ct.light = 1;
+			}else if (c[i] < 40){
+				ct.fg = c[i];
+			}else if (c[i] < 50){
+				ct.bg = c[i];
+			}
+		}
+		return ct;
+	};
+
+	var parseLine = function(lineText){
+		var m = null, 
+			p = 0, 
+			text = "<span>", 
+			RE = /\x1B\[([\d\;]*?)m/g, 
+			colorState = {
+				light: 0,
+				fg: 37,
+				bg: 40
+			};
+			
+		while(m = RE.exec(lineText)){
+			colorState = apply(colorState, m[1]);
+			text += quote(lineText.substring(p, m.index));
+			text += '</span><span class="' + className(colorState) + '">'
+			p = RE.lastIndex;
+		}
+		text += quote(lineText.substring(p)) + "</span>";
+		return text;
+	};
+	
+	var init = function(source){
+		source = source.replace(/ /g, "\u00A0");
+		source = source.replace(/\?\[[\d\;]*?m/g, "_"); //掉字
+		var lines = source.split(/\r?\n/);
+		var i;
+		for (i = 0; i < lines.length; i++) {
+			lines[i] = "<div class='line'>" + parseLine(lines[i]) + "</div>";
+		}
+		return lines.join("");
+	};
+	
+	return init;
+}();

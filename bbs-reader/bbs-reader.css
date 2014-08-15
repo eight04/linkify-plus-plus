@@ -1,21 +1,13 @@
-
-#bbsSource{
-	display: block;
-	width: 96%;
-	height: 300px;
-	margin: 0.5em auto;
-}
-#bbsContainer {
+.bbs-container {
 	background-color: black; 
 	padding: 0.5em; 
 	font-size: 18px;
     font-family: "細明體_HKSCS", "細明體";
     line-height: 18px;
 	color: silver;
+	cursor: default;
 }
-#bbsContainer img{
-	max-width: 90%;
-}
+
 .line {min-height: 1em;}
 
 .c300 {color:#000}
