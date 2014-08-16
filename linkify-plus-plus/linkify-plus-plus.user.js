@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     2.2
+// @version     2.2.1
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -49,6 +49,8 @@ Loosely based on the Linkify script located at:
   http://downloads.mozdev.org/greasemonkey/linkify.user.js
 
 Version history:
+ Version 2.2.1 (Aug 17, 2014):
+  - Ignore .highlight container.
  Version 2.2 (Aug 15, 2014):
   - Add images support.
   - Use Observer instead of DOMNodeInserted.
@@ -119,6 +121,30 @@ new MutationObserver(observerHandler, false)
 
 /******************************************************************************/
 
+var notInTagSet = function(){
+	var o = {}, i;
+	for(i = 0; i < notInTags.length; i++){
+		o[ notInTags[i].toUpperCase() ] = true;
+	}
+	return o;
+}();
+
+var hasValidParent = function(node){
+	while(node = node.parentNode){
+		if ('PRE' == node.tagName && node.className){
+			return false;
+		}
+		if (node.nodeName && node.nodeName in notInTagSet){
+			return false;
+		}
+		if (node.classList && node.classList.contains("highlight")){
+			return false;
+		}
+	}
+	
+	return true;
+};
+
 function linkifyContainer(container) {
 	// Prevent infinite recursion, in case X(HT)ML documents with namespaces
 	// break the XPath's attempt to do so.	(Don't evaluate spans we put our
@@ -128,7 +154,9 @@ function linkifyContainer(container) {
 	}
 	
 	if(container.nodeType && container.nodeType == 3){
-		linkifyTextNode(container);
+		if(hasValidParent(container)){
+			linkifyTextNode(container);
+		}
 		return;
 	}
 
@@ -140,13 +168,10 @@ function linkifyContainer(container) {
 	function continuation() {
 		var node = null, counter = 0;
 		while (node = xpathResult.snapshotItem(i++)) {
-			// console.log(node);
-		  var parent = node.parentNode;
-		  if (!parent) continue;
-
-		  // Skip styled <pre> -- often highlighted by script.
-		  if ('PRE' == parent.tagName && parent.className) continue;
-		  
+			if (!hasValidParent(node)) {
+				continue;
+			}
+			
 			linkifyTextNode(node);
 
 			if (++counter > 50) {
