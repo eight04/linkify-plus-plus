@@ -8,6 +8,10 @@
 	cursor: default;
 }
 
+.bbs-container img{
+	max-width: 100%;
+}
+
 .line {min-height: 1em;}
 
 .c300 {color:#000}
