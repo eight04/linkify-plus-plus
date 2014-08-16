@@ -58,7 +58,7 @@ var parseDoxy = function(source){
 
 var parse = function(){
 	console.log("parse");
-	var RE = /\/\*[* \t]+\r?\n([\u0000-\uffff]+?)\r?\n[* \t]*\*\//m;
+	var RE = /\/\*[* \t]*\r?\n([\u0000-\uffff]+?)\r?\n[* \t]*\*\//m;
 	var m = RE.exec(jsraw);
 	console.log(m);
 	info = parseDoxy(m[1]);
