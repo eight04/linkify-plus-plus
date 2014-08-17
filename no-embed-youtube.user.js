@@ -16,30 +16,23 @@ let xpath = "//iframe[contains(@src,'youtube.com/embed/')]|" +
 	"//object[./param[contains(@value,'youtube.com/v/')]]|" +
 	"//embed[contains(@src,'youtube.com/v/') and not(ancestor::object)]";
 
-var performance = {
-	snapShot: 0,
-	unembed; 0
-};
-setInterval(function(){console.log(performance)}, 1000);
-	
 let unEmbed = function(node){
 	
 	let result = document.evaluate(
 		xpath, node, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
 	
-	let i = 0;
 	let element = null;
+	var i = 0, j;
 	
 	while(element = result.snapshotItem(i++)){
-		performance.snapshot++;
 	
 		// iframe or embed
 		let url = element.src;
 		
 		// object
 		if(!url){
-			for(let i = 0; i < element.childNodes.length; i++){
-				let pa = element.childNodes[i];
+			for(j = 0; j < element.childNodes.length; j++){
+				let pa = element.childNodes[j];
 				if(pa.getAttribute("name") == "movie"){
 					url = pa.getAttribute("value");
 					break;
@@ -48,7 +41,7 @@ let unEmbed = function(node){
 		}
 		
 		if(!url){
-			console.log("can't find url!", element);
+			// console.log("can't find url!", element);
 			continue;
 		}
 		
@@ -74,7 +67,7 @@ var observer = function(){
 			if(m.type != "childList"){
 				return;
 			}
-			for(var j = 0; j < m.addedNodes.length; j++){
+			for(j = 0; j < m.addedNodes.length; j++){
 				unEmbed(m.addedNodes[j]);
 			}
 		}
@@ -84,4 +77,3 @@ var observer = function(){
 			subtree: true
 		});
 }();
-

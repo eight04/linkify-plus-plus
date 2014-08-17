@@ -1,10 +1,13 @@
 
 var bbsReader = function(){
+	"use strict";
+
 	var quoteData = {
 		"&": "&amp;",
 		"<": "&lt;",
-		">": "&gt;",
+		">": "&gt;"
 	};
+	
 	var quote = function(text){
 		var key;
 		for(key in quoteData){
@@ -15,18 +18,6 @@ var bbsReader = function(){
 
 	var className = function(c){
 		return "c" + c.fg + c.light + " b" + c.bg;
-	};
-	
-	var apply = function(colorState, ctrl){
-		var newState = extract(ctrl), key, state = {};
-		for(key in newState){
-			if(newState[key] !== null){
-				state[key] = newState[key];
-			}else{
-				state[key] = colorState[key];
-			}
-		}
-		return state;
 	};
 	
 	var extract = function(c){
@@ -46,6 +37,18 @@ var bbsReader = function(){
 		return ct;
 	};
 
+	var apply = function(colorState, ctrl){
+		var newState = extract(ctrl), key, state = {};
+		for(key in newState){
+			if(newState[key] !== null){
+				state[key] = newState[key];
+			}else{
+				state[key] = colorState[key];
+			}
+		}
+		return state;
+	};
+	
 	var parseLine = function(lineText){
 		var m = null, 
 			p = 0, 
@@ -60,7 +63,7 @@ var bbsReader = function(){
 		while(m = RE.exec(lineText)){
 			colorState = apply(colorState, m[1]);
 			text += quote(lineText.substring(p, m.index));
-			text += '</span><span class="' + className(colorState) + '">'
+			text += '</span><span class="' + className(colorState) + '">';
 			p = RE.lastIndex;
 		}
 		text += quote(lineText.substring(p)) + "</span>";

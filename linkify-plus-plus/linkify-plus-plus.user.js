@@ -82,14 +82,16 @@ Version history:
   - Include "." in the username of email addresses.
  Version 1.1:
   - Fixed a big that caused the first link in a piece of text to
-    be skipped (i.e. not linkified).
+	be skipped (i.e. not linkified).
 *******************************************************************************/
 
+"use strict";
+
 var notInTags = [
-	  'a', 'code', 'head', 'noscript', 'option', 'script', 'style',
-	  'title', 'textarea'];
+	'a', 'code', 'head', 'noscript', 'option', 'script', 'style',
+	'title', 'textarea'];
 var textNodeXpath =
-  	".//text()[not(ancestor::"+notInTags.join(') and not(ancestor::')+")]";
+	".//text()[not(ancestor::" + notInTags.join(') and not(ancestor::') + ")]";
 
 var urlRE = /(\b|$)(?:[-a-z]+:\/\/|www\.(?!\.))[^\s'"<>(),\u0080-\uffff]+|\b[\w.%+-]+@[\w-.]+\.\w{2,4}\b/gi;
 var queue = [];
@@ -131,7 +133,7 @@ var notInTagSet = function(){
 
 var hasValidParent = function(node){
 	while(node = node.parentNode){
-		if ('PRE' == node.tagName && node.className){
+		if (node.tagName == 'PRE' && node.className){
 			return false;
 		}
 		if (node.nodeName && node.nodeName in notInTagSet){
@@ -150,7 +152,7 @@ function linkifyContainer(container) {
 	// break the XPath's attempt to do so.	(Don't evaluate spans we put our
 	// classname into.)
 	if (container.className && container.className.match(/\blinkifyplus\b/)) {
-	  return;
+		return;
 	}
 	
 	if(container.nodeType && container.nodeType == 3){
@@ -161,8 +163,9 @@ function linkifyContainer(container) {
 	}
 
 	var xpathResult = document.evaluate(
-		  textNodeXpath, container, null,
-		  XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
+		textNodeXpath, container, null,
+		XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null
+	);
 
 	var i = 0;
 	function continuation() {
@@ -183,13 +186,13 @@ function linkifyContainer(container) {
 }
 
 function linkifyTextNode(node) {
-	var i, l, m;
+	var l, m;
 	var txt = node.textContent;
 	var span = null;
 	var p = 0;
 	
 	while (m = urlRE.exec(txt)) {
-		if (null == span) {
+		if (!span) {
 			// Create a span to hold the new text with links in it.
 			span = document.createElement('span');
 			span.className = 'linkifyplus';
@@ -201,38 +204,33 @@ function linkifyTextNode(node) {
 		//put in text up to the link
 		span.appendChild(document.createTextNode(txt.substring(p, m.index)));
 		//create a link and put it in the span
-		a = document.createElement('a');
+		var a = document.createElement('a');
 		a.className = 'linkifyplus';
-        if(/(\.jpg|\.png|\.gif)$/i.test(l)){
-            var img = document.createElement("img");
-            img.src = l;
-            a.appendChild(img);
-        }else{
-            a.appendChild(document.createTextNode(l));
-        }
+		if(/(\.jpg|\.png|\.gif)$/i.test(l)){
+			var img = document.createElement("img");
+			img.src = l;
+			a.appendChild(img);
+		}else{
+			a.appendChild(document.createTextNode(l));
+		}
 		
 		if (l.indexOf(":/") < 0) {
 			if (l.indexOf("@") > 0) {
 				l = "mailto:" + l;
 			} else {
 				l = "http://" + l;
-		  }
+			}
 		}
 		a.setAttribute('href', l);
 		span.appendChild(a);
 		//track insertion point
-		p = m.index+lLen;
+		p = m.index + lLen;
 	}
 	if (span) {
 		//take the text after the last link
 		span.appendChild(document.createTextNode(txt.substring(p, txt.length)));
 		//replace the original text with the new span
-		try {
-			node.parentNode.replaceChild(span, node);
-		} catch (e) {
-			console.error(e);
-			console.log(node);
-		}
+		node.parentNode.replaceChild(span, node);
 	}
 }
 
@@ -243,4 +241,3 @@ if(window.GM_addStyle){
 	}\
 	');
 }
-

@@ -57,19 +57,19 @@ var parseDoxy = function(source){
 };
 
 var parse = function(){
-	console.log("parse");
+	// console.log("parse");
 	var RE = /\/\*[* \t]*\r?\n([\u0000-\uffff]+?)\r?\n[* \t]*\*\//m;
 	var m = RE.exec(jsraw);
-	console.log(m);
+	// console.log(m);
 	info = parseDoxy(m[1]);
-	console.log(info);
+	// console.log(info);
 	parsedInfo = marked(info);
 	
 	draw();
 };
 
 var getJS = function(){
-	console.log(url);
+	// console.log(url);
 	var success = function(res){
 		jsraw = res.responseText;
 		parse();
@@ -83,7 +83,7 @@ var getJS = function(){
 };
 
 var checkJS = function(){
-	console.log("checkJS");
+	// console.log("checkJS");
 	if(!$(".install-link").length || $("#additional-info").length){
 		return;
 	}
@@ -91,7 +91,6 @@ var checkJS = function(){
 	getJS();
 };
 
-console.log("grease info");
+// console.log("grease info");
 
 checkJS();
-

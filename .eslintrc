@@ -1,0 +1,23 @@
+{
+	"env": {
+		"browser": true
+	},
+	"rules": {
+		"eqeqeq": 0,
+		"no-unused-vars": [2, {"vars": "local"}],
+		"no-use-before-define": [2, "nofunc"],
+		"no-nested-ternary": 2,
+		"quotes": 0,
+		"no-cond-assign": 0,
+		"new-cap": 0,
+		"no-global-strict": 0,
+		"no-multi-str": 0
+	},
+	"globals": {
+		"GM_addStyle": false,
+		"console": false,
+		"marked": false,
+		"$": false,
+		"GM_xmlhttpRequest": false
+	}
+}
