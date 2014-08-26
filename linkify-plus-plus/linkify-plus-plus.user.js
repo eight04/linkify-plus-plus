@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     2.2.1
+// @version     2.2.2
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -49,6 +49,8 @@ Loosely based on the Linkify script located at:
   http://downloads.mozdev.org/greasemonkey/linkify.user.js
 
 Version history:
+ Version 2.2.2 (Aug 26, 2014):
+  - Add .code to ignore list.
  Version 2.2.1 (Aug 17, 2014):
   - Ignore .highlight container.
  Version 2.2 (Aug 15, 2014):
@@ -131,7 +133,14 @@ var notInTagSet = function(){
 	return o;
 }();
 
+var notInClassSet = {
+	"highlight": true,
+	"editbox": true,
+	"code": true
+};
+
 var hasValidParent = function(node){
+	var i, clses;
 	while(node = node.parentNode){
 		if (node.tagName == 'PRE' && node.className){
 			return false;
@@ -139,8 +148,13 @@ var hasValidParent = function(node){
 		if (node.nodeName && node.nodeName in notInTagSet){
 			return false;
 		}
-		if (node.classList && node.classList.contains("highlight")){
-			return false;
+		if (node.className) {
+			clses = node.className.split(" ");
+			for (i = 0; i < clses.length; i++) {
+				if (clses[i] in notInClassSet) {
+					return false;
+				}
+			}
 		}
 	}
 	
