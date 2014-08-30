@@ -5,7 +5,7 @@
 // @include     http*
 // @exclude		http://www.youtube.com/*
 // @exclude		https://www.youtube.com/*
-// @version     1.2.1
+// @version     1.2.4
 // @grant       none
 // ==/UserScript==
 
@@ -15,9 +15,8 @@ let xpath = "//iframe[contains(@src,'youtube.com/embed/')]|" +
 	"//iframe[contains(@src,'youtube.com/v/')]|" +
 	"//object[./param[contains(@value,'youtube.com/v/')]]|" +
 	"//embed[contains(@src,'youtube.com/v/') and not(ancestor::object)]";
-
-let unEmbed = function(node){
 	
+let unEmbed = function(node){
 	let result = document.evaluate(
 		xpath, node, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
 	
@@ -41,7 +40,6 @@ let unEmbed = function(node){
 		}
 		
 		if(!url){
-			// console.log("can't find url!", element);
 			continue;
 		}
 		
@@ -59,7 +57,49 @@ let unEmbed = function(node){
 
 unEmbed(document.documentElement);
 
+var thread = function(){
+	var data = [],
+		maxLoop = 50,
+		pos = 0,
+		loopCount = 0,
+		started = false;
+		
+	var worker = function(){
+		for (loopCount = 0; pos < data.length && loopCount < maxLoop; pos++, loopCount++) {
+			unEmbed(data[pos]);
+		}
+	};
+	
+	var start = function(){
+		if (started) return;
+		
+		started = true;
+		
+		worker();
+		
+		if (pos < data.length) {
+			loopCount = 0;
+			setTimeout(worker, 16);
+		} else {
+			started = false;
+			data = [];
+			pos = 0;
+		}
+	};
+	
+	var queue = function(node){
+		data.push(node);
+	};
+	
+	return {
+		start: start,
+		queue: queue
+	};
+}();
+
 var observer = function(){
+	// Observer
+	
 	new MutationObserver(function(mutations){
 		var i, j, m;
 		for(i = 0; i < mutations.length; i++){
@@ -68,9 +108,10 @@ var observer = function(){
 				return;
 			}
 			for(j = 0; j < m.addedNodes.length; j++){
-				unEmbed(m.addedNodes[j]);
+				thread.queue(m.addedNodes[j]);
 			}
 		}
+		thread.start();
 	})
 		.observe(document.body, {
 			childList: true,
