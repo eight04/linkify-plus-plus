@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     2.2.2
+// @version     2.3
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -49,6 +49,8 @@ Loosely based on the Linkify script located at:
   http://downloads.mozdev.org/greasemonkey/linkify.user.js
 
 Version history:
+ Version 2.3 (Sep 1, 2014):
+  - Match to a pretty large set. Check readme for detail.
  Version 2.2.2 (Aug 26, 2014):
   - Add .code to ignore list.
  Version 2.2.1 (Aug 17, 2014):
@@ -95,7 +97,8 @@ var notInTags = [
 var textNodeXpath =
 	".//text()[not(ancestor::" + notInTags.join(') and not(ancestor::') + ")]";
 
-var urlRE = /(\b|$)(?:[-a-z]+:\/\/|www\.(?!\.))[^\s'"<>(),\u0080-\uffff]+|\b[\w.%+-]+@[\w-.]+\.\w{2,4}\b/gi;
+var urlRE = /\b(?:([-a-z*]+:\/\/)|(?:([\w:\.]+)@)?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|[\w\.]+\.(?:com|net|org|edu|gov|biz|info|asia|cn|de|eu|jp|hk|tw|uk|us)))([^\s'"<>(),\u0080-\uffff]*)/gi;
+// 1=protocol, 2=user, 3=domain, 4=path
 var queue = [];
 
 /******************************************************************************/
@@ -200,10 +203,11 @@ function linkifyContainer(container) {
 }
 
 function linkifyTextNode(node) {
-	var l, m;
+	var l, m, mm;
 	var txt = node.textContent;
 	var span = null;
 	var p = 0;
+	var lLen, a, img, url;
 	
 	while (m = urlRE.exec(txt)) {
 		if (!span) {
@@ -214,28 +218,49 @@ function linkifyTextNode(node) {
 
 		//get the link without trailing dots
 		l = m[0].replace(/\.*$/, '');
-		var lLen = l.length;
+		if (m[4]) {
+			m[4] = m[4].replace(/\.*$/, '');
+		}
+		// offset = 0;
+		
+		if (!m[1] && m[2] && (mm = m[2].match(/^mailto:(.+)/))) {
+			m[1] = "mailto:";
+			m[2] = mm[1];
+		}
+		
+		if (m[1] && m[1].match(/^(hxxp|h\*\*p)/)) {
+			m[1] = "http://";
+		}
+		
+		lLen = l.length;
 		//put in text up to the link
 		span.appendChild(document.createTextNode(txt.substring(p, m.index)));
 		//create a link and put it in the span
-		var a = document.createElement('a');
+		a = document.createElement('a');
 		a.className = 'linkifyplus';
-		if(/(\.jpg|\.png|\.gif)$/i.test(l)){
-			var img = document.createElement("img");
-			img.src = l;
+		if(/(\.jpg|\.png|\.gif)$/i.test(m[4])){
+			img = document.createElement("img");
+			img.alt = l;
 			a.appendChild(img);
 		}else{
 			a.appendChild(document.createTextNode(l));
 		}
 		
-		if (l.indexOf(":/") < 0) {
-			if (l.indexOf("@") > 0) {
-				l = "mailto:" + l;
+		if (!m[1]) {
+			if (mm = m[3].match(/^(ftp|irc)/)) {
+				m[1] = mm[0] + "://";
+			} else if (m[2] && m[2].indexOf(":") < 0 && !m[4]) {
+				m[1] = "mailto:";
 			} else {
-				l = "http://" + l;
+				m[1] = "http://";
 			}
 		}
-		a.setAttribute('href', l);
+		url = m[1] + (m[2] ? m[2] + "@" : "") + (m[3] ? m[3] : "") + (m[4] ? m[4] : "");
+		a.setAttribute('href', url);
+		if (img) {
+			img.src = url;
+			img = null;
+		}
 		span.appendChild(a);
 		//track insertion point
 		p = m.index + lLen;

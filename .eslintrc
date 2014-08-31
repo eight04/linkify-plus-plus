@@ -11,7 +11,8 @@
 		"no-cond-assign": 0,
 		"new-cap": 0,
 		"no-global-strict": 0,
-		"no-multi-str": 0
+		"no-multi-str": 0,
+		"no-inner-declarations": [2, "both"]
 	},
 	"globals": {
 		"GM_addStyle": false,

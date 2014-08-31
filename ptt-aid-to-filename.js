@@ -29,8 +29,8 @@ function zpad(s, n) {
 
 function aidu2fn(aids){
 	var l = aids.length;
-	var type = (aids[0] >> 31 >> 1) & 0xf;
-	var v1 = aids[0] & 0xffffffff;
+	var type = (aids[0] >> 20) & 0xf;
+	var v1 = ((aids[0] << 12) | (aids[1] >> 12)) & 0xffffffff;
 	var v2 = aids[1] & 0xfff;
 	
 	var c = type ? "G" : "M";
@@ -51,7 +51,7 @@ function aidc2aidu(aidc){
 		}
 		aidu = aidu << 6;
 		aidu = aidu | (v & 0x3f);
-		if (i == 5 || i == 7) {
+		if (i == 3 || i == 7) {
 			aids.push(aidu);
 			aidu = 0;
 		}
