@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     2.3
+// @version     2.3.1
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -49,6 +49,8 @@ Loosely based on the Linkify script located at:
   http://downloads.mozdev.org/greasemonkey/linkify.user.js
 
 Version history:
+ Version 2.3.1 (Sep 1, 2014):
+  - Move class tester into xpath.
  Version 2.3 (Sep 1, 2014):
   - Match to a pretty large set. Check readme for detail.
  Version 2.2.2 (Aug 26, 2014):
@@ -94,6 +96,10 @@ Version history:
 var notInTags = [
 	'a', 'code', 'head', 'noscript', 'option', 'script', 'style',
 	'title', 'textarea'];
+var notInClasses = [
+	"highlight", "editbox", "code"];
+
+notInTags.push("*[contains(@class, '" + notInClasses.join("') or contains(@class, '") + "')]");
 var textNodeXpath =
 	".//text()[not(ancestor::" + notInTags.join(') and not(ancestor::') + ")]";
 
@@ -128,43 +134,47 @@ new MutationObserver(observerHandler, false)
 
 /******************************************************************************/
 
-var notInTagSet = function(){
-	var o = {}, i;
-	for(i = 0; i < notInTags.length; i++){
-		o[ notInTags[i].toUpperCase() ] = true;
-	}
-	return o;
-}();
+// var notInTagSet = function(){
+	// var o = {}, i;
+	// for(i = 0; i < notInTags.length; i++){
+		// o[ notInTags[i].toUpperCase() ] = true;
+	// }
+	// return o;
+// }();
 
-var notInClassSet = {
-	"highlight": true,
-	"editbox": true,
-	"code": true
-};
+// var notInClassSet = {
+	// "highlight": true,
+	// "editbox": true,
+	// "code": true
+// };
 
-var hasValidParent = function(node){
-	var i, clses;
-	while(node = node.parentNode){
-		if (node.tagName == 'PRE' && node.className){
-			return false;
-		}
-		if (node.nodeName && node.nodeName in notInTagSet){
-			return false;
-		}
-		if (node.className) {
-			clses = node.className.split(" ");
-			for (i = 0; i < clses.length; i++) {
-				if (clses[i] in notInClassSet) {
-					return false;
-				}
-			}
-		}
-	}
+// var hasValidParent = function(node){
+	// var i, clses, nodeList = [];
 	
-	return true;
-};
+	// while(node = node.parentNode){
+		// if (node.parentNode.nodeName in notInTagSet){
+			
+			// return false;
+		// }
+		// if (node.className) {
+			// clses = node.className.split(" ");
+			// for (i = 0; i < clses.length; i++) {
+				// if (clses[i] in notInClassSet) {
+					// return false;
+				// }
+			// }
+		// }
+	// }
+	
+	// return true;
+// };
 
 function linkifyContainer(container) {
+	// console.log(container, container.parentNode);
+	if(container.nodeType && container.nodeType == 3){
+		container = container.parentNode;
+	}
+
 	// Prevent infinite recursion, in case X(HT)ML documents with namespaces
 	// break the XPath's attempt to do so.	(Don't evaluate spans we put our
 	// classname into.)
@@ -172,13 +182,6 @@ function linkifyContainer(container) {
 		return;
 	}
 	
-	if(container.nodeType && container.nodeType == 3){
-		if(hasValidParent(container)){
-			linkifyTextNode(container);
-		}
-		return;
-	}
-
 	var xpathResult = document.evaluate(
 		textNodeXpath, container, null,
 		XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null
@@ -188,10 +191,6 @@ function linkifyContainer(container) {
 	function continuation() {
 		var node = null, counter = 0;
 		while (node = xpathResult.snapshotItem(i++)) {
-			if (!hasValidParent(node)) {
-				continue;
-			}
-			
 			linkifyTextNode(node);
 
 			if (++counter > 50) {
@@ -203,11 +202,14 @@ function linkifyContainer(container) {
 }
 
 function linkifyTextNode(node) {
+	if (!node.parentNode){
+		return;
+	}
 	var l, m, mm;
 	var txt = node.textContent;
 	var span = null;
 	var p = 0;
-	var lLen, a, img, url;
+	var a, img, url;
 	
 	while (m = urlRE.exec(txt)) {
 		if (!span) {
@@ -218,10 +220,10 @@ function linkifyTextNode(node) {
 
 		//get the link without trailing dots
 		l = m[0].replace(/\.*$/, '');
-		if (m[4]) {
-			m[4] = m[4].replace(/\.*$/, '');
-		}
-		// offset = 0;
+		m[1] = m[1] ? m[1] : "";
+		m[2] = m[2] ? m[2] : "";
+		m[3] = m[3] ? m[3] : "";
+		m[4] = m[4] ? m[4].replace(/\.*$/, '') : "";
 		
 		if (!m[1] && m[2] && (mm = m[2].match(/^mailto:(.+)/))) {
 			m[1] = "mailto:";
@@ -232,7 +234,6 @@ function linkifyTextNode(node) {
 			m[1] = "http://";
 		}
 		
-		lLen = l.length;
 		//put in text up to the link
 		span.appendChild(document.createTextNode(txt.substring(p, m.index)));
 		//create a link and put it in the span
@@ -255,7 +256,7 @@ function linkifyTextNode(node) {
 				m[1] = "http://";
 			}
 		}
-		url = m[1] + (m[2] ? m[2] + "@" : "") + (m[3] ? m[3] : "") + (m[4] ? m[4] : "");
+		url = m[1] + m[2] + m[3] + m[4];
 		a.setAttribute('href', url);
 		if (img) {
 			img.src = url;
@@ -263,7 +264,7 @@ function linkifyTextNode(node) {
 		}
 		span.appendChild(a);
 		//track insertion point
-		p = m.index + lLen;
+		p = m.index + l.length;
 	}
 	if (span) {
 		//take the text after the last link

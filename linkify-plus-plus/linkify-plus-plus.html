@@ -4,6 +4,11 @@
 	<meta charset="UTF-8">
 	<title>Linkify Plus Plus</title>
 	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+	<style>
+		body {
+			white-space: pre-wrap;
+		}
+	</style>
 </head>
 <body>
 
@@ -24,7 +29,6 @@ There are links including multi-byte characters. The URI of this website is "ｈ
 	Also I don't want these: http://ptt.cc/1234ＷＩＴＨＵＮＩＣＯＤＥ, http://example.org/, http://example.org/,http://example.org, 127.0.0.1, http://127.0.0.1, telnet://ptt.cc, ＡＦＴＥＲＵＮＩＣＯＤＥhttp://example.org, I'm so happy www, www.sohappywwwhaha, www....
 </p>
 
-<pre>
 Plain-text URL Test Cases
 
 Notes:
@@ -540,12 +544,11 @@ http://www.example.com/...
 http://www.example.com/
 http://www.example.com/.
 http://www.example.com/./.
-http://www.example.com/./..
+http://www.example.com/../.
 
 www.wots
 	
-</pre>
-
+advantech.com.tw
 
 <script src="linkify-plus-plus.user.js"></script>
 <script>
