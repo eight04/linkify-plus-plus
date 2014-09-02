@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     2.3.2
+// @version     2.3.3
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -49,7 +49,9 @@ Loosely based on the Linkify script located at:
   http://downloads.mozdev.org/greasemonkey/linkify.user.js
 
 Version history:
- Version 2.3.2 (sep 2, 2014):
+ Version 2.3.3 (Sep 2, 2014):
+  - Add svg and some new tags to ignore list.
+ Version 2.3.2 (Sep 2, 2014):
   - Add ttp:// -> http:// alia.
   - Use TLD list!
  Version 2.3.1 (Sep 1, 2014):
@@ -98,7 +100,8 @@ Version history:
 
 var notInTags = [
 	'a', 'code', 'head', 'noscript', 'option', 'script', 'style',
-	'title', 'textarea'];
+	'title', 'textarea', "svg", "canvas", "button", "select", "template", 
+	"meter", "progress", "math"];
 var notInClasses = [
 	"highlight", "editbox", "code"];
 
@@ -231,7 +234,7 @@ function linkifyTextNode(node) {
 				m[1] = "http://";
 			}
 		}
-		url = m[1] + (m[2]?m[2]+"@":"") + m[3] + m[4];
+		url = m[1] + (m[2] ? m[2] + "@" : "") + m[3] + m[4];
 		a.setAttribute('href', url);
 		if (img) {
 			img.src = url;
