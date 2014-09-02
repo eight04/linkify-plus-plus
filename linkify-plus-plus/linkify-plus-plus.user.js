@@ -49,6 +49,8 @@ Loosely based on the Linkify script located at:
   http://downloads.mozdev.org/greasemonkey/linkify.user.js
 
 Version history:
+ Version 2.3.2 (sep 2, 2014):
+  - Add ttp:// -> http:// alia.
  Version 2.3.1 (Sep 1, 2014):
   - Move class tester into xpath.
  Version 2.3 (Sep 1, 2014):
@@ -103,7 +105,7 @@ notInTags.push("*[contains(@class, '" + notInClasses.join("') or contains(@class
 var textNodeXpath =
 	".//text()[not(ancestor::" + notInTags.join(') and not(ancestor::') + ")]";
 
-var urlRE = /\b(?:([-a-z*]+:\/\/)|(?:([\w:\.]+)@)?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|[\w\.]+\.(?:com|net|org|edu|gov|biz|info|asia|cn|de|eu|jp|hk|tw|uk|us)))([^\s'"<>(),\u0080-\uffff]*)/gi;
+var urlRE = /\b(?:([-a-z*]+:\/\/)[\w\.]+|(?:([\w:\.]+)@)?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|[\w\.]+\.(?:com|net|org|edu|gov|biz|info|asia|cn|de|eu|jp|hk|tw|uk|us)))([^\s'"<>(),\u0080-\uffff]*)/gi;
 // 1=protocol, 2=user, 3=domain, 4=path
 var queue = [];
 
@@ -230,7 +232,7 @@ function linkifyTextNode(node) {
 			m[2] = mm[1];
 		}
 		
-		if (m[1] && m[1].match(/^(hxxp|h\*\*p)/)) {
+		if (m[1] && m[1].match(/^(hxxp|h\*\*p|ttp)/)) {
 			m[1] = "http://";
 		}
 		
