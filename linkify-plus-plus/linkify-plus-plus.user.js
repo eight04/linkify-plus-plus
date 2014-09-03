@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     2.3.4
+// @version     2.3.5
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -49,6 +49,9 @@ Loosely based on the Linkify script located at:
   http://downloads.mozdev.org/greasemonkey/linkify.user.js
 
 Version history:
+ Version 2.3.5 (Sep 3, 2014):
+  - Remove image when loading failed.
+  - Remove debug code.
  Version 2.3.4 (Sep 3, 2014):
   - Since FF 32 have some problem dealing with unicode, use a new path RE.
  Version 2.3.3 (Sep 2, 2014):
@@ -178,6 +181,11 @@ function linkifyContainer(container) {
 	setTimeout(continuation, 0);
 }
 
+function imgFailed(){
+	this.parentNode.textContent = this.alt;
+	this.error = null;
+}
+
 function linkifyTextNode(node) {
 	if (!node.parentNode){
 		return;
@@ -187,7 +195,7 @@ function linkifyTextNode(node) {
 	var span = null;
 	var p = 0;
 	var a, img, url;
-	console.log(txt.match(urlRE));
+	// console.log(txt.match(urlRE));
 	while (m = urlRE.exec(txt)) {
 		if ((mm = m[3].match(/\.([a-z-]+)$/i)) && !tlds[mm[1].toUpperCase()]) {
 			continue;
@@ -200,7 +208,7 @@ function linkifyTextNode(node) {
 
 		//get the link without trailing dots
 		l = m[0].replace(/\.*$/, '');
-		console.log(l);
+		// console.log(l);
 		m[1] = m[1] ? m[1] : "";
 		m[2] = m[2] ? m[2] : "";
 		m[3] = m[3] ? m[3] : "";
@@ -223,6 +231,7 @@ function linkifyTextNode(node) {
 		if(/(\.jpg|\.png|\.gif)$/i.test(m[4])){
 			img = document.createElement("img");
 			img.alt = l;
+			img.onerror = imgFailed;
 			a.appendChild(img);
 		}else{
 			a.appendChild(document.createTextNode(l));
