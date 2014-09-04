@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     2.3.5
+// @version     2.3.6
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -49,6 +49,8 @@ Loosely based on the Linkify script located at:
   http://downloads.mozdev.org/greasemonkey/linkify.user.js
 
 Version history:
+ Version 2.3.6 (Sep 4, 2014):
+  - Fix: Angular conflict.
  Version 2.3.5 (Sep 3, 2014):
   - Remove image when loading failed.
   - Remove debug code.
@@ -108,7 +110,7 @@ var notInTags = [
 	'title', 'textarea', "svg", "canvas", "button", "select", "template", 
 	"meter", "progress", "math"];
 var notInClasses = [
-	"highlight", "editbox", "code"];
+	"highlight", "editbox", "code", "linkifyplus"];
 
 notInTags.push("*[contains(@class, '" + notInClasses.join("') or contains(@class, '") + "')]");
 var textNodeXpath =
@@ -195,11 +197,18 @@ function linkifyTextNode(node) {
 	var span = null;
 	var p = 0;
 	var a, img, url;
-	// console.log(txt.match(urlRE));
+	
 	while (m = urlRE.exec(txt)) {
+		// invalid domain
 		if ((mm = m[3].match(/\.([a-z-]+)$/i)) && !tlds[mm[1].toUpperCase()]) {
 			continue;
 		}
+		
+		// angular directive
+		if (!m[1] && !m[2] && !m[4] && txt.substr(m.index - 2, 2) == "{{" && txt.substr(urlRE.lastIndex, 2) == "}}") {
+			continue;
+		}
+		
 		if (!span) {
 			// Create a span to hold the new text with links in it.
 			span = document.createElement('span');
@@ -208,7 +217,7 @@ function linkifyTextNode(node) {
 
 		//get the link without trailing dots
 		l = m[0].replace(/\.*$/, '');
-		// console.log(l);
+		
 		m[1] = m[1] ? m[1] : "";
 		m[2] = m[2] ? m[2] : "";
 		m[3] = m[3] ? m[3] : "";
