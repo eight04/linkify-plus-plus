@@ -12,7 +12,7 @@
 </head>
 <body>
 
-Original from <a href="http://piro.sakura.ne.jp/xul/textlink/index.html.en#testcases">here</a>
+Original from http://piro.sakura.ne.jp/xul/textlink/index.html.en#testcases
 
 Testcases
 
@@ -25,9 +25,13 @@ Now, TextLink can parse splitted text nodes as joined texts. Mozilla(http://www.
 There are relative links. Firefox www.mozilla.org/products/firefox/ is a new type www-browser and it very extendable. You can find many extensions from update.mozilla.org. I also release some extensions. TBE ./tabextensions/index.html.en and PopupALT _popupalt.html.en are parts of them. (Text Link ignores relative pathes which includes only a filename like "_popupalt.html.en", because strings with the pattern usually indicates only filenames, not relative pathes.) See the parent page ../xul/xul.html to find other extensions in this website.
 
 There are links including multi-byte characters. The URI of this website is "ｈｔｔｐ：／／ｐｉｒｏ．ｓａｋｕｒａ．ｎｅ．ｊｐ／", but you can use the secondary URI, "ｔｔｐ：／／ｗｗｗ９８．ｓａｋｕｒａ．ｎｅ．ｊｐ／￣ｐｉｒｏ／" too.
-<p>
-	Also I don't want these: http://ptt.cc/1234ＷＩＴＨＵＮＩＣＯＤＥ, http://example.org/, http://example.org/,http://example.org, 127.0.0.1, http://127.0.0.1, telnet://ptt.cc, ＡＦＴＥＲＵＮＩＣＯＤＥhttp://example.org, I'm so happy www, www.sohappywwwhaha, www....
-</p>
+
+Also I don't want these: http://ptt.cc/1234ＷＩＴＨＵＮＩＣＯＤＥ, http://example.org/, http://example.org/,http://example.org, 127.0.0.1, http://127.0.0.1, telnet://ptt.cc, ＡＦＴＥＲＵＮＩＣＯＤＥhttp://example.org, I'm so happy www, www.sohappywwwhaha, www....
+
+
+
+
+Original from http://yellow5.us/firefox/testcases.txt
 
 Plain-text URL Test Cases
 
@@ -546,20 +550,17 @@ http://www.example.com/.
 http://www.example.com/./.
 http://www.example.com/../.
 
-www.wots
-xd.comment
-{{xd.comment}}
-{{xd.com}}
-xd.com
+
+Conflict with Angular
+user.id
+user.name
+user.comment
+{{user.id}}
+{{user.name}}
+{{user.comment}}
 	
 advantech.com.tw
 
 <script src="linkify-plus-plus.user.js"></script>
-<script>
-var insertNewText = function(){
-	$("body").append("http://google.com,http://yahoo.com");
-};
-setTimeout(insertNewText, 3000);
-</script>
 </body>
 </html>
