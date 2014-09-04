@@ -1,7 +1,12 @@
-Bunch of JavaScript
-===================
-Feel free to use them.
+Linkify Plus Plus
+=================
+An user script which can linkify almost everything. Base on Linkify Plus.
 
-Todos
------
-* [Linkify Plus Plus] Complete the top-level domain list.
+Install
+-------
+[Greasy Fork](https://greasyfork.org/scripts/4255-linkify-plus-plus).
+
+Testcase
+--------
+<https://rawgit.com/eight04/linkify-plus-plus/master/testcase.html>
+
