@@ -1,9 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" ng-app>
 <head>
 	<meta charset="UTF-8">
 	<title>Linkify Plus Plus</title>
 	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular.min.js"></script>
 	<style>
 		body {
 			white-space: pre-wrap;
@@ -558,12 +559,13 @@ user.comment
 {{user.id}}
 {{user.name}}
 {{user.comment}}
+{{ user.name }}
 	
-Domain test
+Dash
 http://free-group.eu/
 http://free-group.eu:8080/
 http://free-group.eu:8080/?search&follow#id
-
+http://free-group.eu:8080/dash-in-path?search&follow#id
 
 <script src="linkify-plus-plus.user.js"></script>
 </body>

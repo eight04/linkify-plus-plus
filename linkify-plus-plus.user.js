@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     2.3.7
+// @version     2.3.8
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -49,6 +49,9 @@ Loosely based on the Linkify script located at:
   http://downloads.mozdev.org/greasemonkey/linkify.user.js
 
 Version history:
+ Version 2.3.8 (Sep 6, 2014):
+  - Fix: Push to event queue to avoid Angular conflict. It should work on most 
+    of pages.
  Version 2.3.7 (Sep 6, 2014):
   - Fix: Match port and dash in domain.
  Version 2.3.6 (Sep 4, 2014):
@@ -173,7 +176,8 @@ function linkifyContainer(container) {
 	function continuation() {
 		var node = null, counter = 0;
 		while (node = xpathResult.snapshotItem(i++)) {
-			linkifyTextNode(node);
+			// linkifyTextNode(node);
+			setTimeout(linkifyTextNode, 0, node);
 
 			if (++counter > 50) {
 				return setTimeout(continuation, 0);
@@ -212,9 +216,9 @@ function linkifyTextNode(node) {
 		}
 		
 		// angular directive
-		if (!protocol && !user && !port && !path && txt.substr(m.index - 2, 2) == "{{" && txt.substr(urlRE.lastIndex, 2) == "}}") {
-			continue;
-		}
+		// if (!protocol && !user && !port && !path && txt.substr(m.index - 2, 2) == "{{" && txt.substr(urlRE.lastIndex, 2) == "}}") {
+			// continue;
+		// }
 		
 		if (!span) {
 			// Create a span to hold the new text with links in it.
