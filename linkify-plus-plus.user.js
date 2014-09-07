@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     2.3.10
+// @version     2.3.11
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -49,6 +49,8 @@ Loosely based on the Linkify script located at:
   http://downloads.mozdev.org/greasemonkey/linkify.user.js
 
 Version history:
+ Version 2.3.11 (Sep 7, 2014):
+  - Enhance: add isIP function
  Version 2.3.10 (Sep 7, 2014):
   - Enhance: Use better ip detection
  Version 2.3.9 (Sep 7, 2014):
@@ -197,6 +199,19 @@ function imgFailed(){
 	this.error = null;
 }
 
+function isIP(s) {
+	var m, i;
+	if (!(m = s.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/))) {
+		return false;
+	}
+	for (i = 1; i < m.length; i++) {
+		if (m[i] * 1 > 255 || (m[i].length > 1 && m[i][0] == "0")) {
+			return false;
+		}
+	}
+	return true;
+}
+
 function linkifyTextNode(node) {
 	if (!node.parentNode){
 		return;
@@ -215,10 +230,9 @@ function linkifyTextNode(node) {
 		port = m[4] || "";
 		path = m[5] || "";
 		
+		
 		// valid domain
-		if (!/^([1-9]\d{0,2}|0)\.([1-9]\d{0,2}|0)\.([1-9]\d{0,2}|0)\.([1-9]\d{0,2}|0)$/.test(domain) &&
-				(mm = domain.match(/\.([a-z0-9-]+)$/i)) && 
-				!tlds[mm[1].toUpperCase()]) {
+		if (!isIP(domain) && (mm = domain.match(/\.([a-z0-9-]+)$/i)) && !tlds[mm[1].toUpperCase()]) {
 			continue;
 		}
 		if (domain.indexOf("..") > -1) {
