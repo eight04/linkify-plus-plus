@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     2.3.9
+// @version     2.3.10
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -49,6 +49,8 @@ Loosely based on the Linkify script located at:
   http://downloads.mozdev.org/greasemonkey/linkify.user.js
 
 Version history:
+ Version 2.3.10 (Sep 7, 2014):
+  - Enhance: Use better ip detection
  Version 2.3.9 (Sep 7, 2014):
   - Fix: Add domain check for ip numbers.
   - Fix: Add domain check ".." invalid.
@@ -214,11 +216,12 @@ function linkifyTextNode(node) {
 		path = m[5] || "";
 		
 		// valid domain
-		if (!/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(domain) &&
+		if (!/^([1-9]\d{0,2}|0)\.([1-9]\d{0,2}|0)\.([1-9]\d{0,2}|0)\.([1-9]\d{0,2}|0)$/.test(domain) &&
 				(mm = domain.match(/\.([a-z0-9-]+)$/i)) && 
 				!tlds[mm[1].toUpperCase()]) {
 			continue;
-		} else if (domain.indexOf("..") > -1) {
+		}
+		if (domain.indexOf("..") > -1) {
 			continue;
 		}
 		
