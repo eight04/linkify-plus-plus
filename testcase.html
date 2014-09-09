@@ -12,6 +12,15 @@
 	</style>
 </head>
 <body>
+<script>
+// GM setup
+var unsafeWindow = window;
+var GM_addStyle = function(s) {
+	var style = document.createElement("style");
+	style.textContent = s;
+	document.head.appendChild(style);
+};
+</script>
 
 Original from http://piro.sakura.ne.jp/xul/textlink/index.html.en#testcases
 
@@ -575,6 +584,8 @@ Numbers?
 127.0.0.1
 127.0.0.01
 1271.0.0.1
+0.0.0.256
+0.0.0.255
 
 Other common invalid form
 Hi...com

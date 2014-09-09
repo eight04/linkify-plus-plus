@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     2.3.11
+// @version     2.3.12
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -49,6 +49,8 @@ Loosely based on the Linkify script located at:
   http://downloads.mozdev.org/greasemonkey/linkify.user.js
 
 Version history:
+ Version 2.3.12 (Sep 9, 2014):
+  - Fix: Angular conflict. Check "{{ }}" pairs.
  Version 2.3.11 (Sep 7, 2014):
   - Enhance: add isIP function
  Version 2.3.10 (Sep 7, 2014):
@@ -183,8 +185,8 @@ function linkifyContainer(container) {
 	function continuation() {
 		var node = null, counter = 0;
 		while (node = xpathResult.snapshotItem(i++)) {
-			// linkifyTextNode(node);
-			setTimeout(linkifyTextNode, 0, node);
+			linkifyTextNode(node);
+			// setTimeout(linkifyTextNode, 0, node);
 
 			if (++counter > 50) {
 				return setTimeout(continuation, 0);
@@ -212,6 +214,30 @@ function isIP(s) {
 	return true;
 }
 
+function inAngular(text, start, end) {
+	if (!unsafeWindow.angular) {
+		return false;
+	}
+	
+	var l, r;
+	// console.log(text.substr(start, end - start));
+	l = text.lastIndexOf("{{", start);
+	r = text.lastIndexOf("}}", start);
+	if (l < r || l < 0) {
+		// console.log(l, r);
+		return false;
+	} 
+	
+	l = text.indexOf("{{", end);
+	r = text.indexOf("}}", end);
+	if (l > 0 && l < r || r < 0) {
+		// console.log(l, r);
+		return false;
+	}
+	
+	return true;
+}
+
 function linkifyTextNode(node) {
 	if (!node.parentNode){
 		return;
@@ -232,17 +258,17 @@ function linkifyTextNode(node) {
 		
 		
 		// valid domain
-		if (!isIP(domain) && (mm = domain.match(/\.([a-z0-9-]+)$/i)) && !tlds[mm[1].toUpperCase()]) {
+		if (domain.indexOf("..") > -1) {
 			continue;
 		}
-		if (domain.indexOf("..") > -1) {
+		if (!isIP(domain) && (mm = domain.match(/\.([a-z0-9-]+)$/i)) && !tlds[mm[1].toUpperCase()]) {
 			continue;
 		}
 		
 		// angular directive
-		// if (!protocol && !user && !port && !path && txt.substr(m.index - 2, 2) == "{{" && txt.substr(urlRE.lastIndex, 2) == "}}") {
-			// continue;
-		// }
+		if (!protocol && !user && !port && !path && inAngular(txt, m.index, urlRE.lastIndex)) {
+			continue;
+		}
 		
 		if (!span) {
 			// Create a span to hold the new text with links in it.
