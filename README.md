@@ -13,7 +13,7 @@ Testcase
 Changelog
 ---------
 * Version 2.3.17 (Sep 16, 2014):
-	- Enhance: Delay the script excutation if there are too many nodes.
+	- Enhance: Delay the script execution if there are too many nodes.
 * Version 2.3.16 (Sep 15, 2014):
 	- Enhance: Use better config style.
 * Version 2.3.15 (Sep 15, 2014):
