@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     2.3.14
+// @version     2.3.15
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -16,6 +16,8 @@
 // @require 	https://greasyfork.org/scripts/1884-gm-config/code/GM_config.js?version=4836
 // @grant       GM_addStyle
 // @grant       GM_registerMenuCommand
+// @grant       GM_getValue
+// @grant       GM_setValue
 // ==/UserScript==
 
 "use strict";
@@ -254,18 +256,17 @@ function linkifyTextNode(node) {
 }
 
 GM_config.init("Linkify Plus Plus", {
-	useImg: {
-		label: "Parse image url to <img>",
-		type: "checkbox",
-		default: true
+	"useImg": {
+		"label": "Parse image url to <img>",
+		"type": "checkbox",
+		"default": true
 	}
 });
 
-GM_config.open();
 GM_addStyle('.linkifyplus img {max-width: 100%;}');
-GM_registerMenuCommand("Linkify Plus Plus - Configure", GM_config.open);
+GM_registerMenuCommand("Linkify Plus Plus - Configure", function(){
+	GM_config.open();
+});
 
-useImg = GM_config.get("useImg");
+useImg = GM_config.get("useImg", true);
 linkifyContainer(document.body);
-
-
