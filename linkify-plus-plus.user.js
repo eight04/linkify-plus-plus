@@ -15,6 +15,7 @@
 // @exclude     http://mxr.mozilla.org/*
 // @require 	https://greasyfork.org/scripts/1884-gm-config/code/GM_config.js?version=4836
 // @grant       GM_addStyle
+// @grant       GM_registerMenuCommand
 // ==/UserScript==
 
 "use strict";
