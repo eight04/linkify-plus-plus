@@ -12,6 +12,8 @@ Testcase
 
 Changelog
 ---------
+* Version 2.3.16
+	- Enhance: Use better config style.
 * Version 2.3.15
 	- Fix: Grant bug (again)
 * Version 2.3.14

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     2.3.15
+// @version     2.3.16
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -255,15 +255,69 @@ function linkifyTextNode(node) {
 	}
 }
 
-GM_config.init("Linkify Plus Plus", {
-	"useImg": {
-		"label": "Parse image url to <img>",
-		"type": "checkbox",
-		"default": true
-	}
-});
+GM_config.init(
+	"Linkify Plus Plus", 
+	{
+		"useImg": {
+			"label": "Parse image url to <img>:",
+			"type": "checkbox",
+			"default": true
+		},
+	},
+	"body {\
+		margin: 0;\
+	}\
+\
+	.config_header {\
+		background-color: #eee;\
+		padding: 17px 0;\
+		border-bottom: 1px solid #ccc;\
+	}\
+\
+	.section_header_holder {\
+		margin: 0;\
+		padding: 0 15px;\
+	}\
+\
+	#buttons_holder {\
+		margin: 0;\
+		padding: 7px 15px;\
+	}\
+\
+	.section_header {\
+		font-size: 1.5em;\
+		color: black;\
+		border: none;\
+		background-color: transparent;\
+		margin: 12px 0 7px;\
+		display: block;\
+		text-align: left;\
+	}\
+\
+	.saveclose_buttons {\
+		margin: 0;\
+	}\
+	.saveclose_buttons + .saveclose_buttons {\
+		margin-left: 7px;\
+		margin-bottom: 7px;\
+	}\
+\
+	label, input {\
+		vertical-align: middle;\
+	}"
+);
 
-GM_addStyle('.linkifyplus img {max-width: 100%;}');
+GM_addStyle(
+	".linkifyplus img {\
+		max-width: 100%;\
+	}\
+	#GM_config {\
+		border-radius: 1em;\
+		box-shadow: 0 0 1em black;\
+		border: 1px solid grey!important;\
+	}"
+);
+
 GM_registerMenuCommand("Linkify Plus Plus - Configure", function(){
 	GM_config.open();
 });
