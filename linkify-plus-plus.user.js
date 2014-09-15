@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     2.3.12
+// @version     2.3.16
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -13,10 +13,16 @@
 // @exclude     http://docs.google.com/*
 // @exclude     https://docs.google.com/*
 // @exclude     http://mxr.mozilla.org/*
+// @require 	https://greasyfork.org/scripts/1884-gm-config/code/GM_config.js?version=4836
 // @grant       GM_addStyle
+// @grant       GM_registerMenuCommand
+// @grant       GM_getValue
+// @grant       GM_setValue
 // ==/UserScript==
 
 "use strict";
+
+var useImg = true;
 
 var notInTags = [
 	'a', 'code', 'head', 'noscript', 'option', 'script', 'style',
@@ -37,8 +43,6 @@ var tlds = {"AC": true, "ACADEMY": true, "ACCOUNTANTS": true, "ACTIVE": true, "A
 var queue = [];
 
 /******************************************************************************/
-
-linkifyContainer(document.body);
 
 var observerHandler = function(mutations){
 	var i, j;
@@ -62,6 +66,23 @@ new MutationObserver(observerHandler, false)
 
 /******************************************************************************/
 
+function remove(node) {
+	node.parentNode.removeChild(node);
+}
+
+function removeWBR(node) {
+	var l = node.querySelectorAll("wbr"), i, p, t, n;
+	
+	for (i = 0; i < l.length; i++) {
+		t = l[i], p = t.previousSibling, n = t.nextSibling;
+		if (p.nodeType == 3 && n.nodeType == 3) {
+			p.nodeValue += n.nodeValue;
+			remove(n);
+		}
+		remove(t);
+	}
+}
+
 function linkifyContainer(container) {
 	// console.log(container, container.parentNode);
 	if(container.nodeType && container.nodeType == 3){
@@ -74,6 +95,9 @@ function linkifyContainer(container) {
 	if (container.className && container.className.match(/\blinkifyplus\b/)) {
 		return;
 	}
+	
+	// remove wbr element
+	removeWBR(container);
 	
 	var xpathResult = document.evaluate(
 		textNodeXpath, container, null,
@@ -193,12 +217,12 @@ function linkifyTextNode(node) {
 		//create a link and put it in the span
 		a = document.createElement('a');
 		a.className = 'linkifyplus';
-		if(/(\.jpg|\.png|\.gif)$/i.test(path)){
+		if (/(\.jpg|\.png|\.gif)$/i.test(path) && useImg) {
 			img = document.createElement("img");
 			img.alt = l;
 			img.onerror = imgFailed;
 			a.appendChild(img);
-		}else{
+		} else {
 			a.appendChild(document.createTextNode(l));
 		}
 		
@@ -231,4 +255,72 @@ function linkifyTextNode(node) {
 	}
 }
 
-GM_addStyle('.linkifyplus img {max-width: 100%;}');
+GM_config.init(
+	"Linkify Plus Plus", 
+	{
+		"useImg": {
+			"label": "Parse image url to <img>:",
+			"type": "checkbox",
+			"default": true
+		},
+	},
+	"body {\
+		margin: 0;\
+	}\
+\
+	.config_header {\
+		background-color: #eee;\
+		padding: 17px 0;\
+		border-bottom: 1px solid #ccc;\
+	}\
+\
+	.section_header_holder {\
+		margin: 0;\
+		padding: 0 15px;\
+	}\
+\
+	#buttons_holder {\
+		margin: 0;\
+		padding: 7px 15px;\
+	}\
+\
+	.section_header {\
+		font-size: 1.5em;\
+		color: black;\
+		border: none;\
+		background-color: transparent;\
+		margin: 12px 0 7px;\
+		display: block;\
+		text-align: left;\
+	}\
+\
+	.saveclose_buttons {\
+		margin: 0;\
+	}\
+	.saveclose_buttons + .saveclose_buttons {\
+		margin-left: 7px;\
+		margin-bottom: 7px;\
+	}\
+\
+	label, input {\
+		vertical-align: middle;\
+	}"
+);
+
+GM_addStyle(
+	".linkifyplus img {\
+		max-width: 100%;\
+	}\
+	#GM_config {\
+		border-radius: 1em;\
+		box-shadow: 0 0 1em black;\
+		border: 1px solid grey!important;\
+	}"
+);
+
+GM_registerMenuCommand("Linkify Plus Plus - Configure", function(){
+	GM_config.open();
+});
+
+useImg = GM_config.get("useImg", true);
+linkifyContainer(document.body);
