@@ -12,6 +12,10 @@ Testcase
 
 Changelog
 ---------
+* Version 2.3.14
+	- Add: GM_config. Deside whether to display image.
+* Version 2.3.13 (Sep 15, 2014):
+	- Fix: Remove <wbr> before linkify.
 * Version 2.3.12 (Sep 9, 2014):
 	- Fix: Angular conflict. Check "{{ }}" pairs.
 * Version 2.3.11 (Sep 7, 2014):

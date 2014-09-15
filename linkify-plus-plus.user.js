@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     2.3.12
+// @version     2.3.14
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -13,10 +13,13 @@
 // @exclude     http://docs.google.com/*
 // @exclude     https://docs.google.com/*
 // @exclude     http://mxr.mozilla.org/*
+// @require 	https://greasyfork.org/scripts/1884-gm-config/code/GM_config.js?version=4836
 // @grant       GM_addStyle
 // ==/UserScript==
 
 "use strict";
+
+var useImg = true;
 
 var notInTags = [
 	'a', 'code', 'head', 'noscript', 'option', 'script', 'style',
@@ -37,8 +40,6 @@ var tlds = {"AC": true, "ACADEMY": true, "ACCOUNTANTS": true, "ACTIVE": true, "A
 var queue = [];
 
 /******************************************************************************/
-
-linkifyContainer(document.body);
 
 var observerHandler = function(mutations){
 	var i, j;
@@ -62,6 +63,23 @@ new MutationObserver(observerHandler, false)
 
 /******************************************************************************/
 
+function remove(node) {
+	node.parentNode.removeChild(node);
+}
+
+function removeWBR(node) {
+	var l = node.querySelectorAll("wbr"), i, p, t, n;
+	
+	for (i = 0; i < l.length; i++) {
+		t = l[i], p = t.previousSibling, n = t.nextSibling;
+		if (p.nodeType == 3 && n.nodeType == 3) {
+			p.nodeValue += n.nodeValue;
+			remove(n);
+		}
+		remove(t);
+	}
+}
+
 function linkifyContainer(container) {
 	// console.log(container, container.parentNode);
 	if(container.nodeType && container.nodeType == 3){
@@ -74,6 +92,9 @@ function linkifyContainer(container) {
 	if (container.className && container.className.match(/\blinkifyplus\b/)) {
 		return;
 	}
+	
+	// remove wbr element
+	removeWBR(container);
 	
 	var xpathResult = document.evaluate(
 		textNodeXpath, container, null,
@@ -193,12 +214,12 @@ function linkifyTextNode(node) {
 		//create a link and put it in the span
 		a = document.createElement('a');
 		a.className = 'linkifyplus';
-		if(/(\.jpg|\.png|\.gif)$/i.test(path)){
+		if (/(\.jpg|\.png|\.gif)$/i.test(path) && useImg) {
 			img = document.createElement("img");
 			img.alt = l;
 			img.onerror = imgFailed;
 			a.appendChild(img);
-		}else{
+		} else {
 			a.appendChild(document.createTextNode(l));
 		}
 		
@@ -231,4 +252,19 @@ function linkifyTextNode(node) {
 	}
 }
 
+GM_config.init("Linkify Plus Plus", {
+	useImg: {
+		label: "Parse image url to <img>",
+		type: "checkbox",
+		default: true
+	}
+});
+
+GM_config.open();
 GM_addStyle('.linkifyplus img {max-width: 100%;}');
+GM_registerMenuCommand("Linkify Plus Plus - Configure", GM_config.open);
+
+useImg = GM_config.get("useImg");
+linkifyContainer(document.body);
+
+
