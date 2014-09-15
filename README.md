@@ -12,11 +12,13 @@ Testcase
 
 Changelog
 ---------
-* Version 2.3.16
+* Version 2.3.17 (Sep 16, 2014):
+	- Enhance: Delay the script excutation if there are too many nodes.
+* Version 2.3.16 (Sep 15, 2014):
 	- Enhance: Use better config style.
-* Version 2.3.15
+* Version 2.3.15 (Sep 15, 2014):
 	- Fix: Grant bug (again)
-* Version 2.3.14
+* Version 2.3.14 (Sep 15, 2014):
 	- Add: GM_config. Deside whether to display image.
 * Version 2.3.13 (Sep 15, 2014):
 	- Fix: Remove <wbr> before linkify.
