@@ -12,6 +12,8 @@ Testcase
 
 Changelog
 ---------
+* Version 2.3.18 (Sep 18, 2014):
+	- Fix: Add h* tags into ignore list.
 * Version 2.3.17 (Sep 16, 2014):
 	- Enhance: Delay the script execution if there are too many nodes.
 * Version 2.3.16 (Sep 15, 2014):

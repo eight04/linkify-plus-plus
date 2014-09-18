@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     2.3.17
+// @version     2.3.18
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -27,7 +27,7 @@ var useImg = true;
 var notInTags = [
 	'a', 'code', 'head', 'noscript', 'option', 'script', 'style',
 	'title', 'textarea', "svg", "canvas", "button", "select", "template", 
-	"meter", "progress", "math"];
+	"meter", "progress", "math", "h1", "h2", "h3", "h4", "h5", "h6"];
 var notInClasses = [
 	"highlight", "editbox", "code", "linkifyplus"];
 
