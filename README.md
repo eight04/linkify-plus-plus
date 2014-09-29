@@ -12,6 +12,10 @@ Testcase
 
 Changelog
 ---------
+* Version 2.3.20 (Sep 29, 2014):
+	- Enhance: Increase performance.
+* Version 2.3.19 (Sep 29, 2014):
+	- Fix: Reduce node limits.
 * Version 2.3.18 (Sep 18, 2014):
 	- Fix: Add h* tags into ignore list.
 * Version 2.3.17 (Sep 16, 2014):

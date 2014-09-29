@@ -22,6 +22,10 @@ var GM_addStyle = function(s) {
 	document.head.appendChild(style);
 };
 var GM_registerMenuCommand = function(){};
+
+setTimeout(function(){
+	$("body").append("http://yahoo.com");
+}, 1000);
 </script>
 
 Original from http://piro.sakura.ne.jp/xul/textlink/index.html.en#testcases
@@ -602,6 +606,7 @@ Hi...com
 
 <h4>http://<wbr>test.com If this is a header</h4>
 <h5>sf.watch</h5>
+<div class="container"></div>
 <script src="linkify-plus-plus.user.js"></script>
 </body>
 </html>

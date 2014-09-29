@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     2.3.18
+// @version     2.3.20
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -67,19 +67,20 @@ var linkifyDelay = function(){
 }();
 
 var observerHandler = function(mutations){
+	console.log(mutations);
 	var i, j;
 	
-	for(i = 0; i < mutations.length; i++){
+	if (mutations.length > 300 || linkifyDelay.waiting) {
+		linkifyDelay.delay();
+		return;
+	}
+	
+	for (i = 0; i < mutations.length; i++) {
 		if(mutations[i].type != "childList"){
 			continue;
 		}
-		if (mutations[i].addedNodes.length > 1000 || linkifyDelay.waiting) {
-			linkifyDelay.delay();
-			return;
-		}
-		for(j = 0; j < mutations[i].addedNodes.length; j++){
-			linkifyContainer(mutations[i].addedNodes[j]);
-		}
+		
+		linkifyContainer(mutations[i].target);
 	}
 };
 
@@ -87,9 +88,6 @@ var observerConfig = {
 	childList: true,
 	subtree: true
 };
-
-new MutationObserver(observerHandler, false)
-	.observe(document.body, observerConfig);
 
 /******************************************************************************/
 
@@ -112,7 +110,7 @@ function removeWBR(node) {
 
 function linkifyContainer(container) {
 	// console.log(container, container.parentNode);
-	if(container.nodeType && container.nodeType == 3){
+	if (container.nodeType && container.nodeType == 3) {
 		container = container.parentNode;
 	}
 
@@ -351,3 +349,6 @@ GM_registerMenuCommand("Linkify Plus Plus - Configure", function(){
 
 useImg = GM_config.get("useImg", true);
 linkifyContainer(document.body);
+
+new MutationObserver(observerHandler, false)
+	.observe(document.body, observerConfig);
