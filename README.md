@@ -12,6 +12,8 @@ Testcase
 
 Changelog
 ---------
+* Version 2.3.21 (Sep 30, 2014):
+	- Fix: max node limits...
 * Version 2.3.20 (Sep 29, 2014):
 	- Enhance: Increase performance.
 * Version 2.3.19 (Sep 29, 2014):
