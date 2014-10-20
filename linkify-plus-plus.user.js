@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     2.3.21
+// @version     2.3.22
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -29,7 +29,7 @@ var notInTags = [
 	'title', 'textarea', "svg", "canvas", "button", "select", "template", 
 	"meter", "progress", "math", "h1", "h2", "h3", "h4", "h5", "h6"];
 var notInClasses = [
-	"highlight", "editbox", "code", "linkifyplus"];
+	"highlight", "editbox", "code", "linkifyplus", "brush:"];
 
 notInTags.push("*[contains(@class, '" + notInClasses.join("') or contains(@class, '") + "')]");
 var textNodeXpath =
@@ -67,7 +67,6 @@ var linkifyDelay = function(){
 }();
 
 var observerHandler = function(mutations){
-	console.log(mutations);
 	var i, j;
 	
 	if (mutations.length > 10 || linkifyDelay.waiting) {
@@ -109,7 +108,6 @@ function removeWBR(node) {
 }
 
 function linkifyContainer(container) {
-	// console.log(container, container.parentNode);
 	if (container.nodeType && container.nodeType == 3) {
 		container = container.parentNode;
 	}
@@ -168,18 +166,15 @@ function inAngular(text, start, end) {
 	}
 	
 	var l, r;
-	// console.log(text.substr(start, end - start));
 	l = text.lastIndexOf("{{", start);
 	r = text.lastIndexOf("}}", start);
 	if (l < r || l < 0) {
-		// console.log(l, r);
 		return false;
 	} 
 	
 	l = text.indexOf("{{", end);
 	r = text.indexOf("}}", end);
 	if (l > 0 && l < r || r < 0) {
-		// console.log(l, r);
 		return false;
 	}
 	

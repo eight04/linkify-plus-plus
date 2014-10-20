@@ -12,6 +12,8 @@ Testcase
 
 Changelog
 ---------
+* Version 2.3.22 (Oct 20, 2014):
+	- Add ".brush:" to ignore list.
 * Version 2.3.21 (Sep 30, 2014):
 	- Fix: max node limits...
 * Version 2.3.20 (Sep 29, 2014):
