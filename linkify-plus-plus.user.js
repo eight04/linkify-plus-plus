@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     2.3.23
+// @version     2.3.24
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -186,7 +186,7 @@ function stripSingleParenthesis(str) {
 	for (i = 0; i < str.length; i++) {
 		if (str[i] == "(") {
 			if (c != ")") {
-				return str.substring(0, i);
+				return str.substring(0, pos);
 			}
 			pos = i;
 			c = "(";

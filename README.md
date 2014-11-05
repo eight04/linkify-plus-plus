@@ -12,6 +12,8 @@ Testcase
 
 Changelog
 ---------
+* Version 2.3.24 (Nov 5, 2014):
+	- Fix parenthesis match point.
 * Version 2.3.23 (Nov 5, 2014):
 	- Add parenthesis support.
 * Version 2.3.22 (Oct 20, 2014):
