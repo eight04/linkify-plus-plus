@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     2.4.2
+// @version     2.4.3
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -38,8 +38,13 @@ GM_config.init(
 			type: "checkbox",
 			default: true
 		},
+		classBlackList: {
+			label: "Add classes to black-list (Separate by space):",
+			type: "textarea",
+			default: ""
+		},
 		classWhiteList: {
-			label: "Add classes to white list (Separate by space):",
+			label: "Add classes to white-list (Separate by space):",
 			type: "textarea",
 			default: ""
 		}
@@ -96,7 +101,13 @@ var useImg = GM_config.get("useImg", true),
 	xPathRule = "",
 	classWhiteList = GM_config.get("classWhiteList", "");
 
+var classBlackList = GM_config.get("classBlackList", "").trim().split(/\s+/);
 classWhiteList = classWhiteList.trim().split(/\s+/);
+
+if (classBlackList[0]) {
+	notInClasses = notInClasses.concat(classBlackList);
+}
+
 notInTags.push("*[contains(@class, '" + notInClasses.join("') or contains(@class, '") + "')]");
 
 // Exclude tags and classes

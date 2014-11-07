@@ -12,6 +12,8 @@ Testcase
 
 Changelog
 ---------
+* Version 2.4.3 (Nov 7, 2014):
+	- Add custom class name black-list.
 * Version 2.4.2 (Nov 7, 2014):
 	- Add .bdsug to ignore list.
 * Version 2.4.1 (Nov 7, 2014):
