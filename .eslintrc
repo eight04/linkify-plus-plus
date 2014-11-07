@@ -10,6 +10,11 @@
 		GM_registerMenuCommand: false
 	},
 	rules: {
-		"no-trailing-spaces": 0
+		"no-trailing-spaces": 0,
+		"eqeqeq": 0,
+		"no-cond-assign": 0,
+		"camelcase": 0,
+		"no-multi-str": 0,
+		"new-cap": 0
 	}
 }
