@@ -12,6 +12,8 @@ Testcase
 
 Changelog
 ---------
+* Version 2.4.0 (Nov 7, 2014):
+	- Add class whitelist. Set your cutom whitelist in config dialog.
 * Version 2.3.25 (Nov 7, 2014):
 	- Fix wbr removing bug.
 * Version 2.3.24 (Nov 5, 2014):
