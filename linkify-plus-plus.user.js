@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     2.3.24
+// @version     2.3.25
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -99,7 +99,7 @@ function removeWBR(node) {
 	
 	for (i = 0; i < l.length; i++) {
 		t = l[i], p = t.previousSibling, n = t.nextSibling;
-		if (p.nodeType == 3 && n.nodeType == 3) {
+		if (p && n && p.nodeType == 3 && n.nodeType == 3) {
 			p.nodeValue += n.nodeValue;
 			remove(n);
 		}
