@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     2.4.0
+// @version     2.4.1
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -99,15 +99,23 @@ var useImg = GM_config.get("useImg", true),
 classWhiteList = classWhiteList.trim().split(/\s+/);
 notInTags.push("*[contains(@class, '" + notInClasses.join("') or contains(@class, '") + "')]");
 
+// Exclude tags and classes
 xPathRule += "not(ancestor::" + notInTags.join(') and not(ancestor::') + ")";
 
+// Exclude contenteditable
+xPathRule += " and not(ancestor::*[@contenteditable='true'])";
+
+// Include white list
 if (classWhiteList[0]) {
 	xPathRule += " or ancestor::*[contains(@class, '" + classWhiteList.join("') or contains(@class, '") + "')]";
 }
 
+// Exclude linkifyplus to prevent recursive linkify
 xPathRule += " and not(ancestor::*[contains(@class, 'linkifyplus')])";
 
 var textNodeXpath =	".//text()[" + xPathRule + "]";
+
+//console.log(textNodeXpath);
 
 // 1=protocol, 2=user, 3=domain, 4=port, 5=path
 var urlRE = /\b([-a-z*]+:\/\/)?(?:([\w:\.]+)@)?([a-z0-9-.]+\.[a-z0-9-]+)\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#()]*)?/gi;
