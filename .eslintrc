@@ -1,0 +1,15 @@
+{
+	env: {
+		browser: true,
+		node: true
+	},
+	globals: {
+		unsafeWindow: false,
+		GM_config: false,
+		GM_addStyle: false,
+		GM_registerMenuCommand: false
+	},
+	rules: {
+		"no-trailing-spaces": 0
+	}
+}
