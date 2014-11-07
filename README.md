@@ -12,6 +12,8 @@ Testcase
 
 Changelog
 ---------
+* Version 2.4.2 (Nov 7, 2014):
+	- Add .bdsug to ignore list.
 * Version 2.4.1 (Nov 7, 2014):
 	- Ignore if @contenteditable attribute is true.
 * Version 2.4.0 (Nov 7, 2014):
