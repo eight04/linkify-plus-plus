@@ -22,18 +22,92 @@
 
 "use strict";
 
-var useImg = true;
-
 var notInTags = [
 	'a', 'code', 'head', 'noscript', 'option', 'script', 'style',
 	'title', 'textarea', "svg", "canvas", "button", "select", "template", 
-	"meter", "progress", "math", "h1", "h2", "h3", "h4", "h5", "h6"];
-var notInClasses = [
-	"highlight", "editbox", "code", "linkifyplus", "brush:"];
+	"meter", "progress", "math", "h1", "h2", "h3", "h4", "h5", "h6"
+];
 
+var notInClasses = ["highlight", "editbox", "code", "brush:"];
+
+GM_config.init(
+	"Linkify Plus Plus", 
+	{
+		useImg: {
+			label: "Parse image url to <img>:",
+			type: "checkbox",
+			default: true
+		},
+		classWhiteList: {
+			label: "Add classes to white list (Separate by space):",
+			type: "textarea",
+			default: ""
+		}
+	},
+	"body {\
+		margin: 0;\
+	}\
+\
+	.config_header {\
+		background-color: #eee;\
+		padding: 17px 0;\
+		border-bottom: 1px solid #ccc;\
+	}\
+\
+	.section_header_holder {\
+		margin: 0;\
+		padding: 0 15px;\
+	}\
+\
+	#buttons_holder {\
+		margin: 0;\
+		padding: 7px 15px;\
+	}\
+\
+	.section_header {\
+		font-size: 1.5em;\
+		color: black;\
+		border: none;\
+		background-color: transparent;\
+		margin: 12px 0 7px;\
+		display: block;\
+		text-align: left;\
+	}\
+\
+	.saveclose_buttons {\
+		margin: 0;\
+	}\
+	.saveclose_buttons + .saveclose_buttons {\
+		margin-left: 7px;\
+		margin-bottom: 7px;\
+	}\
+\
+	label, input {\
+		vertical-align: middle;\
+	}\
+	textarea {\
+		display: block;\
+		font-family: inherit;\
+		font-size: inherit;\
+	}"
+);
+
+var useImg = GM_config.get("useImg", true),
+	xPathRule = "",
+	classWhiteList = GM_config.get("classWhiteList", "");
+
+classWhiteList = classWhiteList.trim().split(/\s+/);
 notInTags.push("*[contains(@class, '" + notInClasses.join("') or contains(@class, '") + "')]");
-var textNodeXpath =
-	".//text()[not(ancestor::" + notInTags.join(') and not(ancestor::') + ")]";
+
+xPathRule += "not(ancestor::" + notInTags.join(') and not(ancestor::') + ")";
+
+if (classWhiteList[0]) {
+	xPathRule += " or ancestor::*[contains(@class, '" + classWhiteList.join("') or contains(@class, '") + "')]";
+}
+
+xPathRule += " and not(ancestor::*[contains(@class, 'linkifyplus')])";
+
+var textNodeXpath =	".//text()[" + xPathRule + "]";
 
 // 1=protocol, 2=user, 3=domain, 4=port, 5=path
 var urlRE = /\b([-a-z*]+:\/\/)?(?:([\w:\.]+)@)?([a-z0-9-.]+\.[a-z0-9-]+)\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#()]*)?/gi;
@@ -306,57 +380,6 @@ var observerConfig = {
 	subtree: true
 };
 
-GM_config.init(
-	"Linkify Plus Plus", 
-	{
-		"useImg": {
-			"label": "Parse image url to <img>:",
-			"type": "checkbox",
-			"default": true
-		}
-	},
-	"body {\
-		margin: 0;\
-	}\
-\
-	.config_header {\
-		background-color: #eee;\
-		padding: 17px 0;\
-		border-bottom: 1px solid #ccc;\
-	}\
-\
-	.section_header_holder {\
-		margin: 0;\
-		padding: 0 15px;\
-	}\
-\
-	#buttons_holder {\
-		margin: 0;\
-		padding: 7px 15px;\
-	}\
-\
-	.section_header {\
-		font-size: 1.5em;\
-		color: black;\
-		border: none;\
-		background-color: transparent;\
-		margin: 12px 0 7px;\
-		display: block;\
-		text-align: left;\
-	}\
-\
-	.saveclose_buttons {\
-		margin: 0;\
-	}\
-	.saveclose_buttons + .saveclose_buttons {\
-		margin-left: 7px;\
-		margin-bottom: 7px;\
-	}\
-\
-	label, input {\
-		vertical-align: middle;\
-	}"
-);
 
 GM_addStyle(
 	".linkifyplus img {\
@@ -373,7 +396,7 @@ GM_registerMenuCommand("Linkify Plus Plus - Configure", function(){
 	GM_config.open();
 });
 
-useImg = GM_config.get("useImg", true);
+
 linkifyContainer(document.body);
 
 new MutationObserver(observerHandler, false)
