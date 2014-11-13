@@ -60,13 +60,19 @@ module.exports = function(grunt) {
 				}
 			}
 		},
-		clean: ["temp"]
+		clean: ["temp"],
+		copy: {
+			files: {
+				"C:\Users\Owner\AppData\Roaming\Mozilla\Firefox\Profiles\x6tyi36t.20140519\gm_scripts\Linkify_Plus_Plus\Linkify_Plus_Plus.user.js": "linkify-plus-plus.user.js"
+			}
+		}
 	});
 
 	// Load the plugin that provides the "uglify" task.
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-replace');
 	grunt.loadNpmTasks('grunt-contrib-clean');
+	grunt.loadNpmTasks('grunt-contrib-copy');
 
 	// Tasks
 	grunt.registerTask('default', ['replace', 'clean']);

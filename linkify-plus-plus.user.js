@@ -30,6 +30,72 @@ var notInTags = [
 
 var notInClasses = ["highlight", "editbox", "code", "brush:", "bdsug"];
 
+var inClasses = ["bbcode_code"];
+
+var re = {
+	excludingTag: new RegExp(notInTags.join("|")),
+	excludingClass: new RegExp(notInClasses.join("|")),
+	includingClass: new RegExp(inClasses.join("|"))
+};
+
+function valid(node) {
+	return !re.excludingTag.test(node.nodeName) &&
+		!re.excludingClass.test(node.className) ||
+		re.includingClass.test(node.className) &&
+		node.className.indexOf("linkifyplus") < 0;
+}
+
+function traverseContainer(root){
+
+	console.log("Traverse start!");
+
+	var state = {
+		currentNode: root,
+		next: "child",	// child|sibling|parent
+		loopCount: 0,
+		timeStart: Date.now()
+	};
+
+	function traverse(){
+		var i = 0;
+
+		while (true) {
+			if (state.currentNode.nodeType == 3) {
+				linkifyTextNode(state.currentNode);
+			} else if (!valid(state.currentNode)) {
+				state.next = "sibling";
+			}
+
+			// State transfer
+			if (state.next == "child") {
+				if (state.currentNode.childNodes.length) {
+					state.currentNode = state.currentNode.childNodes[0];
+				} else {
+					state.next = "sibling";
+				}
+			} else if (state.next == "sibling") {
+				if (state.currentNode.nextSibling) {
+					state.currentNode = state.currentNode.nextSibling;
+				} else if (state.currentNode.parentNode != root) {
+					state.currentNode = state.currentNode.parentNode;
+				} else {
+					console.log("Traverse complete! Took " + (Date.now() - state.timeStart) + "ms");
+					return;
+				}
+			}
+
+			// Loop counter
+			i++;
+			state.loopCount++;
+			if (i > 50) {
+				setTimeout(traverse, 0);
+				return;
+			}
+		}
+	}
+	setTimeout(traverse, 0);
+}
+
 GM_config.init(
 	"Linkify Plus Plus",
 	{
@@ -372,8 +438,10 @@ GM_registerMenuCommand("Linkify Plus Plus - Configure", function(){
 	GM_config.open();
 });
 
+//
+//linkifyContainer(document.body);
+//
+//new MutationObserver(observerHandler, false)
+//	.observe(document.body, observerConfig);
 
-linkifyContainer(document.body);
-
-new MutationObserver(observerHandler, false)
-	.observe(document.body, observerConfig);
+traverseContainer(document.body);
