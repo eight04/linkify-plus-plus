@@ -12,6 +12,8 @@ Testcase
 
 Changelog
 ---------
+* Version 3.0.0 (Nav 14, 2014):
+	- Breaking change. Removed linkifyContainer and use new DOM traversal method.
 * Version 2.4.3 (Nov 7, 2014):
 	- Add custom class name black-list.
 * Version 2.4.2 (Nov 7, 2014):
@@ -120,7 +122,7 @@ http://downloads.mozdev.org/greasemonkey/linkify.user.js
 
 License
 -------
-Copyright (c) 2011, Anthony Lieuallen  
+Copyright (c) 2011, Anthony Lieuallen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
