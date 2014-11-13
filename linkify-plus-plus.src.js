@@ -22,20 +22,34 @@
 
 "use strict";
 
-var notInTags = [
-	'a', 'code', 'head', 'noscript', 'option', 'script', 'style',
-	'title', 'textarea', "svg", "canvas", "button", "select", "template",
-	"meter", "progress", "math", "h1", "h2", "h3", "h4", "h5", "h6"
-];
+var config = {
+	excludingTag: [
+		'a', 'code', 'head', 'noscript', 'option', 'script', 'style',
+		'title', 'textarea', "svg", "canvas", "button", "select", "template",
+		"meter", "progress", "math", "h1", "h2", "h3", "h4", "h5", "h6"
+	],
+	excludingClass: [
+		"highlight", "editbox", "code", "brush:", "bdsug"
+	],
+	includingClass: [
+		"bbcode_code"
+	],
+	useImg: true
+};
 
-var notInClasses = ["highlight", "editbox", "code", "brush:", "bdsug"];
+configInit(config);
 
-var inClasses = ["bbcode_code"];
+// 1=protocol, 2=user, 3=domain, 4=port, 5=path
+var urlRE = /\b([-a-z*]+:\/\/)?(?:([\w:\.]+)@)?([a-z0-9-.]+\.[a-z0-9-]+)\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#()]*)?/gi;
 
 var re = {
-	excludingTag: new RegExp(notInTags.join("|")),
-	excludingClass: new RegExp(notInClasses.join("|")),
-	includingClass: new RegExp(inClasses.join("|"))
+	excludingTag: new RegExp(config.excludingTag.join("|")),
+	excludingClass: new RegExp(config.excludingClass.join("|")),
+	includingClass: new RegExp(config.includingClass.join("|"))
+};
+
+var tlds = {
+	// @@TLDS
 };
 
 function valid(node) {
@@ -47,7 +61,10 @@ function valid(node) {
 
 function traverseContainer(root){
 
-	console.log("Traverse start!");
+	console.log("Traverse start! Root node is %o.", root);
+
+	// remove wbr element
+	removeWBR(root);
 
 	var state = {
 		currentNode: root,
@@ -57,29 +74,35 @@ function traverseContainer(root){
 	};
 
 	function traverse(){
-		var i = 0;
+		var i = 0, cn;
 
 		while (true) {
-			if (state.currentNode.nodeType == 3) {
-				linkifyTextNode(state.currentNode);
-			} else if (!valid(state.currentNode)) {
+			cn = state.currentNode;
+
+			if (cn.nodeType == 3) {
+				linkifyTextNode(cn);
+			} else if (!valid(cn)) {
 				state.next = "sibling";
 			}
 
 			// State transfer
 			if (state.next == "child") {
-				if (state.currentNode.childNodes.length) {
-					state.currentNode = state.currentNode.childNodes[0];
+				if (cn.childNodes.length) {
+					cn = cn.childNodes[0];
 				} else {
 					state.next = "sibling";
 				}
 			} else if (state.next == "sibling") {
-				if (state.currentNode.nextSibling) {
-					state.currentNode = state.currentNode.nextSibling;
-				} else if (state.currentNode.parentNode != root) {
-					state.currentNode = state.currentNode.parentNode;
+				if (cn.nextSibling) {
+					cn = cn.nextSibling;
+				} else if (cn.parentNode && cn.parentNode != root) {
+					cn = cn.parentNode;
 				} else {
-					console.log("Traverse complete! Took " + (Date.now() - state.timeStart) + "ms");
+					console.log(
+						"Traverse complete! Took %dms. Traversed %d nodes.",
+						Date.now() - state.timeStart,
+						state.loopCount
+					);
 					return;
 				}
 			}
@@ -96,66 +119,44 @@ function traverseContainer(root){
 	setTimeout(traverse, 0);
 }
 
-GM_config.init(
-	"Linkify Plus Plus",
-	{
-		useImg: {
-			label: "Parse image url to <img>:",
-			type: "checkbox",
-			default: true
+function configInit(config){
+	GM_config.init(
+		"Linkify Plus Plus",
+		{
+			useImg: {
+				label: "Parse image url to <img>:",
+				type: "checkbox",
+				default: true
+			},
+			classBlackList: {
+				label: "Add classes to black-list (Separate by space):",
+				type: "textarea",
+				default: ""
+			},
+			classWhiteList: {
+				label: "Add classes to white-list (Separate by space):",
+				type: "textarea",
+				default: ""
+			}
 		},
-		classBlackList: {
-			label: "Add classes to black-list (Separate by space):",
-			type: "textarea",
-			default: ""
-		},
-		classWhiteList: {
-			label: "Add classes to white-list (Separate by space):",
-			type: "textarea",
-			default: ""
-		}
-	},
-	"@@CSS"
-);
-
-var useImg = GM_config.get("useImg", true),
-	xPathRule = "",
-	classWhiteList = GM_config.get("classWhiteList", "");
-
-var classBlackList = GM_config.get("classBlackList", "").trim().split(/\s+/);
-classWhiteList = classWhiteList.trim().split(/\s+/);
-
-if (classBlackList[0]) {
-	notInClasses = notInClasses.concat(classBlackList);
+		"@@CSS"
+	);
+	config.useImg = GM_config.get("useImg", true);
+	config.includingClass = config.includingClass.concat(
+		getArray(GM_config.get("classWhiteList", ""))
+	);
+	config.excludingClass = config.excludingClass.concat(
+		getArray(GM_config.get("classBlackList", ""))
+	);
 }
 
-notInTags.push("*[contains(@class, '" + notInClasses.join("') or contains(@class, '") + "')]");
-
-// Exclude tags and classes
-xPathRule += "not(ancestor::" + notInTags.join(') and not(ancestor::') + ")";
-
-// Exclude contenteditable
-xPathRule += " and not(ancestor::*[@contenteditable='true'])";
-
-// Include white list
-if (classWhiteList[0]) {
-	xPathRule += " or ancestor::*[contains(@class, '" + classWhiteList.join("') or contains(@class, '") + "')]";
+function getArray(s) {
+	s = s.trim();
+	if (!s) {
+		return [];
+	}
+	return s.split(/\s+/);
 }
-
-// Exclude linkifyplus to prevent recursive linkify
-xPathRule += " and not(ancestor::*[contains(@class, 'linkifyplus')])";
-
-var textNodeXpath =	".//text()[" + xPathRule + "]";
-
-//console.log(textNodeXpath);
-
-// 1=protocol, 2=user, 3=domain, 4=port, 5=path
-var urlRE = /\b([-a-z*]+:\/\/)?(?:([\w:\.]+)@)?([a-z0-9-.]+\.[a-z0-9-]+)\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#()]*)?/gi;
-
-// generated from http://data.iana.org/TLD/tlds-alpha-by-domain.txt
-var tlds = {
-	// @@TLDS
-};
 
 function remove(node) {
 	node.parentNode.removeChild(node);
@@ -303,7 +304,7 @@ function linkifyTextNode(node) {
 		//create a link and put it in the span
 		a = document.createElement('a');
 		a.className = 'linkifyplus';
-		if (/(\.jpg|\.png|\.gif)$/i.test(path) && useImg) {
+		if (/(\.jpg|\.png|\.gif)$/i.test(path) && config.useImg) {
 			img = document.createElement("img");
 			img.alt = l;
 			img.onerror = imgFailed;
@@ -341,106 +342,60 @@ function linkifyTextNode(node) {
 	}
 }
 
-function linkifyContainer(container) {
-	if (container.nodeType && container.nodeType == 3) {
-		container = container.parentNode;
-	}
+//var linkifyDelay = function(){
+//	var time = 3000, timer = null;
+//
+//	var delay = {
+//		waiting: false,
+//		delay: function(){
+//			clearTimeout(timer);
+//			timer = setTimeout(delay.linkify, time);
+//			delay.waiting = true;
+//		},
+//		linkify: function(){
+//			linkifyContainer(document.body);
+//			delay.waiting = false;
+//		}
+//	};
+//
+//	return delay;
+//}();
 
-	// Prevent infinite recursion, in case X(HT)ML documents with namespaces
-	// break the XPath's attempt to do so.	(Don't evaluate spans we put our
-	// classname into.)
-	if (container.className && container.className.match(/\blinkifyplus\b/)) {
-		return;
-	}
+var observer = {
+	handler: function(mutations){
 
-	// remove wbr element
-	removeWBR(container);
+		console.log("Cought mutations! Total %d mutations.", mutations.length);
 
-	var xpathResult = document.evaluate(
-		textNodeXpath, container, null,
-		XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null
-	);
-
-	var i = 0;
-	function continuation() {
-		var node = null, counter = 0;
-		while (node = xpathResult.snapshotItem(i++)) {
-			linkifyTextNode(node);
-			// setTimeout(linkifyTextNode, 0, node);
-
-			if (++counter > 50) {
-				return setTimeout(continuation, 0);
-			}
-		}
-	}
-	setTimeout(continuation, 0);
-}
-
-var linkifyDelay = function(){
-	var time = 3000, timer = null;
-
-	var delay = {
-		waiting: false,
-		delay: function(){
-			clearTimeout(timer);
-			timer = setTimeout(delay.linkify, time);
-			delay.waiting = true;
-		},
-		linkify: function(){
-			linkifyContainer(document.body);
-			delay.waiting = false;
-		}
-	};
-
-	return delay;
-}();
-
-var observerHandler = function(mutations){
-	var i;
-
-	if (mutations.length > 10 || linkifyDelay.waiting) {
-		linkifyDelay.delay();
-		return;
-	}
-
-	for (i = 0; i < mutations.length; i++) {
-		if (mutations[i].type != "childList") {
-			continue;
-		}
-
-		if (!mutations[i].addedNodes.length) {
-			continue;
-		}
-
-		linkifyContainer(mutations[i].target);
+//		var i;
+//
+//		if (mutations.length > 10 || linkifyDelay.waiting) {
+//			linkifyDelay.delay();
+//			return;
+//		}
+//
+//		for (i = 0; i < mutations.length; i++) {
+//			if (mutations[i].type != "childList") {
+//				continue;
+//			}
+//
+//			if (!mutations[i].addedNodes.length) {
+//				continue;
+//			}
+//
+//			linkifyContainer(mutations[i].target);
+//		}
+	},
+	config: {
+		childList: true,
+		subtree: true
 	}
 };
 
-var observerConfig = {
-	childList: true,
-	subtree: true
-};
-
-
-GM_addStyle(
-	".linkifyplus img {\
-		max-width: 100%;\
-	}\
-	#GM_config {\
-		border-radius: 1em;\
-		box-shadow: 0 0 1em black;\
-		border: 1px solid grey!important;\
-	}"
-);
+GM_addStyle("@CSS");
 
 GM_registerMenuCommand("Linkify Plus Plus - Configure", function(){
 	GM_config.open();
 });
 
-//
-//linkifyContainer(document.body);
-//
-//new MutationObserver(observerHandler, false)
-//	.observe(document.body, observerConfig);
-
 traverseContainer(document.body);
+new MutationObserver(observer.handler, false).observe(document.body, observer.config);

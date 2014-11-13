@@ -1,47 +1,8 @@
-body {
-	margin: 0;
+.linkifyplus img {
+	max-width: 100%;
 }
-
-.config_header {
-	background-color: #eee;
-	padding: 17px 0;
-	border-bottom: 1px solid #ccc;
-}
-
-.section_header_holder {
-	margin: 0;
-	padding: 0 15px;
-}
-
-#buttons_holder {
-	margin: 0;
-	padding: 7px 15px;
-}
-
-.section_header {
-	font-size: 1.5em;
-	color: black;
-	border: none;
-	background-color: transparent;
-	margin: 12px 0 7px;
-	display: block;
-	text-align: left;
-}
-
-.saveclose_buttons {
-	margin: 0;
-}
-.saveclose_buttons + .saveclose_buttons {
-	margin-left: 7px;
-	margin-bottom: 7px;
-}
-
-label, input {
-	vertical-align: middle;
-}
-
-textarea {
-	display: block;
-	font-family: inherit;
-	font-size: inherit;
+#GM_config {
+	border-radius: 1em;
+	box-shadow: 0 0 1em black;
+	border: 1px solid grey!important;
 }

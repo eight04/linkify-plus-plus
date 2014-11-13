@@ -21,15 +21,12 @@ module.exports = function(grunt) {
 						{
 							match: /'|"/g,
 							replacement: "\\$0"
-						},
-						{
-							match: /\r?\n/g,
-							replacement: ""
 						}
 					]
 				},
 				files: {
-					"temp/style.css": "style.css"
+					"temp/style.css": "style.css",
+					"temp/style-config.css": "style-config.css"
 				}
 			},
 			includeCss: {
@@ -38,6 +35,10 @@ module.exports = function(grunt) {
 						{
 							match: "CSS",
 							replacement: "<%= grunt.file.read('temp/style.css') %>"
+						},
+						{
+							match: "CSS_CONFIG",
+							replacement: "<%= grunt.file.read('temp/style-config.css') %>"
 						}
 					]
 				},
@@ -65,6 +66,13 @@ module.exports = function(grunt) {
 			files: {
 				"C:\Users\Owner\AppData\Roaming\Mozilla\Firefox\Profiles\x6tyi36t.20140519\gm_scripts\Linkify_Plus_Plus\Linkify_Plus_Plus.user.js": "linkify-plus-plus.user.js"
 			}
+		},
+		cssmin: {
+			css: {
+				expand: true,
+				src: "*.css",
+				dest: "temp/"
+			}
 		}
 	});
 
@@ -73,7 +81,8 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-replace');
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-copy');
+	grunt.loadNpmTasks('grunt-contrib-cssmin');
 
 	// Tasks
-	grunt.registerTask('default', ['replace', 'clean']);
+	grunt.registerTask('default', ["cssmin", 'replace', 'clean']);
 };
