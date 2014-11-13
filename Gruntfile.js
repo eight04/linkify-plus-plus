@@ -36,7 +36,7 @@ module.exports = function(grunt) {
 				options: {
 					patterns: [
 						{
-							match: "__CSS__",
+							match: "CSS",
 							replacement: "<%= grunt.file.read('temp/style.css') %>"
 						}
 					]

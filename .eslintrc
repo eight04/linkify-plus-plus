@@ -15,6 +15,7 @@
 		"no-cond-assign": 0,
 		"camelcase": 0,
 		"no-multi-str": 0,
-		"new-cap": 0
+		"new-cap": 0,
+		"no-constant-condition": 0
 	}
 }
