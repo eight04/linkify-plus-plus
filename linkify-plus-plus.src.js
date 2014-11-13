@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     3.0.0
+// @version     3.0.1
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -48,8 +48,6 @@ var re = {
 	includingClass: new RegExp(config.includingClass.join("|"))
 };
 
-//console.log(re);
-
 var tlds = {
 	// @@TLDS
 };
@@ -75,18 +73,24 @@ var traverser = {
 		var root = traverser.queue.shift();
 
 		if (!root) {
-			console.log("Traverser queue is empty! Traverser stop.");
+//			console.log("Traverser queue is empty! Traverser stop.");
 			traverser.running = false;
 			return;
 		}
 
+
 		if (!root.childNodes || !root.childNodes.length || !valid(root)) {
-			console.log("Invalid root: ", root);
+//			console.log("Invalid root: ", root);
+			root.inTraverserQueue = false;
 			setTimeout(traverser.container, 0);
 			return;
 		}
 
-		console.log("Traverse start! Root node is %o", root);
+//		console.log(
+//			"%d nodes in queue. Traverse start! Root node is %o",
+//			traverser.queue.length,
+//			root
+//		);
 
 		// remove wbr element
 		removeWBR(root);
@@ -138,14 +142,21 @@ var traverser = {
 				}
 			}
 			console.log(
-				"Traverse complete! Took %dms. Traversed %d nodes. Last node is %o",
+				"Traverse complete! Took %dms. Traversed %d nodes.",
 				Date.now() - state.timeStart,
-				state.loopCount + 1,
-				state.currentNode
+				state.loopCount + 1
 			);
+			root.inTraverserQueue = false;
 			traverser.container();
 		}
 		setTimeout(traverse, 0);
+	},
+	add: function(node) {
+		if (node.inTraverserQueue) {
+			return;
+		}
+		node.inTraverserQueue = true;
+		traverser.queue.push(node);
 	}
 };
 
@@ -394,7 +405,7 @@ function linkifyTextNode(node) {
 var observer = {
 	handler: function(mutations){
 
-		console.log("Cought mutations! Total %d mutations.", mutations.length);
+//		console.log("Cought mutations! Total %d mutations.", mutations.length);
 
 		var i;
 
@@ -403,7 +414,7 @@ var observer = {
 				continue;
 			}
 
-			traverser.queue.push(mutations[i].target);
+			traverser.add(mutations[i].target);
 		}
 
 		traverser.start();
@@ -420,6 +431,6 @@ GM_registerMenuCommand("Linkify Plus Plus - Configure", function(){
 	GM_config.open();
 });
 
-traverser.queue.push(document.body);
+traverser.add(document.body);
 traverser.start();
 new MutationObserver(observer.handler, false).observe(document.body, observer.config);

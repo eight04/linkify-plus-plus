@@ -12,7 +12,9 @@ Testcase
 
 Changelog
 ---------
-* Version 3.0.0 (Nav 14, 2014):
+* Version 3.0.1 (Nov 14, 2014):
+	- Cleanup console.log.
+* Version 3.0.0 (Nov 14, 2014):
 	- Breaking change. Removed linkifyContainer and use new DOM traversal method.
 * Version 2.4.3 (Nov 7, 2014):
 	- Add custom class name black-list.
