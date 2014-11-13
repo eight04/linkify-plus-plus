@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     3.0.1
+// @version     3.0.2
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -55,9 +55,10 @@ var tlds = {
 };
 
 function valid(node) {
-	return !re.excludingTag.test(node.nodeName) &&
+	return (!re.excludingTag.test(node.nodeName) &&
 		!re.excludingClass.test(node.className) ||
-		re.includingClass.test(node.className) &&
+		re.includingClass.test(node.className)) &&
+		node.contentEditable != "true" &&
 		node.className.indexOf("linkifyplus") < 0;
 }
 
@@ -105,32 +106,29 @@ var traverser = {
 		};
 
 		function traverse(){
-			var i = 0;
+			var i = 0, child, sibling, parent;
 			while (state.currentNode != root) {
 
-//				console.log(state.currentNode, valid(state.currentNode), state.lastMove);
+				// Cache elements since linkified node will be detach from DOM
+				child = state.currentNode.childNodes[0];
+				sibling = state.currentNode.nextSibling;
+				parent = state.currentNode.parentNode;
 
 				if (state.currentNode.nodeType == 3) {
 					linkifyTextNode(state.currentNode);
 				}
 
 				// State transfer
-				if (state.currentNode.childNodes.length &&
-					state.lastMove != 3 && valid(state.currentNode)) {
-
-					state.currentNode = state.currentNode.childNodes[0];
+				if (state.currentNode.nodeType != 3 && valid(state.currentNode) &&
+					state.lastMove != 3 && child) {
+					state.currentNode = child;
 					state.lastMove = 1;
-
-				} else if (state.currentNode.nextSibling) {
-
-					state.currentNode = state.currentNode.nextSibling;
+				} else if (sibling) {
+					state.currentNode = sibling;
 					state.lastMove = 2;
-
-				} else if (state.currentNode.parentNode) {
-
-					state.currentNode = state.currentNode.parentNode;
+				} else if (parent) {
+					state.currentNode = parent;
 					state.lastMove = 3;
-
 				} else {
 					break;
 				}
@@ -144,9 +142,10 @@ var traverser = {
 				}
 			}
 			console.log(
-				"Traversal end! Traversed %d nodes in %dms.",
+				"Traversal end! Traversed %d nodes in %dms. %o",
 				state.loopCount + 1,
-				Date.now() - state.timeStart
+				Date.now() - state.timeStart,
+				state.currentNode
 			);
 			root.inTraverserQueue = false;
 			setTimeout(traverser.container);
