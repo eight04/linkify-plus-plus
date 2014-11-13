@@ -12,6 +12,8 @@ Testcase
 
 Changelog
 ---------
+* Version 3.0.4 (Nov 14, 2014):
+	- Add style.
 * Version 3.0.3 (Nov 14, 2014):
 	- Fixed comment element bug.
 * Version 3.0.2 (Nov 14, 2014):

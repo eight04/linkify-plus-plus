@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     3.0.3
+// @version     3.0.4
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -174,7 +174,7 @@ function configInit(config){
 				default: ""
 			}
 		},
-		".linkifyplus img{max-width:100%}#GM_config{border-radius:1em;box-shadow:0 0 1em #000;border:1px solid grey!important}"
+		"body{margin:0}.config_header{background-color:#eee;padding:17px 0;border-bottom:1px solid #ccc}.section_header_holder{margin:0;padding:0 15px}#buttons_holder{margin:0;padding:7px 15px}.section_header{font-size:1.5em;color:#000;border:none;background-color:transparent;margin:12px 0 7px;display:block;text-align:left}.saveclose_buttons{margin:0}.saveclose_buttons+.saveclose_buttons{margin-left:7px;margin-bottom:7px}input,label{vertical-align:middle}textarea{display:block;font-family:inherit;font-size:inherit}"
 	);
 	config.useImg = GM_config.get("useImg", true);
 	config.includingClass = config.includingClass.concat(
@@ -419,7 +419,7 @@ var observer = {
 	}
 };
 
-GM_addStyle("@CSS");
+GM_addStyle(".linkifyplus img{max-width:100%}#GM_config{border-radius:1em;box-shadow:0 0 1em #000;border:1px solid grey!important}");
 
 GM_registerMenuCommand("Linkify Plus Plus - Configure", function(){
 	GM_config.open();
