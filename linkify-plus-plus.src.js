@@ -43,10 +43,12 @@ configInit(config);
 var urlRE = /\b([-a-z*]+:\/\/)?(?:([\w:\.]+)@)?([a-z0-9-.]+\.[a-z0-9-]+)\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#()]*)?/gi;
 
 var re = {
-	excludingTag: new RegExp(config.excludingTag.join("|")),
+	excludingTag: new RegExp(config.excludingTag.join("|"), "i"),
 	excludingClass: new RegExp(config.excludingClass.join("|")),
 	includingClass: new RegExp(config.includingClass.join("|"))
 };
+
+//console.log(re);
 
 var tlds = {
 	// @@TLDS
@@ -59,65 +61,93 @@ function valid(node) {
 		node.className.indexOf("linkifyplus") < 0;
 }
 
-function traverseContainer(root){
+var traverser = {
+	queue: [],
+	running: false,
+	start: function(){
+		if (traverser.running) {
+			return;
+		}
+		traverser.running = true;
+		traverser.container();
+	},
+	container: function(){
+		var root = traverser.queue.shift();
 
-	console.log("Traverse start! Root node is %o.", root);
+		if (!root) {
+			console.log("Traverser queue is empty! Traverser stop.");
+			traverser.running = false;
+			return;
+		}
 
-	// remove wbr element
-	removeWBR(root);
+		if (!root.childNodes || !root.childNodes.length || !valid(root)) {
+			console.log("Invalid root: ", root);
+			setTimeout(traverser.container, 0);
+			return;
+		}
 
-	var state = {
-		currentNode: root,
-		next: "child",	// child|sibling|parent
-		loopCount: 0,
-		timeStart: Date.now()
-	};
+		console.log("Traverse start! Root node is %o", root);
 
-	function traverse(){
-		var i = 0, cn;
+		// remove wbr element
+		removeWBR(root);
 
-		while (true) {
-			cn = state.currentNode;
+		var state = {
+			currentNode: root.childNodes[0],
+			lastMove: 1,	// 1=down, 2=left, 3=up
+			loopCount: 0,
+			timeStart: Date.now()
+		};
 
-			if (cn.nodeType == 3) {
-				linkifyTextNode(cn);
-			} else if (!valid(cn)) {
-				state.next = "sibling";
-			}
+		function traverse(){
+			var i = 0;
+			while (state.currentNode != root) {
 
-			// State transfer
-			if (state.next == "child") {
-				if (cn.childNodes.length) {
-					cn = cn.childNodes[0];
-				} else {
-					state.next = "sibling";
+//				console.log(state.currentNode, valid(state.currentNode), state.lastMove);
+
+				if (state.currentNode.nodeType == 3) {
+					linkifyTextNode(state.currentNode);
 				}
-			} else if (state.next == "sibling") {
-				if (cn.nextSibling) {
-					cn = cn.nextSibling;
-				} else if (cn.parentNode && cn.parentNode != root) {
-					cn = cn.parentNode;
+
+				// State transfer
+				if (state.currentNode.childNodes.length &&
+					state.lastMove != 3 && valid(state.currentNode)) {
+
+					state.currentNode = state.currentNode.childNodes[0];
+					state.lastMove = 1;
+
+				} else if (state.currentNode.nextSibling) {
+
+					state.currentNode = state.currentNode.nextSibling;
+					state.lastMove = 2;
+
+				} else if (state.currentNode.parentNode) {
+
+					state.currentNode = state.currentNode.parentNode;
+					state.lastMove = 3;
+
 				} else {
-					console.log(
-						"Traverse complete! Took %dms. Traversed %d nodes.",
-						Date.now() - state.timeStart,
-						state.loopCount
-					);
+					break;
+				}
+
+				// Loop counter
+				i++;
+				state.loopCount++;
+				if (i > 50) {
+					setTimeout(traverse, 0);
 					return;
 				}
 			}
-
-			// Loop counter
-			i++;
-			state.loopCount++;
-			if (i > 50) {
-				setTimeout(traverse, 0);
-				return;
-			}
+			console.log(
+				"Traverse complete! Took %dms. Traversed %d nodes. Last node is %o",
+				Date.now() - state.timeStart,
+				state.loopCount + 1,
+				state.currentNode
+			);
+			traverser.container();
 		}
+		setTimeout(traverse, 0);
 	}
-	setTimeout(traverse, 0);
-}
+};
 
 function configInit(config){
 	GM_config.init(
@@ -366,24 +396,17 @@ var observer = {
 
 		console.log("Cought mutations! Total %d mutations.", mutations.length);
 
-//		var i;
-//
-//		if (mutations.length > 10 || linkifyDelay.waiting) {
-//			linkifyDelay.delay();
-//			return;
-//		}
-//
-//		for (i = 0; i < mutations.length; i++) {
-//			if (mutations[i].type != "childList") {
-//				continue;
-//			}
-//
-//			if (!mutations[i].addedNodes.length) {
-//				continue;
-//			}
-//
-//			linkifyContainer(mutations[i].target);
-//		}
+		var i;
+
+		for (i = 0; i < mutations.length; i++) {
+			if (!mutations[i].addedNodes.length) {
+				continue;
+			}
+
+			traverser.push(mutations[i].target);
+		}
+
+		traverser.start();
 	},
 	config: {
 		childList: true,
@@ -397,5 +420,6 @@ GM_registerMenuCommand("Linkify Plus Plus - Configure", function(){
 	GM_config.open();
 });
 
-traverseContainer(document.body);
+traverser.queue.push(document.body);
+traverser.start();
 new MutationObserver(observer.handler, false).observe(document.body, observer.config);

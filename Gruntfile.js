@@ -11,7 +11,7 @@ module.exports = function(grunt) {
 			},
 			src: {
 				files: ["*.src.js", "*.css"],
-				tasks: "default"
+				tasks: ["default"]
 			}
 		},
 		replace: {
