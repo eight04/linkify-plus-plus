@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     3.0.4
+// @version     3.0.5
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -43,9 +43,9 @@ configInit(config);
 var urlRE = /\b([-a-z*]+:\/\/)?(?:([\w:\.]+)@)?([a-z0-9-.]+\.[a-z0-9-]+)\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#()]*)?/gi;
 
 var re = {
-	excludingTag: new RegExp(config.excludingTag.join("|"), "i"),
-	excludingClass: new RegExp(config.excludingClass.join("|")),
-	includingClass: new RegExp(config.includingClass.join("|"))
+	excludingTag: new RegExp("^(" + config.excludingTag.join("|") + ")$", "i"),
+	excludingClass: new RegExp("\\b(" + config.excludingClass.join("|") + ")\\b"),
+	includingClass: new RegExp("\\b(" + config.includingClass.join("|") + ")\\b")
 };
 
 var tlds = {
@@ -101,6 +101,8 @@ var traverser = {
 
 			while (state.currentNode != root) {
 
+//				console.log(state.currentNode);
+
 				// Cache elements since linkified node will be detach from DOM
 				child = state.currentNode.childNodes[0];
 				sibling = state.currentNode.nextSibling;
@@ -133,11 +135,16 @@ var traverser = {
 				}
 			}
 
-			console.log(
-				"Traversal end! Traversed %d nodes in %dms.",
-				state.loopCount + 1,
-				Date.now() - state.timeStart
-			);
+			if (state.currentNode != root) {
+				console.log("Traversal terminated! Last node: ", state.currentNode);
+			} else {
+				console.log(
+					"Traversal end! Traversed %d nodes in %dms.",
+					state.loopCount + 1,
+					Date.now() - state.timeStart
+				);
+			}
+
 			root.inTraverserQueue = false;
 			setTimeout(traverser.container);
 		}

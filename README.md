@@ -12,6 +12,8 @@ Testcase
 
 Changelog
 ---------
+* Version 3.0.5 (Nov 14, 2014):
+	- Fixed tag name excluding bug.
 * Version 3.0.4 (Nov 14, 2014):
 	- Add style.
 * Version 3.0.3 (Nov 14, 2014):
