@@ -25,8 +25,8 @@ module.exports = function(grunt) {
 					]
 				},
 				files: {
-					"temp/style.css": "style.css",
-					"temp/style-config.css": "style-config.css"
+					"temp/style.css": "temp/style.css",
+					"temp/style-config.css": "temp/style-config.css"
 				}
 			},
 			includeCss: {
@@ -63,8 +63,10 @@ module.exports = function(grunt) {
 		},
 		clean: ["temp"],
 		copy: {
-			files: {
-				"C:\Users\Owner\AppData\Roaming\Mozilla\Firefox\Profiles\x6tyi36t.20140519\gm_scripts\Linkify_Plus_Plus\Linkify_Plus_Plus.user.js": "linkify-plus-plus.user.js"
+			dist: {
+				files: {
+					"C:\\Users\\Owner\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles\\x6tyi36t.20140519\\gm_scripts\\Linkify_Plus_Plus\\Linkify_Plus_Plus.user.js": "linkify-plus-plus.user.js"
+				}
 			}
 		},
 		cssmin: {
@@ -84,5 +86,5 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
 
 	// Tasks
-	grunt.registerTask('default', ["cssmin", 'replace', 'clean']);
+	grunt.registerTask('default', ["cssmin", 'replace', 'clean', "copy"]);
 };
