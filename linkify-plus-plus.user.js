@@ -55,7 +55,8 @@ var tlds = {
 };
 
 function valid(node) {
-	return (!re.excludingTag.test(node.nodeName) &&
+	return node.nodeType == 1 &&
+		(!re.excludingTag.test(node.nodeName) &&
 		!re.excludingClass.test(node.className) ||
 		re.includingClass.test(node.className)) &&
 		node.contentEditable != "true" &&
@@ -76,24 +77,16 @@ var traverser = {
 		var root = traverser.queue.shift();
 
 		if (!root) {
-//			console.log("Traverser queue is empty! Traverser stop.");
 			traverser.running = false;
 			return;
 		}
 
 
 		if (!root.childNodes || !root.childNodes.length || !valid(root)) {
-//			console.log("Invalid root: ", root);
 			root.inTraverserQueue = false;
 			setTimeout(traverser.container, 0);
 			return;
 		}
-
-//		console.log(
-//			"%d nodes in queue. Traverse start! Root node is %o",
-//			traverser.queue.length,
-//			root
-//		);
 
 		// remove wbr element
 		removeWBR(root);
@@ -107,6 +100,7 @@ var traverser = {
 
 		function traverse(){
 			var i = 0, child, sibling, parent;
+
 			while (state.currentNode != root) {
 
 				// Cache elements since linkified node will be detach from DOM
@@ -119,8 +113,7 @@ var traverser = {
 				}
 
 				// State transfer
-				if (state.currentNode.nodeType != 3 && valid(state.currentNode) &&
-					state.lastMove != 3 && child) {
+				if (valid(state.currentNode) && state.lastMove != 3 && child) {
 					state.currentNode = child;
 					state.lastMove = 1;
 				} else if (sibling) {
@@ -141,11 +134,11 @@ var traverser = {
 					return;
 				}
 			}
+
 			console.log(
-				"Traversal end! Traversed %d nodes in %dms. %o",
+				"Traversal end! Traversed %d nodes in %dms.",
 				state.loopCount + 1,
-				Date.now() - state.timeStart,
-				state.currentNode
+				Date.now() - state.timeStart
 			);
 			root.inTraverserQueue = false;
 			setTimeout(traverser.container);
