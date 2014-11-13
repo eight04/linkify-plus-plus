@@ -26,7 +26,7 @@ var config = {
 	excludingTag: [
 		'a', 'code', 'head', 'noscript', 'option', 'script', 'style',
 		'title', 'textarea', "svg", "canvas", "button", "select", "template",
-		"meter", "progress", "math", "h1", "h2", "h3", "h4", "h5", "h6"
+		"meter", "progress", "math", "h1", "h2", "h3", "h4", "h5", "h6", "time"
 	],
 	excludingClass: [
 		"highlight", "editbox", "code", "brush:", "bdsug"
@@ -142,12 +142,12 @@ var traverser = {
 				}
 			}
 			console.log(
-				"Traverse complete! Took %dms. Traversed %d nodes.",
-				Date.now() - state.timeStart,
-				state.loopCount + 1
+				"Traversal end! Traversed %d nodes in %dms.",
+				state.loopCount + 1,
+				Date.now() - state.timeStart
 			);
 			root.inTraverserQueue = false;
-			traverser.container();
+			setTimeout(traverser.container);
 		}
 		setTimeout(traverse, 0);
 	},
