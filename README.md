@@ -12,6 +12,8 @@ Testcase
 
 Changelog
 ---------
+* Version 3.0.6 (Nov 15, 2014):
+	- Fixed potential bug that root could be invalid after removing `<wbr>`.
 * Version 3.0.5 (Nov 14, 2014):
 	- Fixed tag name excluding bug.
 * Version 3.0.4 (Nov 14, 2014):
