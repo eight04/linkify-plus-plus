@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     3.0.6
+// @version     3.1.0
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -81,9 +81,6 @@ var traverser = {
 			return;
 		}
 
-		// remove wbr element
-		removeWBR(root);
-
 		if (!root.childNodes || !root.childNodes.length || !valid(root)) {
 			root.inTraverserQueue = false;
 			setTimeout(traverser.container, 0);
@@ -102,13 +99,22 @@ var traverser = {
 
 			while (state.currentNode != root) {
 
-//				console.log(state.currentNode);
+				// Remove wbr and merge textnode
+				if (state.currentNode.nodeType == 3) {
+					while (state.currentNode.nextSibling &&
+						   (state.currentNode.nextSibling.nodeType == 3 ||
+							state.currentNode.nextSibling.nodeName == "WBR")) {
+						state.currentNode.nodeValue += state.currentNode.nextSibling.nodeValue || "";
+						remove(state.currentNode.nextSibling);
+					}
+				}
 
-				// Cache elements since linkified node will be detach from DOM
+				// Cache node for transfer
 				child = state.currentNode.childNodes[0];
 				sibling = state.currentNode.nextSibling;
 				parent = state.currentNode.parentNode;
 
+				// Remove wbr and merge textnode
 				if (state.currentNode.nodeType == 3) {
 					linkifyTextNode(state.currentNode);
 				}
@@ -201,23 +207,6 @@ function getArray(s) {
 
 function remove(node) {
 	node.parentNode.removeChild(node);
-}
-
-function removeWBR(node) {
-	var l = node.querySelectorAll("wbr"), i, p, t, n;
-
-	for (i = 0; i < l.length; i++) {
-		t = l[i];
-		p = t.previousSibling;
-		n = t.nextSibling;
-
-		if (p && n && p.nodeType == 3 && n.nodeType == 3) {
-			p.nodeValue += n.nodeValue;
-			remove(n);
-		}
-
-		remove(t);
-	}
 }
 
 function isIP(s) {

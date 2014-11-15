@@ -16,6 +16,7 @@
 		"camelcase": 0,
 		"no-multi-str": 0,
 		"new-cap": 0,
-		"no-constant-condition": 0
+		"no-constant-condition": 0,
+		"no-mixed-spaces-and-tabs": 0
 	}
 }

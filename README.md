@@ -12,6 +12,8 @@ Testcase
 
 Changelog
 ---------
+* Version 3.1.0 (Nov 15, 2014):
+	- Remove removeWBR(). Now the script will check `wbr` when traversing DOM.
 * Version 3.0.6 (Nov 15, 2014):
 	- Fixed potential bug that root could be invalid after removing `<wbr>`.
 * Version 3.0.5 (Nov 14, 2014):
