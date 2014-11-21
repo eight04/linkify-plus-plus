@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en" ng-app>
+<head>
+	<meta charset="UTF-8">
+	<title>Mutation Test</title>
+	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular.min.js"></script>
+	<script src="https://greasyfork.org/scripts/1884-gm-config/code/GM_config.js?version=4836"></script>
+	<style>
+	</style>
+</head>
+<body>
+<script>
+	setTimeout(function(){
+		$("body").html("<p>http://yahoo.com<a>test</a></p>");
+
+		setTimeout(function(){
+			$("p").append("<span>Hi</spam>");
+		}, 1000)
+	}, 1000);
+
+	new MutationObserver(function(mutations){
+		console.log(mutations);
+		mutations[0].target
+	}).observe(document.body, {
+		childList: true,
+		subtree: true
+	});
+</script>
+</body>
+</html>
