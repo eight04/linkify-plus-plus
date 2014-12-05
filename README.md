@@ -10,8 +10,16 @@ Testcase
 --------
 <https://rawgit.com/eight04/linkify-plus-plus/master/testcase.html>
 
+Configure
+---------
+You can find it from greasemonkey menu.
+
+![Greasemonkey Menu](http://i.imgur.com/tOTr7ys.jpg)
+
 Changelog
 ---------
+* Version 3.1.1 (Dec 5, 2014):
+	- Add `https?://www.google.tld/webhp*` to excluding list.
 * Version 3.1.0 (Nov 15, 2014):
 	- Remove removeWBR(). Now the script will check `wbr` when traversing DOM.
 * Version 3.0.6 (Nov 15, 2014):

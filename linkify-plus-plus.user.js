@@ -1,11 +1,13 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     3.1.0
+// @version     3.1.1
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
 // @exclude     http://www.google.tld/search*
 // @exclude     https://www.google.tld/search*
+// @exclude     http://www.google.tld/webhp*
+// @exclude     https://www.google.tld/webhp*
 // @exclude     http://music.google.com/*
 // @exclude     https://music.google.com/*
 // @exclude     http://mail.google.com/*
