@@ -2,6 +2,16 @@ Linkify Plus Plus
 =================
 An user script which can linkify almost everything. Based on Linkify Plus.
 
+Features
+--------
+* Detect text url and convert them into links.
+* Support dynamic content.
+* If the url ends with .jpg/.gif/.png, the script parse them to images. (Configurable)
+* Custom whitelist, blacklist according class name.
+
+You can find the configure from greasemonkey menu.
+![Greasemonkey Menu](https://i.imgur.com/tOTr7ys.jpg)
+
 Install
 -------
 [Greasy Fork](https://greasyfork.org/scripts/4255-linkify-plus-plus).
@@ -9,12 +19,6 @@ Install
 Testcase
 --------
 <https://rawgit.com/eight04/linkify-plus-plus/master/testcase.html>
-
-Configure
----------
-You can find it from greasemonkey menu.
-
-![Greasemonkey Menu](https://i.imgur.com/tOTr7ys.jpg)
 
 Changelog
 ---------
