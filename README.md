@@ -1,6 +1,6 @@
 Linkify Plus Plus
 =================
-An user script which can linkify almost everything. Base on Linkify Plus.
+An user script which can linkify almost everything. Based on Linkify Plus.
 
 Install
 -------
@@ -14,7 +14,7 @@ Configure
 ---------
 You can find it from greasemonkey menu.
 
-![Greasemonkey Menu](http://i.imgur.com/tOTr7ys.jpg)
+![Greasemonkey Menu](https://i.imgur.com/tOTr7ys.jpg)
 
 Changelog
 ---------
