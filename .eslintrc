@@ -1,15 +1,15 @@
 {
-	env: {
-		browser: true,
-		node: true
+	"env": {
+		"browser": true,
+		"node": true
 	},
-	globals: {
-		unsafeWindow: false,
-		GM_config: false,
-		GM_addStyle: false,
-		GM_registerMenuCommand: false
+	"globals": {
+		"unsafeWindow": false,
+		"GM_config": false,
+		"GM_addStyle": false,
+		"GM_registerMenuCommand": false
 	},
-	rules: {
+	"rules": {
 		"no-trailing-spaces": 0,
 		"eqeqeq": 0,
 		"no-cond-assign": 0,
