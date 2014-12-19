@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     3.1.1
+// @version     3.2.0
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -36,7 +36,8 @@ var config = {
 	includingClass: [
 		"bbcode_code"
 	],
-	useImg: true
+	useImg: true,
+	generateLog: false
 };
 
 configInit(config);
@@ -144,14 +145,16 @@ var traverser = {
 				}
 			}
 
-			if (state.currentNode != root) {
-				console.log("Traversal terminated! Last node: ", state.currentNode);
-			} else {
-				console.log(
-					"Traversal end! Traversed %d nodes in %dms.",
-					state.loopCount + 1,
-					Date.now() - state.timeStart
-				);
+			if (config.generateLog) {
+				if (state.currentNode != root) {
+					console.log("Traversal terminated! Last node: ", state.currentNode);
+				} else {
+					console.log(
+						"Traversal end! Traversed %d nodes in %dms.",
+						state.loopCount + 1,
+						Date.now() - state.timeStart
+					);
+				}
 			}
 
 			root.inTraverserQueue = false;
@@ -186,6 +189,11 @@ function configInit(config){
 				label: "Add classes to white-list (Separate by space):",
 				type: "textarea",
 				default: ""
+			},
+			generateLog: {
+				label: "Generate log (useful for debugging):",
+				type: "checkbox",
+				default: false
 			}
 		},
 		"body{margin:0}.config_header{background-color:#eee;padding:17px 0;border-bottom:1px solid #ccc}.section_header_holder{margin:0;padding:0 15px}#buttons_holder{margin:0;padding:7px 15px}.section_header{font-size:1.5em;color:#000;border:none;background-color:transparent;margin:12px 0 7px;display:block;text-align:left}.saveclose_buttons{margin:0}.saveclose_buttons+.saveclose_buttons{margin-left:7px;margin-bottom:7px}input,label{vertical-align:middle}textarea{display:block;font-family:inherit;font-size:inherit}"
@@ -197,6 +205,7 @@ function configInit(config){
 	config.excludingClass = config.excludingClass.concat(
 		getArray(GM_config.get("classBlackList", ""))
 	);
+	config.generateLog = GM_config.get("generateLog", false);
 }
 
 function getArray(s) {
@@ -374,29 +383,8 @@ function linkifyTextNode(node) {
 	}
 }
 
-//var linkifyDelay = function(){
-//	var time = 3000, timer = null;
-//
-//	var delay = {
-//		waiting: false,
-//		delay: function(){
-//			clearTimeout(timer);
-//			timer = setTimeout(delay.linkify, time);
-//			delay.waiting = true;
-//		},
-//		linkify: function(){
-//			linkifyContainer(document.body);
-//			delay.waiting = false;
-//		}
-//	};
-//
-//	return delay;
-//}();
-
 var observer = {
 	handler: function(mutations){
-
-//		console.log("Cought mutations! Total %d mutations.", mutations.length);
 
 		var i;
 

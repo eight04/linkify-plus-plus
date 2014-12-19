@@ -22,6 +22,8 @@ Testcase
 
 Changelog
 ---------
+* Version 3.2.0 (Dec 20, 2014):
+	- Add `config.generateLog` option to config.
 * Version 3.1.1 (Dec 5, 2014):
 	- Add `https?://www.google.tld/webhp*` to excluding list.
 * Version 3.1.0 (Nov 15, 2014):
