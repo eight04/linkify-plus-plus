@@ -22,6 +22,8 @@ Testcase
 
 Changelog
 ---------
+* Version 3.2.2 (Jan 9, 2015):
+	- Fix root node validation bug.
 * Version 3.2.1 (Jan 9, 2015):
 	- Fix class matching bug.
 * Version 3.2.0 (Dec 20, 2014):
