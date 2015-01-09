@@ -5,6 +5,7 @@ module.exports = function(grunt) {
 	// Project configuration.
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
+		env: grunt.file.readJSON('env.json'),
 		watch: {
 			grunt: {
 				files: "Gruntfile.js"
@@ -64,9 +65,8 @@ module.exports = function(grunt) {
 		clean: ["temp"],
 		copy: {
 			dist: {
-				files: {
-					"C:\\Users\\Owner\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles\\x6tyi36t.20140519\\gm_scripts\\Linkify_Plus_Plus\\Linkify_Plus_Plus.user.js": "linkify-plus-plus.user.js"
-				}
+				src: "linkify-plus-plus.user.js",
+				dest: "<%= env.GM_FOLDER %>\\Linkify_Plus_Plus\\Linkify_Plus_Plus.user.js"
 			}
 		},
 		cssmin: {
