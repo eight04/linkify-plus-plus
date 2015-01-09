@@ -22,6 +22,8 @@ Testcase
 
 Changelog
 ---------
+* Version 3.2.1 (Jan 9, 2015):
+	- Fix class matching bug.
 * Version 3.2.0 (Dec 20, 2014):
 	- Add `config.generateLog` option to config.
 * Version 3.1.1 (Dec 5, 2014):

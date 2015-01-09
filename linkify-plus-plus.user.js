@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     3.2.0
+// @version     3.2.1
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -47,8 +47,8 @@ var urlRE = /\b([-a-z*]+:\/\/)?(?:([\w:\.]+)@)?([a-z0-9-.]+\.[a-z0-9-]+)\b(:\d+)
 
 var re = {
 	excludingTag: new RegExp("^(" + config.excludingTag.join("|") + ")$", "i"),
-	excludingClass: new RegExp("\\b(" + config.excludingClass.join("|") + ")\\b"),
-	includingClass: new RegExp("\\b(" + config.includingClass.join("|") + ")\\b")
+	excludingClass: new RegExp("(^|\\s)(" + config.excludingClass.join("|") + ")($|\\s)"),
+	includingClass: new RegExp("(^|\\s)(" + config.includingClass.join("|") + ")($|\\s)")
 };
 
 var tlds = {
