@@ -43,7 +43,7 @@ var config = {
 configInit(config);
 
 // 1=protocol, 2=user, 3=domain, 4=port, 5=path
-var urlRE = /\b([-a-z*]+:\/\/)?(?:([\w:\.]+)@)?([a-z0-9-.]+\.[a-z0-9-]+)\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#()]*)?/gi;
+var urlRE = /\b([-a-z*]+:\/\/)?(?:([\w:\.]+)@)?([a-z0-9-.]+\.[a-z0-9-]+)\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#()\[\]]*)?/gi;
 
 var re = {
 	excludingTag: new RegExp("^(" + config.excludingTag.join("|") + ")$", "i"),
@@ -291,6 +291,30 @@ function stripSingleParenthesis(str) {
 	return str;
 }
 
+function stripSingleSquare(str) {
+	var i, pos, c = "]";
+	for (i = 0; i < str.length; i++) {
+		if (str[i] == "[") {
+			if (c != "]") {
+				return str.substring(0, pos);
+			}
+			pos = i;
+			c = "[";
+		}
+		if (str[i] == "]") {
+			if (c != "[") {
+				return str.substring(0, i);
+			}
+			pos = i;
+			c = "]";
+		}
+	}
+	if (c != "]") {
+		return str.substring(0, pos);
+	}
+	return str;
+}
+
 function imgFailed(){
 	this.parentNode.textContent = this.alt;
 	this.error = null;
@@ -343,6 +367,10 @@ function linkifyTextNode(node) {
 		// Get the link without single parenthesis
 		l = stripSingleParenthesis(l);
 		path = stripSingleParenthesis(path);
+
+		// Get the link without single parenthesis
+		l = stripSingleSquare(l);
+		path = stripSingleSquare(path);
 
 		if (!protocol && user && (mm = user.match(/^mailto:(.+)/))) {
 			protocol = "mailto:";
