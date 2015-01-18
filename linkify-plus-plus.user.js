@@ -368,7 +368,7 @@ function linkifyTextNode(node) {
 		l = stripSingleParenthesis(l);
 		path = stripSingleParenthesis(path);
 
-		// Get the link without single parenthesis
+		// Get the link without single square brackets
 		l = stripSingleSquare(l);
 		path = stripSingleSquare(path);
 
