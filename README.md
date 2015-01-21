@@ -22,6 +22,8 @@ Testcase
 
 Changelog
 ---------
+* Version 3.2.3 (Jan 21, 2015):
+	- Fix parentNode == null bug in validRoot().
 * Version 3.2.2 (Jan 9, 2015):
 	- Fix root node validation bug.
 * Version 3.2.1 (Jan 9, 2015):
