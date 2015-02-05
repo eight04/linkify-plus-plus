@@ -9,7 +9,7 @@ Features
 * If the url ends with .jpg/.gif/.png, the script parse them to images. (Configurable)
 * Custom whitelist, blacklist according class name.
 
-You can find the configure from greasemonkey menu.
+You can find the configuration from greasemonkey menu.
 ![Greasemonkey Menu](https://i.imgur.com/tOTr7ys.jpg)
 
 Install
