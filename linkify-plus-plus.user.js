@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     3.2.4
+// @version     3.2.5
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -43,7 +43,7 @@ var config = {
 configInit(config);
 
 // 1=protocol, 2=user, 3=domain, 4=port, 5=path
-var urlRE = /\b([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.]+\.[a-z0-9-]+)\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#()]*)?/gi;
+var urlRE = /\b([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.]+\.[a-z0-9-]+)\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#(),]*)?/gi;
 
 var re = {
 	excludingTag: new RegExp("^(" + config.excludingTag.join("|") + ")$", "i"),
@@ -340,9 +340,9 @@ function linkifyTextNode(node) {
 
 		l = m[0];
 
-		// get the link without trailing dots
-		l = l.replace(/\.*$/, '');
-		path = path.replace(/\.*$/, '');
+		// get the link without trailing dots and comma
+		l = l.replace(/[.,]*$/, '');
+		path = path.replace(/[.,]*$/, '');
 
 		// Get the link without single parenthesis
 		l = stripSingleParenthesis(l);

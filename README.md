@@ -22,6 +22,8 @@ Testcase
 
 Changelog
 ---------
+* Version 3.2.5 (Feb 20, 2015):
+	- Make path match "," character.
 * Version 3.2.4 (Jan 30, 2015):
 	- Make user part of url match "-+" characters.
 * Version 3.2.3 (Jan 21, 2015):
