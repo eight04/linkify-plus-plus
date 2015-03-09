@@ -20,6 +20,14 @@ Testcase
 --------
 <https://rawgit.com/eight04/linkify-plus-plus/master/testcase.html>
 
+Todos
+-----
+* Add options to match unicode characters in path part.
+
+4.0 milestone
+-------------
+* Cleanup TLDs.
+
 Changelog
 ---------
 * Version 3.2.5 (Feb 20, 2015):
