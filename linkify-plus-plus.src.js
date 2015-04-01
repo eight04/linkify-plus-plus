@@ -1,19 +1,19 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     3.2.5
+// @version     3.2.6
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
-// @exclude     http://www.google.tld/search*
-// @exclude     https://www.google.tld/search*
-// @exclude     http://www.google.tld/webhp*
-// @exclude     https://www.google.tld/webhp*
-// @exclude     http://music.google.com/*
-// @exclude     https://music.google.com/*
-// @exclude     http://mail.google.com/*
-// @exclude     https://mail.google.com/*
-// @exclude     http://docs.google.com/*
-// @exclude     https://docs.google.com/*
+// @exclude     http://www.google.*/search*
+// @exclude     https://www.google.*/search*
+// @exclude     http://www.google.*/webhp*
+// @exclude     https://www.google.*/webhp*
+// @exclude     http://music.google.*/*
+// @exclude     https://music.google.*/*
+// @exclude     http://mail.google.*/*
+// @exclude     https://mail.google.*/*
+// @exclude     http://docs.google.*/*
+// @exclude     https://docs.google.*/*
 // @exclude     http://mxr.mozilla.org/*
 // @require 	https://greasyfork.org/scripts/1884-gm-config/code/GM_config.js?version=4836
 // @grant       GM_addStyle
