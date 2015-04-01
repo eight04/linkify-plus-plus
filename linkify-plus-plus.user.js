@@ -1,19 +1,19 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     3.2.5
+// @version     3.2.6
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
-// @exclude     http://www.google.tld/search*
-// @exclude     https://www.google.tld/search*
-// @exclude     http://www.google.tld/webhp*
-// @exclude     https://www.google.tld/webhp*
-// @exclude     http://music.google.com/*
-// @exclude     https://music.google.com/*
-// @exclude     http://mail.google.com/*
-// @exclude     https://mail.google.com/*
-// @exclude     http://docs.google.com/*
-// @exclude     https://docs.google.com/*
+// @exclude     http://www.google.*/search*
+// @exclude     https://www.google.*/search*
+// @exclude     http://www.google.*/webhp*
+// @exclude     https://www.google.*/webhp*
+// @exclude     http://music.google.*/*
+// @exclude     https://music.google.*/*
+// @exclude     http://mail.google.*/*
+// @exclude     https://mail.google.*/*
+// @exclude     http://docs.google.*/*
+// @exclude     https://docs.google.*/*
 // @exclude     http://mxr.mozilla.org/*
 // @require 	https://greasyfork.org/scripts/1884-gm-config/code/GM_config.js?version=4836
 // @grant       GM_addStyle
@@ -211,6 +211,11 @@ function configInit(config){
 				label: "Generate log (useful for debugging):",
 				type: "checkbox",
 				default: false
+			},
+			openInNewTab: {
+				label: "Open link in new tab:",
+				type: "checkbox",
+				default: false
 			}
 		},
 		"body{margin:0}.config_header{background-color:#eee;padding:17px 0;border-bottom:1px solid #ccc}.section_header_holder{margin:0;padding:0 15px}#buttons_holder{margin:0;padding:7px 15px}.section_header{font-size:1.5em;color:#000;border:none;background-color:transparent;margin:12px 0 7px;display:block;text-align:left}.saveclose_buttons{margin:0}.saveclose_buttons+.saveclose_buttons{margin-left:7px;margin-bottom:7px}input,label{vertical-align:middle}textarea{display:block;font-family:inherit;font-size:inherit}"
@@ -223,6 +228,7 @@ function configInit(config){
 		getArray(GM_config.get("classBlackList", ""))
 	);
 	config.generateLog = GM_config.get("generateLog", false);
+	config.openInNewTab = GM_config.get("openInNewTab", false);
 }
 
 function getArray(s) {
@@ -361,6 +367,9 @@ function linkifyTextNode(node) {
 		span.appendChild(document.createTextNode(txt.substring(p, m.index)));
 		//create a link and put it in the span
 		a = document.createElement('a');
+		if (config.openInNewTab) {
+			a.setAttribute("target", "_blank");
+		}
 		a.className = 'linkifyplus';
 		if (/(\.jpg|\.png|\.gif)$/i.test(path) && config.useImg) {
 			img = document.createElement("img");

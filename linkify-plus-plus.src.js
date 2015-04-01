@@ -209,6 +209,11 @@ function configInit(config){
 				label: "Generate log (useful for debugging):",
 				type: "checkbox",
 				default: false
+			},
+			openInNewTab: {
+				label: "Open link in new tab:",
+				type: "checkbox",
+				default: false
 			}
 		},
 		"@@CSS_CONFIG"
@@ -221,6 +226,7 @@ function configInit(config){
 		getArray(GM_config.get("classBlackList", ""))
 	);
 	config.generateLog = GM_config.get("generateLog", false);
+	config.openInNewTab = GM_config.get("openInNewTab", false);
 }
 
 function getArray(s) {
@@ -359,6 +365,9 @@ function linkifyTextNode(node) {
 		span.appendChild(document.createTextNode(txt.substring(p, m.index)));
 		//create a link and put it in the span
 		a = document.createElement('a');
+		if (config.openInNewTab) {
+			a.setAttribute("target", "_blank");
+		}
 		a.className = 'linkifyplus';
 		if (/(\.jpg|\.png|\.gif)$/i.test(path) && config.useImg) {
 			img = document.createElement("img");

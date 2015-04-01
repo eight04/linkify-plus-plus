@@ -30,6 +30,8 @@ Todos
 
 Changelog
 ---------
+* Version 3.3.0 (April 1, 2015):
+	- New feature: Open link in new tab.
 * Version 3.2.6 (April 1, 2015):
 	- Tampermonkey dosn't support magic TLD.
 * Version 3.2.5 (Feb 20, 2015):
