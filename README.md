@@ -30,6 +30,8 @@ Todos
 
 Changelog
 ---------
+* Version 3.4.0 (April 13, 2015):
+	- New feature: Embed youtube video.
 * Version 3.3.0 (April 1, 2015):
 	- New feature: Open link in new tab.
 * Version 3.2.6 (April 1, 2015):
