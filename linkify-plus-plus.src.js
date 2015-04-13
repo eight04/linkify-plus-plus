@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     3.2.6
+// @version     3.3.0
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -40,7 +40,7 @@ var config = {
 	generateLog: false
 };
 
-configInit(config);
+configInit();
 
 // 1=protocol, 2=user, 3=domain, 4=port, 5=path
 var urlRE = /\b([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.]+\.[a-z0-9-]+)\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#(),]*)?/gi;
@@ -120,7 +120,7 @@ var traverser = {
 				// Remove wbr and merge textnode
 				if (state.currentNode.nodeType == 3) {
 					while (state.currentNode.nextSibling &&
-						   (state.currentNode.nextSibling.nodeType == 3 ||
+							(state.currentNode.nextSibling.nodeType == 3 ||
 							state.currentNode.nextSibling.nodeName == "WBR")) {
 						state.currentNode.nodeValue += state.currentNode.nextSibling.nodeValue || "";
 						remove(state.currentNode.nextSibling);
@@ -186,7 +186,7 @@ var traverser = {
 	}
 };
 
-function configInit(config){
+function configInit(){
 	GM_config.init(
 		"Linkify Plus Plus",
 		{
@@ -214,6 +214,21 @@ function configInit(config){
 				label: "Open link in new tab:",
 				type: "checkbox",
 				default: false
+			},
+			useYT: {
+				label: "Embed youtube video:",
+				type: "checkbox",
+				default: false
+			},
+			ytWidth: {
+				label: "Video width:",
+				type: "text",
+				default: "560"
+			},
+			ytHeight: {
+				label: "Video height:",
+				type: "text",
+				default: "315"
 			}
 		},
 		"@@CSS_CONFIG"
@@ -227,6 +242,9 @@ function configInit(config){
 	);
 	config.generateLog = GM_config.get("generateLog", false);
 	config.openInNewTab = GM_config.get("openInNewTab", false);
+	config.useYT = GM_config.get("useYT", false);
+	config.ytWidth = +GM_config.get("ytWidth");
+	config.ytHeight = +GM_config.get("ytHeight");
 }
 
 function getArray(s) {
@@ -304,6 +322,60 @@ function imgFailed(){
 	this.error = null;
 }
 
+function getYoutubeId(url) {
+	var match =
+		url.match(/https?:\/\/www\.youtube\.com\/watch\?v=([^&]+)/) ||
+		url.match(/https?:\/\/youtu\.be\/([^?]+)/);
+	return match && match[1];
+}
+
+function createLink(text, url) {
+	var id, cont, obj, ratio, wrap;
+
+	if (config.useYT && (id = getYoutubeId(url))) {
+		ratio = (config.ytHeight / config.ytWidth) * 100;
+
+		cont = document.createElement("div");
+		cont.style.maxWidth = config.ytWidth + "px";
+
+		wrap = document.createElement("div");
+		wrap.style.position = "relative";
+		wrap.style.paddingTop = "30px";
+		wrap.style.paddingBottom = ratio + "%";
+
+		cont.appendChild(wrap);
+
+		obj = document.createElement("iframe");
+		obj.style.position = "absolute";
+		obj.style.top = "0";
+		obj.style.left = "0";
+		obj.style.width = "100%";
+		obj.style.height = "100%";
+		obj.src = "https://www.youtube.com/embed/" + id;
+		obj.setAttribute("allowfullscreen", "true");
+		obj.setAttribute("frameborder", "0");
+
+		wrap.appendChild(obj);
+	} else {
+		cont = document.createElement("a");
+		cont.href = url;
+		if (config.openInNewTab) {
+			cont.target = "_blank";
+		}
+		if (config.useImg && /(\.jpg|\.png|\.gif)$/i.test(url)) {
+			obj = document.createElement("img");
+			obj.alt = text;
+			obj.onerror = imgFailed;
+			obj.src = url;
+		} else {
+			obj = document.createTextNode(text);
+		}
+		cont.appendChild(obj);
+	}
+
+	return cont;
+}
+
 function linkifyTextNode(node) {
 	if (!node.parentNode){
 		return;
@@ -313,7 +385,7 @@ function linkifyTextNode(node) {
 	var span = null;
 	var p = 0;
 	var protocol, user, domain, port, path;
-	var a, img, url;
+	var a, url;
 
 	while (m = urlRE.exec(txt)) {
 		protocol = m[1] || "";
@@ -352,6 +424,7 @@ function linkifyTextNode(node) {
 		l = stripSingleParenthesis(l);
 		path = stripSingleParenthesis(path);
 
+		// Guess protocol and create url
 		if (!protocol && user && (mm = user.match(/^mailto:(.+)/))) {
 			protocol = "mailto:";
 			user = mm[1];
@@ -359,23 +432,6 @@ function linkifyTextNode(node) {
 
 		if (protocol && protocol.match(/^(hxxp|h\*\*p|ttp)/)) {
 			protocol = "http://";
-		}
-
-		//put in text up to the link
-		span.appendChild(document.createTextNode(txt.substring(p, m.index)));
-		//create a link and put it in the span
-		a = document.createElement('a');
-		if (config.openInNewTab) {
-			a.setAttribute("target", "_blank");
-		}
-		a.className = 'linkifyplus';
-		if (/(\.jpg|\.png|\.gif)$/i.test(path) && config.useImg) {
-			img = document.createElement("img");
-			img.alt = l;
-			img.onerror = imgFailed;
-			a.appendChild(img);
-		} else {
-			a.appendChild(document.createTextNode(l));
 		}
 
 		if (!protocol) {
@@ -389,13 +445,16 @@ function linkifyTextNode(node) {
 				protocol = "http://";
 			}
 		}
+
 		url = protocol + (user ? user + "@" : "") + domain + port + path;
-		a.setAttribute('href', url);
-		if (img) {
-			img.src = url;
-			img = null;
-		}
+
+		//put in text up to the link
+		span.appendChild(document.createTextNode(txt.substring(p, m.index)));
+
+		//create a link and put it in the span
+		a = createLink(l, url);
 		span.appendChild(a);
+
 		//track insertion point
 		p = m.index + l.length;
 	}
