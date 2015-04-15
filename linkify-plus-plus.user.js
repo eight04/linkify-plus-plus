@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     3.4.0
+// @version     3.4.1
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -332,32 +332,23 @@ function getYoutubeId(url) {
 }
 
 function createLink(text, url) {
-	var id, cont, obj, ratio, wrap;
+	var id, cont, obj, wrap;
 
 	if (config.useYT && (id = getYoutubeId(url))) {
-		ratio = (config.ytHeight / config.ytWidth) * 100;
-
 		cont = document.createElement("div");
-		cont.style.maxWidth = config.ytWidth + "px";
+		cont.className = "linkifyplus-video";
 
 		wrap = document.createElement("div");
-		wrap.style.position = "relative";
-		wrap.style.paddingTop = "30px";
-		wrap.style.paddingBottom = ratio + "%";
-
+		wrap.className = "linkifyplus-video-wrap";
 		cont.appendChild(wrap);
 
 		obj = document.createElement("iframe");
-		obj.style.position = "absolute";
-		obj.style.top = "0";
-		obj.style.left = "0";
-		obj.style.width = "100%";
-		obj.style.height = "100%";
+		obj.className = "linkifyplus-video-iframe";
 		obj.src = "https://www.youtube.com/embed/" + id;
 		obj.setAttribute("allowfullscreen", "true");
 		obj.setAttribute("frameborder", "0");
-
 		wrap.appendChild(obj);
+
 	} else {
 		cont = document.createElement("a");
 		cont.href = url;
@@ -366,6 +357,7 @@ function createLink(text, url) {
 		}
 		if (config.useImg && /(\.jpg|\.png|\.gif)$/i.test(url)) {
 			obj = document.createElement("img");
+			obj.className = "linkifyplus-image";
 			obj.alt = text;
 			obj.onerror = imgFailed;
 			obj.src = url;
@@ -375,6 +367,7 @@ function createLink(text, url) {
 		cont.appendChild(obj);
 	}
 
+	cont.classList.add("linkifyplus");
 	return cont;
 }
 
@@ -468,6 +461,14 @@ function linkifyTextNode(node) {
 	}
 }
 
+function template(text, option) {
+	var key;
+	for (key in option) {
+		text = text.split("@" + key).join(option[key]);
+	}
+	return text;
+}
+
 var observer = {
 	handler: function(mutations){
 
@@ -489,7 +490,10 @@ var observer = {
 	}
 };
 
-GM_addStyle(".linkifyplus img{max-width:100%}#GM_config{border-radius:1em;box-shadow:0 0 1em #000;border:1px solid grey!important}");
+GM_addStyle(template(".linkifyplus-image{max-width:100%}.linkifyplus-video{max-width:@ytWidthpx}.linkifyplus-video-wrap{position:relative;padding-top:30px;padding-bottom:@ytRatio%}.linkifyplus-video-iframe{position:absolute;top:0;left:0;width:100%;height:100%}#GM_config{border-radius:1em;box-shadow:0 0 1em #000;border:1px solid grey!important}", {
+	ytWidth: config.ytWidth,
+	ytRatio: (config.ytHeight / config.ytWidth) * 100
+}));
 
 GM_registerMenuCommand("Linkify Plus Plus - Configure", function(){
 	GM_config.open();

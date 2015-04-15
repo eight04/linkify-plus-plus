@@ -1,6 +1,25 @@
-.linkifyplus img {
+.linkifyplus-image {
 	max-width: 100%;
 }
+
+.linkifyplus-video {
+	max-width: @ytWidthpx;
+}
+
+.linkifyplus-video-wrap {
+	position: relative;
+	padding-top: 30px;
+	padding-bottom: @ytRatio%;
+}
+
+.linkifyplus-video-iframe {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
 #GM_config {
 	border-radius: 1em;
 	box-shadow: 0 0 1em black;
