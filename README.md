@@ -30,6 +30,8 @@ Todos
 
 Changelog
 ---------
+* Version 3.4.2 (Apr 16, 2015):
+	- Add spreadsheetinfo to ignore list.
 * Version 3.4.1 (Apr 16, 2015):
 	- Fix className issue. Move CSS rule to style.css.
 * Version 3.4.0 (Apr 13, 2015):

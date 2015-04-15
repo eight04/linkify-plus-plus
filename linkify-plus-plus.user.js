@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     3.4.1
+// @version     3.4.2
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -31,7 +31,7 @@ var config = {
 		"meter", "progress", "math", "h1", "h2", "h3", "h4", "h5", "h6", "time"
 	],
 	excludingClass: [
-		"highlight", "editbox", "code", "brush:", "bdsug"
+		"highlight", "editbox", "code", "brush:", "bdsug", "spreadsheetinfo"
 	],
 	includingClass: [
 		"bbcode_code"
