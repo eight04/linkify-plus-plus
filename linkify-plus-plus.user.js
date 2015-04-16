@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     3.4.2
+// @version     3.5.0
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -15,7 +15,7 @@
 // @exclude     http://docs.google.*/*
 // @exclude     https://docs.google.*/*
 // @exclude     http://mxr.mozilla.org/*
-// @require 	https://greasyfork.org/scripts/1884-gm-config/code/GM_config.js?version=4836
+// @require 	https://greasyfork.org/scripts/7212-gm-config-eight-s-version/code/GM_config%20(eight's%20version).js?version=46603
 // @grant       GM_addStyle
 // @grant       GM_registerMenuCommand
 // @grant       GM_getValue
@@ -24,32 +24,61 @@
 
 "use strict";
 
-var config = {
-	excludingTag: [
-		'a', 'code', 'head', 'noscript', 'option', 'script', 'style',
-		'title', 'textarea', "svg", "canvas", "button", "select", "template",
-		"meter", "progress", "math", "h1", "h2", "h3", "h4", "h5", "h6", "time"
-	],
-	excludingClass: [
-		"highlight", "editbox", "code", "brush:", "bdsug", "spreadsheetinfo"
-	],
-	includingClass: [
-		"bbcode_code"
-	],
-	useImg: true,
-	generateLog: false
-};
+var config, re;
 
-configInit();
+GM_config.init(
+	"Linkify Plus Plus",
+	{
+		useImg: {
+			label: "Parse image url to <img>:",
+			type: "checkbox",
+			default: true
+		},
+		classBlackList: {
+			label: "Add classes to black-list (Separate by space):",
+			type: "textarea",
+			default: ""
+		},
+		classWhiteList: {
+			label: "Add classes to white-list (Separate by space):",
+			type: "textarea",
+			default: ""
+		},
+		generateLog: {
+			label: "Generate log (useful for debugging):",
+			type: "checkbox",
+			default: false
+		},
+		openInNewTab: {
+			label: "Open link in new tab:",
+			type: "checkbox",
+			default: false
+		},
+		useYT: {
+			label: "Embed youtube video:",
+			type: "checkbox",
+			default: false
+		},
+		ytWidth: {
+			label: "Video width:",
+			type: "text",
+			default: "560"
+		},
+		ytHeight: {
+			label: "Video height:",
+			type: "text",
+			default: "315"
+		}
+	},
+	"body{margin:0}.config_header{background-color:#eee;padding:17px 0;border-bottom:1px solid #ccc}.section_header_holder{margin:0;padding:0 15px}#buttons_holder{margin:0;padding:7px 15px}.section_header{font-size:1.5em;color:#000;border:none;background-color:transparent;margin:12px 0 7px;display:block;text-align:left}.saveclose_buttons{margin:0}.saveclose_buttons+.saveclose_buttons{margin-left:7px;margin-bottom:7px}input,label{vertical-align:middle}textarea{display:block;font-family:inherit;font-size:inherit}"
+);
+
+GM_config.onclose = loadConfig;
+
+loadConfig();
 
 // 1=protocol, 2=user, 3=domain, 4=port, 5=path
 var urlRE = /\b([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.]+\.[a-z0-9-]+)\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#(),]*)?/gi;
-
-var re = {
-	excludingTag: new RegExp("^(" + config.excludingTag.join("|") + ")$", "i"),
-	excludingClass: new RegExp("(^|\\s)(" + config.excludingClass.join("|") + ")($|\\s)"),
-	includingClass: new RegExp("(^|\\s)(" + config.includingClass.join("|") + ")($|\\s)")
-};
 
 var tlds = {
 	// generated from http://data.iana.org/TLD/tlds-alpha-by-domain.txt
@@ -188,65 +217,28 @@ var traverser = {
 	}
 };
 
-function configInit(){
-	GM_config.init(
-		"Linkify Plus Plus",
-		{
-			useImg: {
-				label: "Parse image url to <img>:",
-				type: "checkbox",
-				default: true
-			},
-			classBlackList: {
-				label: "Add classes to black-list (Separate by space):",
-				type: "textarea",
-				default: ""
-			},
-			classWhiteList: {
-				label: "Add classes to white-list (Separate by space):",
-				type: "textarea",
-				default: ""
-			},
-			generateLog: {
-				label: "Generate log (useful for debugging):",
-				type: "checkbox",
-				default: false
-			},
-			openInNewTab: {
-				label: "Open link in new tab:",
-				type: "checkbox",
-				default: false
-			},
-			useYT: {
-				label: "Embed youtube video:",
-				type: "checkbox",
-				default: false
-			},
-			ytWidth: {
-				label: "Video width:",
-				type: "text",
-				default: "560"
-			},
-			ytHeight: {
-				label: "Video height:",
-				type: "text",
-				default: "315"
-			}
-		},
-		"body{margin:0}.config_header{background-color:#eee;padding:17px 0;border-bottom:1px solid #ccc}.section_header_holder{margin:0;padding:0 15px}#buttons_holder{margin:0;padding:7px 15px}.section_header{font-size:1.5em;color:#000;border:none;background-color:transparent;margin:12px 0 7px;display:block;text-align:left}.saveclose_buttons{margin:0}.saveclose_buttons+.saveclose_buttons{margin-left:7px;margin-bottom:7px}input,label{vertical-align:middle}textarea{display:block;font-family:inherit;font-size:inherit}"
-	);
-	config.useImg = GM_config.get("useImg", true);
-	config.includingClass = config.includingClass.concat(
-		getArray(GM_config.get("classWhiteList", ""))
-	);
-	config.excludingClass = config.excludingClass.concat(
-		getArray(GM_config.get("classBlackList", ""))
-	);
-	config.generateLog = GM_config.get("generateLog", false);
-	config.openInNewTab = GM_config.get("openInNewTab", false);
-	config.useYT = GM_config.get("useYT", false);
-	config.ytWidth = +GM_config.get("ytWidth");
-	config.ytHeight = +GM_config.get("ytHeight");
+function loadConfig(){
+	config = GM_config.get();
+
+	var excludingTag = [
+		'a', 'code', 'head', 'noscript', 'option', 'script', 'style',
+		'title', 'textarea', "svg", "canvas", "button", "select", "template",
+		"meter", "progress", "math", "h1", "h2", "h3", "h4", "h5", "h6", "time"
+	];
+
+	var excludingClass = [
+		"highlight", "editbox", "code", "brush:", "bdsug", "spreadsheetinfo"
+	].concat(getArray(config.classBlackList));
+
+	var includingClass = [
+		"bbcode_code"
+	].concat(getArray(config.classWhiteList));
+
+	re = {
+		excludingTag: new RegExp("^(" + excludingTag.join("|") + ")$", "i"),
+		excludingClass: new RegExp("(^|\\s)(" + excludingClass.join("|") + ")($|\\s)"),
+		includingClass: new RegExp("(^|\\s)(" + includingClass.join("|") + ")($|\\s)")
+	};
 }
 
 function getArray(s) {

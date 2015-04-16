@@ -30,6 +30,8 @@ Todos
 
 Changelog
 ---------
+* Version 3.5.0 (Apr 16, 2015):
+	- Use a different GM_config library.
 * Version 3.4.2 (Apr 16, 2015):
 	- Add spreadsheetinfo to ignore list.
 * Version 3.4.1 (Apr 16, 2015):
