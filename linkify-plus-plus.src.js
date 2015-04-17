@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     3.5.0
+// @version     3.5.1
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -309,11 +309,6 @@ function stripSingleParenthesis(str) {
 	return str;
 }
 
-function imgFailed(){
-	this.parentNode.textContent = this.alt;
-	this.error = null;
-}
-
 function getYoutubeId(url) {
 	var match =
 		url.match(/https?:\/\/www\.youtube\.com\/watch\?v=([^&]+)/) ||
@@ -345,11 +340,10 @@ function createLink(text, url) {
 		if (config.openInNewTab) {
 			cont.target = "_blank";
 		}
-		if (config.useImg && /(\.jpg|\.png|\.gif)$/i.test(url)) {
+		if (config.useImg && /^[^?#]+\.(jpg|png|gif|jpeg)($|[?#])/i.test(url)) {
 			obj = document.createElement("img");
 			obj.className = "linkifyplus-image";
 			obj.alt = text;
-			obj.onerror = imgFailed;
 			obj.src = url;
 		} else {
 			obj = document.createTextNode(text);
