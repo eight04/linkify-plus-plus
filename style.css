@@ -1,18 +1,18 @@
-.linkifyplus-image {
+.embedme-image {
 	max-width: 100%;
 }
 
-.linkifyplus-video {
+.embedme-video {
 	max-width: @ytWidthpx;
 }
 
-.linkifyplus-video-wrap {
+.embedme-video-wrap {
 	position: relative;
 	padding-top: 30px;
 	padding-bottom: @ytRatio%;
 }
 
-.linkifyplus-video-iframe {
+.embedme-video-iframe {
 	position: absolute;
 	top: 0;
 	left: 0;

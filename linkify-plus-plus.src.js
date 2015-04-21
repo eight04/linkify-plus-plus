@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     3.5.1
+// @version     3.6.0
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -30,44 +30,49 @@ GM_config.init(
 	"Linkify Plus Plus",
 	{
 		useImg: {
-			label: "Parse image url to <img>:",
+			label: "Embed images",
 			type: "checkbox",
 			default: true
 		},
 		classBlackList: {
-			label: "Add classes to black-list (Separate by space):",
+			label: "Add classes to black-list (Separate by space)",
 			type: "textarea",
 			default: ""
 		},
 		classWhiteList: {
-			label: "Add classes to white-list (Separate by space):",
+			label: "Add classes to white-list (Separate by space)",
 			type: "textarea",
 			default: ""
 		},
 		generateLog: {
-			label: "Generate log (useful for debugging):",
+			label: "Generate log (useful for debugging)",
 			type: "checkbox",
 			default: false
 		},
 		openInNewTab: {
-			label: "Open link in new tab:",
+			label: "Open link in new tab",
 			type: "checkbox",
 			default: false
 		},
 		useYT: {
-			label: "Embed youtube video:",
+			label: "Embed youtube video",
 			type: "checkbox",
 			default: false
 		},
 		ytWidth: {
-			label: "Video width:",
+			label: "Video width",
 			type: "text",
 			default: "560"
 		},
 		ytHeight: {
-			label: "Video height:",
+			label: "Video height",
 			type: "text",
 			default: "315"
+		},
+		embedAll: {
+			label: "Enable embedding globally (It might mess up your page!)",
+			type: "checkbox",
+			default: false
 		}
 	},
 	"@@CSS_CONFIG"
@@ -317,41 +322,16 @@ function getYoutubeId(url) {
 }
 
 function createLink(text, url) {
-	var id, cont, obj, wrap;
+	var cont;
 
-	if (config.useYT && (id = getYoutubeId(url))) {
-		cont = document.createElement("div");
-		cont.className = "linkifyplus-video";
-
-		wrap = document.createElement("div");
-		wrap.className = "linkifyplus-video-wrap";
-		cont.appendChild(wrap);
-
-		obj = document.createElement("iframe");
-		obj.className = "linkifyplus-video-iframe";
-		obj.src = "https://www.youtube.com/embed/" + id;
-		obj.setAttribute("allowfullscreen", "true");
-		obj.setAttribute("frameborder", "0");
-		wrap.appendChild(obj);
-
-	} else {
-		cont = document.createElement("a");
-		cont.href = url;
-		if (config.openInNewTab) {
-			cont.target = "_blank";
-		}
-		if (config.useImg && /^[^?#]+\.(jpg|png|gif|jpeg)($|[?#])/i.test(url)) {
-			obj = document.createElement("img");
-			obj.className = "linkifyplus-image";
-			obj.alt = text;
-			obj.src = url;
-		} else {
-			obj = document.createTextNode(text);
-		}
-		cont.appendChild(obj);
+	cont = document.createElement("a");
+	cont.href = url;
+	if (config.openInNewTab) {
+		cont.target = "_blank";
 	}
+	cont.appendChild(document.createTextNode(text));
+	cont.className = "linkifyplus";
 
-	cont.classList.add("linkifyplus");
 	return cont;
 }
 
@@ -453,26 +433,113 @@ function template(text, option) {
 	return text;
 }
 
-var observer = {
-	handler: function(mutations){
+function observeDocument(callback) {
 
+	callback(document.body);
+
+	new MutationObserver(function(mutations){
 		var i;
-
 		for (i = 0; i < mutations.length; i++) {
 			if (!mutations[i].addedNodes.length) {
 				continue;
 			}
-
-			traverser.add(mutations[i].target);
+			callback(mutations[i].target);
 		}
-
-		traverser.start();
-	},
-	config: {
+	}).observe(document.body, {
 		childList: true,
 		subtree: true
+	});
+}
+
+function loop(list, callback) {
+	var i = 0,
+		len = list.length;
+
+	function chunk() {
+		var j;
+		for (j = 0; j < 50 && i < len; i++, j++) {
+			callback(list[i]);
+		}
+		if (i < len) {
+			setTimeout(chunk);
+		}
+	}
+
+	setTimeout(chunk);
+}
+
+var embedFunction = {
+	image: function(url, element) {
+		var obj;
+		if (!config.useImg || !/^[^?#]+\.(jpg|png|gif|jpeg)($|[?#])/i.test(url)) {
+			return null;
+		}
+		obj = document.createElement("img");
+		obj.className = "embedme-image";
+		obj.alt = url;
+		obj.src = url;
+		element = element.cloneNode(false);
+		element.appendChild(obj);
+		return element;
+	},
+	youtube: function(url) {
+		var id, cont, wrap, obj;
+		if (!config.useYT || !(id = getYoutubeId(url))) {
+			return null;
+		}
+		cont = document.createElement("div");
+		cont.className = "embedme-video";
+
+		wrap = document.createElement("div");
+		wrap.className = "embedme-video-wrap";
+		cont.appendChild(wrap);
+
+		obj = document.createElement("iframe");
+		obj.className = "embedme-video-iframe";
+		obj.src = "https://www.youtube.com/embed/" + id;
+		obj.setAttribute("allowfullscreen", "true");
+		obj.setAttribute("frameborder", "0");
+		wrap.appendChild(obj);
+
+		return cont;
 	}
 };
+
+function embedContent(element) {
+	var url = element.href, key, embed;
+
+	if (!element.parentNode) {
+		return;
+	}
+
+	for (key in embedFunction) {
+		embed = embedFunction[key](url, element);
+		if (embed) {
+			embed.classList.add("embedme");
+			element.parentNode.replaceChild(embed, element);
+			return;
+		}
+	}
+//	element.classList.add("embedme-fail");
+}
+
+function embedMe(node) {
+	var result, nodes = [], i, xpath;
+
+	if (config.embedAll) {
+		xpath = ".//a[not(*) and text() and @href and not(contains(@class, 'embedme'))]";
+	} else {
+		xpath = ".//a[not(*) and text() and @href and not(contains(@class, 'embedme')) and contains(@class, 'linkifyplus')]";
+	}
+
+	result = document.evaluate(xpath, node, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
+
+	for (i = 0; i < result.snapshotLength; i++) {
+		nodes.push(result.snapshotItem(i));
+	}
+
+	loop(nodes, embedContent);
+}
 
 GM_addStyle(template("@@CSS", {
 	ytWidth: config.ytWidth,
@@ -483,6 +550,9 @@ GM_registerMenuCommand("Linkify Plus Plus - Configure", function(){
 	GM_config.open();
 });
 
-traverser.add(document.body);
-traverser.start();
-new MutationObserver(observer.handler, false).observe(document.body, observer.config);
+observeDocument(function(node){
+	traverser.add(node);
+	traverser.start();
+});
+
+observeDocument(embedMe);
