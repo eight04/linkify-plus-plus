@@ -6,8 +6,8 @@ Features
 --------
 * Detect text url and convert them into links.
 * Support dynamic content.
-* If the url ends with .jpg/.gif/.png, the script parse them to images. (Configurable)
 * Custom whitelist, blacklist according class name.
+* Embed youtube videos, images.
 
 You can find the configuration from greasemonkey menu.
 ![Greasemonkey Menu](https://i.imgur.com/tOTr7ys.jpg)
