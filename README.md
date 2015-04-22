@@ -30,6 +30,8 @@ Todos
 
 Changelog
 ---------
+* Version 3.6.1 (Apr 23, 2015):
+	- Use regex to detect angular source.
 * Version 3.6.0 (Apr 21, 2015):
 	- Move embeding function out of LPP core.
 * Version 3.5.1 (Apr 17, 2015):

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     3.6.0
+// @version     3.6.1
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -82,8 +82,8 @@ GM_config.onclose = loadConfig;
 
 loadConfig();
 
-// 1=protocol, 2=user, 3=domain, 4=port, 5=path
-var urlRE = /\b([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.]+\.[a-z0-9-]+)\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#(),]*)?/gi;
+// 1=protocol, 2=user, 3=domain, 4=port, 5=path, 6=angular source
+var urlRE = /\b([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.]+\.[a-z0-9-]+)\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#(),]*)?|\{\{(.+?)\}\}/gi;
 
 var tlds = {
 	// @@TLDS
@@ -269,27 +269,6 @@ function isIP(s) {
 	return true;
 }
 
-function inAngular(text, start, end) {
-	if (!unsafeWindow.angular) {
-		return false;
-	}
-
-	var l, r;
-	l = text.lastIndexOf("{{", start);
-	r = text.lastIndexOf("}}", start);
-	if (l < r || l < 0) {
-		return false;
-	}
-
-	l = text.indexOf("{{", end);
-	r = text.indexOf("}}", end);
-	if (l > 0 && l < r || r < 0) {
-		return false;
-	}
-
-	return true;
-}
-
 function stripSingleParenthesis(str) {
 	var i, pos, c = ")";
 	for (i = 0; i < str.length; i++) {
@@ -347,23 +326,27 @@ function linkifyTextNode(node) {
 	var a, url;
 
 	while (m = urlRE.exec(txt)) {
+		// Skip angular source
+		if (m[6]) {
+			if (!unsafeWindow.angular) {
+				urlRE.lastIndex = m.index + 2;
+			}
+			continue;
+		}
+
 		protocol = m[1] || "";
 		user = m[2] || "";
 		domain = m[3] || "";
 		port = m[4] || "";
 		path = m[5] || "";
 
-
-		// valid domain
+		// domain shouldn't contain connected dots
 		if (domain.indexOf("..") > -1) {
 			continue;
 		}
-		if (!isIP(domain) && (mm = domain.match(/\.([a-z0-9-]+)$/i)) && !tlds[mm[1].toUpperCase()]) {
-			continue;
-		}
 
-		// angular directive
-		if (!protocol && !user && !port && !path && inAngular(txt, m.index, urlRE.lastIndex)) {
+		// valid IP address
+		if (!isIP(domain) && (mm = domain.match(/\.([a-z0-9-]+)$/i)) && !tlds[mm[1].toUpperCase()]) {
 			continue;
 		}
 

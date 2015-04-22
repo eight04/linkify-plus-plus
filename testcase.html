@@ -2,12 +2,11 @@
 <html lang="en" ng-app>
 <head>
 	<meta charset="UTF-8">
+	<meta http-equiv="cache-control" content="no-cache">
 	<title>Linkify Plus Plus</title>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular.min.js"></script>
 	<script src="https://greasyfork.org/scripts/7212-gm-config-eight-s-version/code/GM_config%20(eight's%20version).js?version=46603"></script>
-	<script src="https://rawgit.com/urish/angular-load/master/angular-load.js"></script>
 	<link rel="stylesheet" href="https://rawgit.com/eight04/end2end/master/dist/end2end.css">
-
 	<style>
 		body {
 			word-wrap: break-word;
@@ -28,7 +27,7 @@
 		var scripts = [
 			"linkify-plus-plus.user.js"
 		];
-		var unsafeWindow = window;
+		var unsafeWindow = Object.create(window);
 		var GM_addStyle = function(s) {
 			var style = document.createElement("style");
 			style.textContent = s;
@@ -56,7 +55,7 @@
 
 				angular.forEach(scripts, function(url){
 					var script = document.createElement("script");
-					script.src = url;
+					script.src = url + "?" + new Date().getTime();
 					script.onload = apply;
 					document.head.appendChild(script);
 				});
