@@ -8,7 +8,7 @@
 	<script src="https://greasyfork.org/scripts/7212-gm-config-eight-s-version/code/GM_config%20(eight's%20version).js?version=46603"></script>
 	<link rel="stylesheet" href="https://rawgit.com/eight04/end2end/master/dist/end2end.css">
 	<style>
-		a {
+		p a {
 			background-color: greenyellow;
 		}
 		img {
@@ -19,7 +19,11 @@
 		}
 	</style>
 	<script>
+		// <![CDATA[
 		// GM setup
+		var scripts = [
+			"linkify-plus-plus.user.js"
+		];
 		var unsafeWindow = window;
 		var GM_addStyle = function(s) {
 			var style = document.createElement("style");
@@ -36,644 +40,664 @@
 
 		function commandBar($scope) {
 			$scope.commands = commands;
+			$scope.running = false;
+			$scope.run = function(){
+				if ($scope.running) {
+					return;
+				}
+				$scope.running = true;
+				angular.forEach(scripts, function(url){
+					var script = angular.element("<script src='" + url + "'>");
+					angular.element("head").append(script);
+				});
+			};
 		}
+		// ]]>
 	</script>
 </head>
-<body class="container-sm">
-	<h2>Linkify Plus Plus <small>Test Page</small></h2>
+<body class="navbar-padded">
+	<nav class="navbar navbar-fixed" ng-controller="commandBar">
+		<div class="container container-sm">
+			<a class="navbar-brand" href="https://greasyfork.org/zh-TW/scripts/4255-linkify-plus-plus">
+				Home
+			</a>
+			<a href="" class="navbar-link" ng-click="run()" ng-hide="running">
+				Run script
+			</a>
+			<a href="" class="navbar-link" ng-repeat="command in commands" ng-click="command.callback()">
+				{{command.title}}
+			</a>
+		</div>
+	</nav>
 
-	<div class="btn-group" ng-controller="commandBar">
-		<button class="btn-default" ng-repeat="command in commands" ng-click="command.callback()">
-			{{command.title}}
-		</button>
-	</div>
+	<div class="container container-sm">
+		<h2>Linkify Plus Plus <small>Test Page</small></h2>
 
-	<h3>Random test 1</h3>
-	<quote>
-		Original from http://piro.sakura.ne.jp/xul/textlink/index.html.en#testcases
-	</quote>
-	<p>
-		Mozilla(http://www.mozilla.org/) started as a project of next generation www-browser of Netscape(http://www.netscape.com/). See http://www.mozilla.org/src-faq.html#1. Mozilla were planned to be released as "Netscape Communicator 5.0", but the new layout engine "NGLayout" ttp://www.mozilla.org/newlayout/gecko.html prevented it. Netscape 6 ttp://ftp.netscape.com/pub/netscape6/ was released after 2 years from the deciding.And now, the Firefox(h**p://www.mozilla.com/firefox/) web browser is released from the Mozilla Corporation(h++p://www.mozilla.com/).
-	</p>
-	<p>
-		Now, TextLink can parse splitted text nodes as joined texts. Mozilla(http://www.mozilla.org/) started as a project of next generation www-browser of Netscape(http://www.netscape.com/). See http://www.mozilla.org/src-faq.html#1. Mozilla were planned to be released as "Netscape Communicator 5.0", but the new layout engine "NGLayout" ttp://www.mozilla.org/newlayout/gecko.html prevented it. Netscape 6 ttp://ftp.netscape.com/pub/netscape6/ was released after 2 years from the deciding.
-	</p>
-	<p>
-		There are relative links. Firefox www.mozilla.org/products/firefox/ is a new type www-browser and it very extendable. You can find many extensions from update.mozilla.org. I also release some extensions. TBE ./tabextensions/index.html.en and PopupALT _popupalt.html.en are parts of them. (Text Link ignores relative pathes which includes only a filename like "_popupalt.html.en", because strings with the pattern usually indicates only filenames, not relative pathes.) See the parent page ../xul/xul.html to find other extensions in this website.
-	</p>
-	<p>
-		There are links including multi-byte characters. The URI of this website is "ｈｔｔｐ：／／ｐｉｒｏ．ｓａｋｕｒａ．ｎｅ．ｊｐ／", but you can use the secondary URI, "ｔｔｐ：／／ｗｗｗ９８．ｓａｋｕｒａ．ｎｅ．ｊｐ／￣ｐｉｒｏ／" too.
-	<p>
-		Also I don't want these: http://ptt.cc/1234ＷＩＴＨＵＮＩＣＯＤＥ, http://example.org/, http://example.org/,http://example.org, 127.0.0.1, http://127.0.0.1, telnet://ptt.cc, ＡＦＴＥＲＵＮＩＣＯＤＥhttp://example.org, I'm so happy www, www.sohappywwwhaha, www....
-	</p>
-
-	<h3>Random test 2</h3>
-	<quote>
-		Original from http://yellow5.us/firefox/testcases.txt
-	</quote>
-	<p class="pre-line">
-		ABOUT
-		about:blank
-		about:config
-
-		MAILTO
-		mailto:example@example.com
-
-		HTTP
-		http://www.example.com
-		http://www.example.com.
-		http://www.example.com/test/
-		http://www.example.com/test/.
-		http://www.example.com/test/index.html
-		http://www.example.com/test/index.html.
-		http://user@www.example.com
-		http://user@www.example.com.
-		http://user@www.example.com/test/
-		http://user@www.example.com/test/.
-		http://user@www.example.com/test/index.html
-		http://user@www.example.com/test/index.html.
-		http://user:password@www.example.com
-		http://user:password@www.example.com.
-		http://user:password@www.example.com/test/
-		http://user:password@www.example.com/test/.
-		http://user:password@www.example.com/test/index.html
-		http://user:password@www.example.com/test/index.html.
-		http://192.168.0.1
-		http://192.168.0.1.
-		http://192.168.0.1/test/
-		http://192.168.0.1/test/.
-		http://192.168.0.1/test/index.html
-		http://192.168.0.1/test/index.html.
-		http://user@192.168.0.1
-		http://user@192.168.0.1.
-		http://user@192.168.0.1/test/
-		http://user@192.168.0.1/test/.
-		http://user@192.168.0.1/test/index.html
-		http://user@192.168.0.1/test/index.html.
-		http://user:password@192.168.0.1
-		http://user:password@192.168.0.1.
-		http://user:password@192.168.0.1/test/
-		http://user:password@192.168.0.1/test/.
-		http://user:password@192.168.0.1/test/index.html
-		http://user:password@192.168.0.1/test/index.html.
-
-		HTTPS
-		https://www.example.com
-		https://www.example.com.
-		https://www.example.com/test/
-		https://www.example.com/test/.
-		https://www.example.com/test/index.html
-		https://www.example.com/test/index.html.
-		https://user@www.example.com
-		https://user@www.example.com.
-		https://user@www.example.com/test/
-		https://user@www.example.com/test/.
-		https://user@www.example.com/test/index.html
-		https://user@www.example.com/test/index.html.
-		https://user:password@www.example.com
-		https://user:password@www.example.com.
-		https://user:password@www.example.com/test/
-		https://user:password@www.example.com/test/.
-		https://user:password@www.example.com/test/index.html
-		https://user:password@www.example.com/test/index.html.
-		https://192.168.0.1
-		https://192.168.0.1.
-		https://192.168.0.1/test/
-		https://192.168.0.1/test/.
-		https://192.168.0.1/test/index.html
-		https://192.168.0.1/test/index.html.
-		https://user@192.168.0.1
-		https://user@192.168.0.1.
-		https://user@192.168.0.1/test/
-		https://user@192.168.0.1/test/.
-		https://user@192.168.0.1/test/index.html
-		https://user@192.168.0.1/test/index.html.
-		https://user:password@192.168.0.1
-		https://user:password@192.168.0.1.
-		https://user:password@192.168.0.1/test/
-		https://user:password@192.168.0.1/test/.
-		https://user:password@192.168.0.1/test/index.html
-		https://user:password@192.168.0.1/test/index.html.
-
-		FTP
-		ftp://www.example.com
-		ftp://www.example.com.
-		ftp://www.example.com/test/
-		ftp://www.example.com/test/.
-		ftp://www.example.com/test/index.html
-		ftp://www.example.com/test/index.html.
-		ftp://user@www.example.com
-		ftp://user@www.example.com.
-		ftp://user@www.example.com/test/
-		ftp://user@www.example.com/test/.
-		ftp://user@www.example.com/test/index.html
-		ftp://user@www.example.com/test/index.html.
-		ftp://user:password@www.example.com
-		ftp://user:password@www.example.com.
-		ftp://user:password@www.example.com/test/
-		ftp://user:password@www.example.com/test/.
-		ftp://user:password@www.example.com/test/index.html
-		ftp://user:password@www.example.com/test/index.html.
-		ftp://192.168.0.1
-		ftp://192.168.0.1.
-		ftp://192.168.0.1/test/
-		ftp://192.168.0.1/test/.
-		ftp://192.168.0.1/test/index.html
-		ftp://192.168.0.1/test/index.html.
-		ftp://user@192.168.0.1
-		ftp://user@192.168.0.1.
-		ftp://user@192.168.0.1/test/
-		ftp://user@192.168.0.1/test/.
-		ftp://user@192.168.0.1/test/index.html
-		ftp://user@192.168.0.1/test/index.html.
-		ftp://user:password@192.168.0.1
-		ftp://user:password@192.168.0.1.
-		ftp://user:password@192.168.0.1/test/
-		ftp://user:password@192.168.0.1/test/.
-		ftp://user:password@192.168.0.1/test/index.html
-		ftp://user:password@192.168.0.1/test/index.html.
-
-		NNTP
-		nntp://www.example.com
-		nntp://www.example.com.
-		nntp://www.example.com/test/
-		nntp://www.example.com/test/.
-		nntp://www.example.com/test/index.html
-		nntp://www.example.com/test/index.html.
-		nntp://user@www.example.com
-		nntp://user@www.example.com.
-		nntp://user@www.example.com/test/
-		nntp://user@www.example.com/test/.
-		nntp://user@www.example.com/test/index.html
-		nntp://user@www.example.com/test/index.html.
-		nntp://user:password@www.example.com
-		nntp://user:password@www.example.com.
-		nntp://user:password@www.example.com/test/
-		nntp://user:password@www.example.com/test/.
-		nntp://user:password@www.example.com/test/index.html
-		nntp://user:password@www.example.com/test/index.html.
-		nntp://192.168.0.1
-		nntp://192.168.0.1.
-		nntp://192.168.0.1/test/
-		nntp://192.168.0.1/test/.
-		nntp://192.168.0.1/test/index.html
-		nntp://192.168.0.1/test/index.html.
-		nntp://user@192.168.0.1
-		nntp://user@192.168.0.1.
-		nntp://user@192.168.0.1/test/
-		nntp://user@192.168.0.1/test/.
-		nntp://user@192.168.0.1/test/index.html
-		nntp://user@192.168.0.1/test/index.html.
-		nntp://user:password@192.168.0.1
-		nntp://user:password@192.168.0.1.
-		nntp://user:password@192.168.0.1/test/
-		nntp://user:password@192.168.0.1/test/.
-		nntp://user:password@192.168.0.1/test/index.html
-		nntp://user:password@192.168.0.1/test/index.html.
-
-		NEWS
-		news://www.example.com
-		news://www.example.com.
-		news://www.example.com/test/
-		news://www.example.com/test/.
-		news://www.example.com/test/index.html
-		news://www.example.com/test/index.html.
-		news://user@www.example.com
-		news://user@www.example.com.
-		news://user@www.example.com/test/
-		news://user@www.example.com/test/.
-		news://user@www.example.com/test/index.html
-		news://user@www.example.com/test/index.html.
-		news://user:password@www.example.com
-		news://user:password@www.example.com.
-		news://user:password@www.example.com/test/
-		news://user:password@www.example.com/test/.
-		news://user:password@www.example.com/test/index.html
-		news://user:password@www.example.com/test/index.html.
-		news://192.168.0.1
-		news://192.168.0.1.
-		news://192.168.0.1/test/
-		news://192.168.0.1/test/.
-		news://192.168.0.1/test/index.html
-		news://192.168.0.1/test/index.html.
-		news://user@192.168.0.1
-		news://user@192.168.0.1.
-		news://user@192.168.0.1/test/
-		news://user@192.168.0.1/test/.
-		news://user@192.168.0.1/test/index.html
-		news://user@192.168.0.1/test/index.html.
-		news://user:password@192.168.0.1
-		news://user:password@192.168.0.1.
-		news://user:password@192.168.0.1/test/
-		news://user:password@192.168.0.1/test/.
-		news://user:password@192.168.0.1/test/index.html
-		news://user:password@192.168.0.1/test/index.html.
-
-		TELNET
-		telnet://www.example.com
-		telnet://www.example.com.
-		telnet://www.example.com/test/
-		telnet://www.example.com/test/.
-		telnet://www.example.com/test/index.html
-		telnet://www.example.com/test/index.html.
-		telnet://user@www.example.com
-		telnet://user@www.example.com.
-		telnet://user@www.example.com/test/
-		telnet://user@www.example.com/test/.
-		telnet://user@www.example.com/test/index.html
-		telnet://user@www.example.com/test/index.html.
-		telnet://user:password@www.example.com
-		telnet://user:password@www.example.com.
-		telnet://user:password@www.example.com/test/
-		telnet://user:password@www.example.com/test/.
-		telnet://user:password@www.example.com/test/index.html
-		telnet://user:password@www.example.com/test/index.html.
-		telnet://192.168.0.1
-		telnet://192.168.0.1.
-		telnet://192.168.0.1/test/
-		telnet://192.168.0.1/test/.
-		telnet://192.168.0.1/test/index.html
-		telnet://192.168.0.1/test/index.html.
-		telnet://user@192.168.0.1
-		telnet://user@192.168.0.1.
-		telnet://user@192.168.0.1/test/
-		telnet://user@192.168.0.1/test/.
-		telnet://user@192.168.0.1/test/index.html
-		telnet://user@192.168.0.1/test/index.html.
-		telnet://user:password@192.168.0.1
-		telnet://user:password@192.168.0.1.
-		telnet://user:password@192.168.0.1/test/
-		telnet://user:password@192.168.0.1/test/.
-		telnet://user:password@192.168.0.1/test/index.html
-		telnet://user:password@192.168.0.1/test/index.html.
-
-		IRC
-		irc://www.example.com
-		irc://www.example.com.
-		irc://www.example.com/test/
-		irc://www.example.com/test/.
-		irc://www.example.com/test/index.html
-		irc://www.example.com/test/index.html.
-		irc://user@www.example.com
-		irc://user@www.example.com.
-		irc://user@www.example.com/test/
-		irc://user@www.example.com/test/.
-		irc://user@www.example.com/test/index.html
-		irc://user@www.example.com/test/index.html.
-		irc://user:password@www.example.com
-		irc://user:password@www.example.com.
-		irc://user:password@www.example.com/test/
-		irc://user:password@www.example.com/test/.
-		irc://user:password@www.example.com/test/index.html
-		irc://user:password@www.example.com/test/index.html.
-		irc://192.168.0.1
-		irc://192.168.0.1.
-		irc://192.168.0.1/test/
-		irc://192.168.0.1/test/.
-		irc://192.168.0.1/test/index.html
-		irc://192.168.0.1/test/index.html.
-		irc://user@192.168.0.1
-		irc://user@192.168.0.1.
-		irc://user@192.168.0.1/test/
-		irc://user@192.168.0.1/test/.
-		irc://user@192.168.0.1/test/index.html
-		irc://user@192.168.0.1/test/index.html.
-		irc://user:password@192.168.0.1
-		irc://user:password@192.168.0.1.
-		irc://user:password@192.168.0.1/test/
-		irc://user:password@192.168.0.1/test/.
-		irc://user:password@192.168.0.1/test/index.html
-		irc://user:password@192.168.0.1/test/index.html.
-
-		CUSTOM
-		hxxp://www.example.com
-		hxxp://www.example.com.
-		hxxp://www.example.com/test/
-		hxxp://www.example.com/test/.
-		hxxp://www.example.com/test/index.html
-		hxxp://www.example.com/test/index.html.
-		hxxp://user@www.example.com
-		hxxp://user@www.example.com.
-		hxxp://user@www.example.com/test/
-		hxxp://user@www.example.com/test/.
-		hxxp://user@www.example.com/test/index.html
-		hxxp://user@www.example.com/test/index.html.
-		hxxp://user:password@www.example.com
-		hxxp://user:password@www.example.com.
-		hxxp://user:password@www.example.com/test/
-		hxxp://user:password@www.example.com/test/.
-		hxxp://user:password@www.example.com/test/index.html
-		hxxp://user:password@www.example.com/test/index.html.
-		hxxp://192.168.0.1
-		hxxp://192.168.0.1.
-		hxxp://192.168.0.1/test/
-		hxxp://192.168.0.1/test/.
-		hxxp://192.168.0.1/test/index.html
-		hxxp://192.168.0.1/test/index.html.
-		hxxp://user@192.168.0.1
-		hxxp://user@192.168.0.1.
-		hxxp://user@192.168.0.1/test/
-		hxxp://user@192.168.0.1/test/.
-		hxxp://user@192.168.0.1/test/index.html
-		hxxp://user@192.168.0.1/test/index.html.
-		hxxp://user:password@192.168.0.1
-		hxxp://user:password@192.168.0.1.
-		hxxp://user:password@192.168.0.1/test/
-		hxxp://user:password@192.168.0.1/test/.
-		hxxp://user:password@192.168.0.1/test/index.html
-		hxxp://user:password@192.168.0.1/test/index.html.
-
-		CUSTOM
-		h**p://www.example.com
-		h**p://www.example.com.
-		h**p://www.example.com/test/
-		h**p://www.example.com/test/.
-		h**p://www.example.com/test/index.html
-		h**p://www.example.com/test/index.html.
-		h**p://user@www.example.com
-		h**p://user@www.example.com.
-		h**p://user@www.example.com/test/
-		h**p://user@www.example.com/test/.
-		h**p://user@www.example.com/test/index.html
-		h**p://user@www.example.com/test/index.html.
-		h**p://user:password@www.example.com
-		h**p://user:password@www.example.com.
-		h**p://user:password@www.example.com/test/
-		h**p://user:password@www.example.com/test/.
-		h**p://user:password@www.example.com/test/index.html
-		h**p://user:password@www.example.com/test/index.html.
-		h**p://192.168.0.1
-		h**p://192.168.0.1.
-		h**p://192.168.0.1/test/
-		h**p://192.168.0.1/test/.
-		h**p://192.168.0.1/test/index.html
-		h**p://192.168.0.1/test/index.html.
-		h**p://user@192.168.0.1
-		h**p://user@192.168.0.1.
-		h**p://user@192.168.0.1/test/
-		h**p://user@192.168.0.1/test/.
-		h**p://user@192.168.0.1/test/index.html
-		h**p://user@192.168.0.1/test/index.html.
-		h**p://user:password@192.168.0.1
-		h**p://user:password@192.168.0.1.
-		h**p://user:password@192.168.0.1/test/
-		h**p://user:password@192.168.0.1/test/.
-		h**p://user:password@192.168.0.1/test/index.html
-		h**p://user:password@192.168.0.1/test/index.html.
-
-		WWW (no protocol)
-		www.example.com
-		www.example.com.
-		www.example.com/test/
-		www.example.com/test/.
-		www.example.com/test/index.html
-		www.example.com/test/index.html.
-		user@www.example.com                    (ambiguous, but recognized subdomain.  not an e-mail address)
-		user@www.example.com.                   (ambiguous, but recognized subdomain.  not an e-mail address)
-		user@www.example.com/test/
-		user@www.example.com/test/.
-		user@www.example.com/test/index.html
-		user@www.example.com/test/index.html.
-		user:password@www.example.com
-		user:password@www.example.com.
-		user:password@www.example.com/test/
-		user:password@www.example.com/test/.
-		user:password@www.example.com/test/index.html
-		user:password@www.example.com/test/index.html.
-
-		FTP (no protocol)
-		ftp.example.com
-		ftp.example.com.
-		ftp.example.com/test/
-		ftp.example.com/test/.
-		ftp.example.com/test/index.html
-		ftp.example.com/test/index.html.
-		user@ftp.example.com                    (ambiguous, but recognized subdomain.  not an e-mail address)
-		user@ftp.example.com.                   (ambiguous, but recognized subdomain.  not an e-mail address)
-		user@ftp.example.com/test/
-		user@ftp.example.com/test/.
-		user@ftp.example.com/test/index.html
-		user@ftp.example.com/test/index.html.
-		user:password@ftp.example.com
-		user:password@ftp.example.com.
-		user:password@ftp.example.com/test/
-		user:password@ftp.example.com/test/.
-		user:password@ftp.example.com/test/index.html
-		user:password@ftp.example.com/test/index.html.
-
-		IRC (no protocol)
-		irc.example.com
-		irc.example.com.
-		irc.example.com/test/
-		irc.example.com/test/.
-		irc.example.com/test/index.html
-		irc.example.com/test/index.html.
-		user@irc.example.com                    (ambiguous, but recognized subdomain.  not an e-mail address)
-		user@irc.example.com.                   (ambiguous, but recognized subdomain.  not an e-mail address)
-		user@irc.example.com/test/
-		user@irc.example.com/test/.
-		user@irc.example.com/test/index.html
-		user@irc.example.com/test/index.html.
-		user:password@irc.example.com
-		user:password@irc.example.com.
-		user:password@irc.example.com/test/
-		user:password@irc.example.com/test/.
-		user:password@irc.example.com/test/index.html
-		user:password@irc.example.com/test/index.html.
-		#test-name@irc.example.com
-		#test-name@irc.example.com.
-		irc.example.com#test-name
-		irc.example.com#test-name.
-
-		IP (no protocol)
-		192.168.0.1                          (not linkified; pattern too common)
-		192.168.0.1.                         (not linkified; pattern too common)
-		192.168.0.1/test/
-		192.168.0.1/test/.
-		192.168.0.1/test/index.html
-		192.168.0.1/test/index.html.
-		user@192.168.0.1                     (ambiguous; should be recognized as e-mail)
-		user@192.168.0.1.                    (ambiguous; should be recognized as e-mail)
-		user@192.168.0.1/test/
-		user@192.168.0.1/test/.
-		user@192.168.0.1/test/index.html
-		user@192.168.0.1/test/index.html.
-		user:password@192.168.0.1
-		user:password@192.168.0.1.
-		user:password@192.168.0.1/test/
-		user:password@192.168.0.1/test/.
-		user:password@192.168.0.1/test/index.html
-		user:password@192.168.0.1/test/index.html.
-
-		OTHER (no protocol)
-		subdomain.example.com                   (not linkified; pattern too common)
-		subdomain.example.com.                  (not linkified; pattern too common)
-		subdomain.example.com/test/
-		subdomain.example.com/test/.
-		subdomain.example.com/test/index.html
-		subdomain.example.com/test/index.html.
-		user@subdomain.example.com              (ambiguous; should be recognized as e-mail)
-		user@subdomain.example.com.             (ambiguous; should be recognized as e-mail)
-		user@subdomain.example.com/test/
-		user@subdomain.example.com/test/.
-		user@subdomain.example.com/test/index.html
-		user@subdomain.example.com/test/index.html.
-		user:password@subdomain.example.com
-		user:password@subdomain.example.com.
-		user:password@subdomain.example.com/test/
-		user:password@subdomain.example.com/test/.
-		user:password@subdomain.example.com/test/index.html
-		user:password@subdomain.example.com/test/index.html.
-
-		EMAIL
-		test@example.com
-		test@example.com.
-		test.test@test.example.com
-		test.test@test.example.com.
-		test@192.168.0.1
-		test@192.168.0.1.
-		test.test@192.168.0.1
-		test.test@192.168.0.1.
-
-		IMAGE
-		http://www.example.com/image.jpg
-		http://www.example.com/image.jpeg
-		http://www.example.com/image.png
-		http://www.example.com/image.gif
-		http://www.example.com/image.bmp
-		http://www.example.com/image.jpg.test   (not an image)
-		http://www.example.com/image.jpeg.test  (not an image)
-		http://www.example.com/image.png.test   (not an image)
-		http://www.example.com/image.gif.test   (not an image)
-		http://www.example.com/image.bmp.test   (not an image)
-		http://www.example.com/image.jpg?test
-		http://www.example.com/image.jpeg?test
-		http://www.example.com/image.png?test
-		http://www.example.com/image.gif?test
-		http://www.example.com/image.bmp?test
-		http://www.example.com/image.test?jpg   (not an image)
-		http://www.example.com/image.test?jpeg  (not an image)
-		http://www.example.com/image.test?png   (not an image)
-		http://www.example.com/image.test?gif   (not an image)
-		http://www.example.com/image.test?bmp   (not an image)
-		http://www.example.com/image.jpg#test
-		http://www.example.com/image.jpeg#test
-		http://www.example.com/image.png#test
-		http://www.example.com/image.gif#test
-		http://www.example.com/image.bmp#test
-		http://www.example.com/image.test#jpg   (not an image)
-		http://www.example.com/image.test#jpeg  (not an image)
-		http://www.example.com/image.test#png   (not an image)
-		http://www.example.com/image.test#gif   (not an image)
-		http://www.example.com/image.test#bmp   (not an image)
-		https://greasyfork.org/assets/blacklogo96-0596aff6108f83c3073764496d7768ec.png
-		http://i.imgur.com/25zhGbg.jpg
-		https://f061172b00c7bca1e36fdd56f00f238cf2545831.googledrive.com/host/0B_P4A1paVEPbb1UxSUdua3Fwc1k/Vorago_chathead.png
-		https://secure.runescape.com/m=weblogin/logout.ws?.png
-
-		Dots
-		http://www.example.com
-		http://www.example.com.
-		http://www.example.com..
-		http://www.example.com...
-		http://www.example.com/
-		http://www.example.com/.
-		http://www.example.com/..
-		http://www.example.com/...
-		http://www.example.com/
-		http://www.example.com/.
-		http://www.example.com/./.
-		http://www.example.com/../.
-	</p>
-
-	<h3>Conflict with Angular</h3>
-	<div ng-non-bindable>
+		<h3>Random test 1</h3>
 		<quote>
-			Should ignore any links in <code>{{...}}</code>
+			Original from http://piro.sakura.ne.jp/xul/textlink/index.html.en#testcases
+		</quote>
+		<p>
+			Mozilla(http://www.mozilla.org/) started as a project of next generation www-browser of Netscape(http://www.netscape.com/). See http://www.mozilla.org/src-faq.html#1. Mozilla were planned to be released as "Netscape Communicator 5.0", but the new layout engine "NGLayout" ttp://www.mozilla.org/newlayout/gecko.html prevented it. Netscape 6 ttp://ftp.netscape.com/pub/netscape6/ was released after 2 years from the deciding.And now, the Firefox(h**p://www.mozilla.com/firefox/) web browser is released from the Mozilla Corporation(h++p://www.mozilla.com/).
+		</p>
+		<p>
+			Now, TextLink can parse splitted text nodes as joined texts. Mozilla(http://www.mozilla.org/) started as a project of next generation www-browser of Netscape(http://www.netscape.com/). See http://www.mozilla.org/src-faq.html#1. Mozilla were planned to be released as "Netscape Communicator 5.0", but the new layout engine "NGLayout" ttp://www.mozilla.org/newlayout/gecko.html prevented it. Netscape 6 ttp://ftp.netscape.com/pub/netscape6/ was released after 2 years from the deciding.
+		</p>
+		<p>
+			There are relative links. Firefox www.mozilla.org/products/firefox/ is a new type www-browser and it very extendable. You can find many extensions from update.mozilla.org. I also release some extensions. TBE ./tabextensions/index.html.en and PopupALT _popupalt.html.en are parts of them. (Text Link ignores relative pathes which includes only a filename like "_popupalt.html.en", because strings with the pattern usually indicates only filenames, not relative pathes.) See the parent page ../xul/xul.html to find other extensions in this website.
+		</p>
+		<p>
+			There are links including multi-byte characters. The URI of this website is "ｈｔｔｐ：／／ｐｉｒｏ．ｓａｋｕｒａ．ｎｅ．ｊｐ／", but you can use the secondary URI, "ｔｔｐ：／／ｗｗｗ９８．ｓａｋｕｒａ．ｎｅ．ｊｐ／￣ｐｉｒｏ／" too.
+		<p>
+			Also I don't want these: http://ptt.cc/1234ＷＩＴＨＵＮＩＣＯＤＥ, http://example.org/, http://example.org/,http://example.org, 127.0.0.1, http://127.0.0.1, telnet://ptt.cc, ＡＦＴＥＲＵＮＩＣＯＤＥhttp://example.org, I'm so happy www, www.sohappywwwhaha, www....
+		</p>
+
+		<h3>Random test 2</h3>
+		<quote>
+			Original from http://yellow5.us/firefox/testcases.txt
 		</quote>
 		<p class="pre-line">
-			{{someVar}}
-			{{someVar.com.tw}}
-			{{"http://example.com"}}
+			ABOUT
+			about:blank
+			about:config
+
+			MAILTO
+			mailto:example@example.com
+
+			HTTP
+			http://www.example.com
+			http://www.example.com.
+			http://www.example.com/test/
+			http://www.example.com/test/.
+			http://www.example.com/test/index.html
+			http://www.example.com/test/index.html.
+			http://user@www.example.com
+			http://user@www.example.com.
+			http://user@www.example.com/test/
+			http://user@www.example.com/test/.
+			http://user@www.example.com/test/index.html
+			http://user@www.example.com/test/index.html.
+			http://user:password@www.example.com
+			http://user:password@www.example.com.
+			http://user:password@www.example.com/test/
+			http://user:password@www.example.com/test/.
+			http://user:password@www.example.com/test/index.html
+			http://user:password@www.example.com/test/index.html.
+			http://192.168.0.1
+			http://192.168.0.1.
+			http://192.168.0.1/test/
+			http://192.168.0.1/test/.
+			http://192.168.0.1/test/index.html
+			http://192.168.0.1/test/index.html.
+			http://user@192.168.0.1
+			http://user@192.168.0.1.
+			http://user@192.168.0.1/test/
+			http://user@192.168.0.1/test/.
+			http://user@192.168.0.1/test/index.html
+			http://user@192.168.0.1/test/index.html.
+			http://user:password@192.168.0.1
+			http://user:password@192.168.0.1.
+			http://user:password@192.168.0.1/test/
+			http://user:password@192.168.0.1/test/.
+			http://user:password@192.168.0.1/test/index.html
+			http://user:password@192.168.0.1/test/index.html.
+
+			HTTPS
+			https://www.example.com
+			https://www.example.com.
+			https://www.example.com/test/
+			https://www.example.com/test/.
+			https://www.example.com/test/index.html
+			https://www.example.com/test/index.html.
+			https://user@www.example.com
+			https://user@www.example.com.
+			https://user@www.example.com/test/
+			https://user@www.example.com/test/.
+			https://user@www.example.com/test/index.html
+			https://user@www.example.com/test/index.html.
+			https://user:password@www.example.com
+			https://user:password@www.example.com.
+			https://user:password@www.example.com/test/
+			https://user:password@www.example.com/test/.
+			https://user:password@www.example.com/test/index.html
+			https://user:password@www.example.com/test/index.html.
+			https://192.168.0.1
+			https://192.168.0.1.
+			https://192.168.0.1/test/
+			https://192.168.0.1/test/.
+			https://192.168.0.1/test/index.html
+			https://192.168.0.1/test/index.html.
+			https://user@192.168.0.1
+			https://user@192.168.0.1.
+			https://user@192.168.0.1/test/
+			https://user@192.168.0.1/test/.
+			https://user@192.168.0.1/test/index.html
+			https://user@192.168.0.1/test/index.html.
+			https://user:password@192.168.0.1
+			https://user:password@192.168.0.1.
+			https://user:password@192.168.0.1/test/
+			https://user:password@192.168.0.1/test/.
+			https://user:password@192.168.0.1/test/index.html
+			https://user:password@192.168.0.1/test/index.html.
+
+			FTP
+			ftp://www.example.com
+			ftp://www.example.com.
+			ftp://www.example.com/test/
+			ftp://www.example.com/test/.
+			ftp://www.example.com/test/index.html
+			ftp://www.example.com/test/index.html.
+			ftp://user@www.example.com
+			ftp://user@www.example.com.
+			ftp://user@www.example.com/test/
+			ftp://user@www.example.com/test/.
+			ftp://user@www.example.com/test/index.html
+			ftp://user@www.example.com/test/index.html.
+			ftp://user:password@www.example.com
+			ftp://user:password@www.example.com.
+			ftp://user:password@www.example.com/test/
+			ftp://user:password@www.example.com/test/.
+			ftp://user:password@www.example.com/test/index.html
+			ftp://user:password@www.example.com/test/index.html.
+			ftp://192.168.0.1
+			ftp://192.168.0.1.
+			ftp://192.168.0.1/test/
+			ftp://192.168.0.1/test/.
+			ftp://192.168.0.1/test/index.html
+			ftp://192.168.0.1/test/index.html.
+			ftp://user@192.168.0.1
+			ftp://user@192.168.0.1.
+			ftp://user@192.168.0.1/test/
+			ftp://user@192.168.0.1/test/.
+			ftp://user@192.168.0.1/test/index.html
+			ftp://user@192.168.0.1/test/index.html.
+			ftp://user:password@192.168.0.1
+			ftp://user:password@192.168.0.1.
+			ftp://user:password@192.168.0.1/test/
+			ftp://user:password@192.168.0.1/test/.
+			ftp://user:password@192.168.0.1/test/index.html
+			ftp://user:password@192.168.0.1/test/index.html.
+
+			NNTP
+			nntp://www.example.com
+			nntp://www.example.com.
+			nntp://www.example.com/test/
+			nntp://www.example.com/test/.
+			nntp://www.example.com/test/index.html
+			nntp://www.example.com/test/index.html.
+			nntp://user@www.example.com
+			nntp://user@www.example.com.
+			nntp://user@www.example.com/test/
+			nntp://user@www.example.com/test/.
+			nntp://user@www.example.com/test/index.html
+			nntp://user@www.example.com/test/index.html.
+			nntp://user:password@www.example.com
+			nntp://user:password@www.example.com.
+			nntp://user:password@www.example.com/test/
+			nntp://user:password@www.example.com/test/.
+			nntp://user:password@www.example.com/test/index.html
+			nntp://user:password@www.example.com/test/index.html.
+			nntp://192.168.0.1
+			nntp://192.168.0.1.
+			nntp://192.168.0.1/test/
+			nntp://192.168.0.1/test/.
+			nntp://192.168.0.1/test/index.html
+			nntp://192.168.0.1/test/index.html.
+			nntp://user@192.168.0.1
+			nntp://user@192.168.0.1.
+			nntp://user@192.168.0.1/test/
+			nntp://user@192.168.0.1/test/.
+			nntp://user@192.168.0.1/test/index.html
+			nntp://user@192.168.0.1/test/index.html.
+			nntp://user:password@192.168.0.1
+			nntp://user:password@192.168.0.1.
+			nntp://user:password@192.168.0.1/test/
+			nntp://user:password@192.168.0.1/test/.
+			nntp://user:password@192.168.0.1/test/index.html
+			nntp://user:password@192.168.0.1/test/index.html.
+
+			NEWS
+			news://www.example.com
+			news://www.example.com.
+			news://www.example.com/test/
+			news://www.example.com/test/.
+			news://www.example.com/test/index.html
+			news://www.example.com/test/index.html.
+			news://user@www.example.com
+			news://user@www.example.com.
+			news://user@www.example.com/test/
+			news://user@www.example.com/test/.
+			news://user@www.example.com/test/index.html
+			news://user@www.example.com/test/index.html.
+			news://user:password@www.example.com
+			news://user:password@www.example.com.
+			news://user:password@www.example.com/test/
+			news://user:password@www.example.com/test/.
+			news://user:password@www.example.com/test/index.html
+			news://user:password@www.example.com/test/index.html.
+			news://192.168.0.1
+			news://192.168.0.1.
+			news://192.168.0.1/test/
+			news://192.168.0.1/test/.
+			news://192.168.0.1/test/index.html
+			news://192.168.0.1/test/index.html.
+			news://user@192.168.0.1
+			news://user@192.168.0.1.
+			news://user@192.168.0.1/test/
+			news://user@192.168.0.1/test/.
+			news://user@192.168.0.1/test/index.html
+			news://user@192.168.0.1/test/index.html.
+			news://user:password@192.168.0.1
+			news://user:password@192.168.0.1.
+			news://user:password@192.168.0.1/test/
+			news://user:password@192.168.0.1/test/.
+			news://user:password@192.168.0.1/test/index.html
+			news://user:password@192.168.0.1/test/index.html.
+
+			TELNET
+			telnet://www.example.com
+			telnet://www.example.com.
+			telnet://www.example.com/test/
+			telnet://www.example.com/test/.
+			telnet://www.example.com/test/index.html
+			telnet://www.example.com/test/index.html.
+			telnet://user@www.example.com
+			telnet://user@www.example.com.
+			telnet://user@www.example.com/test/
+			telnet://user@www.example.com/test/.
+			telnet://user@www.example.com/test/index.html
+			telnet://user@www.example.com/test/index.html.
+			telnet://user:password@www.example.com
+			telnet://user:password@www.example.com.
+			telnet://user:password@www.example.com/test/
+			telnet://user:password@www.example.com/test/.
+			telnet://user:password@www.example.com/test/index.html
+			telnet://user:password@www.example.com/test/index.html.
+			telnet://192.168.0.1
+			telnet://192.168.0.1.
+			telnet://192.168.0.1/test/
+			telnet://192.168.0.1/test/.
+			telnet://192.168.0.1/test/index.html
+			telnet://192.168.0.1/test/index.html.
+			telnet://user@192.168.0.1
+			telnet://user@192.168.0.1.
+			telnet://user@192.168.0.1/test/
+			telnet://user@192.168.0.1/test/.
+			telnet://user@192.168.0.1/test/index.html
+			telnet://user@192.168.0.1/test/index.html.
+			telnet://user:password@192.168.0.1
+			telnet://user:password@192.168.0.1.
+			telnet://user:password@192.168.0.1/test/
+			telnet://user:password@192.168.0.1/test/.
+			telnet://user:password@192.168.0.1/test/index.html
+			telnet://user:password@192.168.0.1/test/index.html.
+
+			IRC
+			irc://www.example.com
+			irc://www.example.com.
+			irc://www.example.com/test/
+			irc://www.example.com/test/.
+			irc://www.example.com/test/index.html
+			irc://www.example.com/test/index.html.
+			irc://user@www.example.com
+			irc://user@www.example.com.
+			irc://user@www.example.com/test/
+			irc://user@www.example.com/test/.
+			irc://user@www.example.com/test/index.html
+			irc://user@www.example.com/test/index.html.
+			irc://user:password@www.example.com
+			irc://user:password@www.example.com.
+			irc://user:password@www.example.com/test/
+			irc://user:password@www.example.com/test/.
+			irc://user:password@www.example.com/test/index.html
+			irc://user:password@www.example.com/test/index.html.
+			irc://192.168.0.1
+			irc://192.168.0.1.
+			irc://192.168.0.1/test/
+			irc://192.168.0.1/test/.
+			irc://192.168.0.1/test/index.html
+			irc://192.168.0.1/test/index.html.
+			irc://user@192.168.0.1
+			irc://user@192.168.0.1.
+			irc://user@192.168.0.1/test/
+			irc://user@192.168.0.1/test/.
+			irc://user@192.168.0.1/test/index.html
+			irc://user@192.168.0.1/test/index.html.
+			irc://user:password@192.168.0.1
+			irc://user:password@192.168.0.1.
+			irc://user:password@192.168.0.1/test/
+			irc://user:password@192.168.0.1/test/.
+			irc://user:password@192.168.0.1/test/index.html
+			irc://user:password@192.168.0.1/test/index.html.
+
+			CUSTOM
+			hxxp://www.example.com
+			hxxp://www.example.com.
+			hxxp://www.example.com/test/
+			hxxp://www.example.com/test/.
+			hxxp://www.example.com/test/index.html
+			hxxp://www.example.com/test/index.html.
+			hxxp://user@www.example.com
+			hxxp://user@www.example.com.
+			hxxp://user@www.example.com/test/
+			hxxp://user@www.example.com/test/.
+			hxxp://user@www.example.com/test/index.html
+			hxxp://user@www.example.com/test/index.html.
+			hxxp://user:password@www.example.com
+			hxxp://user:password@www.example.com.
+			hxxp://user:password@www.example.com/test/
+			hxxp://user:password@www.example.com/test/.
+			hxxp://user:password@www.example.com/test/index.html
+			hxxp://user:password@www.example.com/test/index.html.
+			hxxp://192.168.0.1
+			hxxp://192.168.0.1.
+			hxxp://192.168.0.1/test/
+			hxxp://192.168.0.1/test/.
+			hxxp://192.168.0.1/test/index.html
+			hxxp://192.168.0.1/test/index.html.
+			hxxp://user@192.168.0.1
+			hxxp://user@192.168.0.1.
+			hxxp://user@192.168.0.1/test/
+			hxxp://user@192.168.0.1/test/.
+			hxxp://user@192.168.0.1/test/index.html
+			hxxp://user@192.168.0.1/test/index.html.
+			hxxp://user:password@192.168.0.1
+			hxxp://user:password@192.168.0.1.
+			hxxp://user:password@192.168.0.1/test/
+			hxxp://user:password@192.168.0.1/test/.
+			hxxp://user:password@192.168.0.1/test/index.html
+			hxxp://user:password@192.168.0.1/test/index.html.
+
+			CUSTOM
+			h**p://www.example.com
+			h**p://www.example.com.
+			h**p://www.example.com/test/
+			h**p://www.example.com/test/.
+			h**p://www.example.com/test/index.html
+			h**p://www.example.com/test/index.html.
+			h**p://user@www.example.com
+			h**p://user@www.example.com.
+			h**p://user@www.example.com/test/
+			h**p://user@www.example.com/test/.
+			h**p://user@www.example.com/test/index.html
+			h**p://user@www.example.com/test/index.html.
+			h**p://user:password@www.example.com
+			h**p://user:password@www.example.com.
+			h**p://user:password@www.example.com/test/
+			h**p://user:password@www.example.com/test/.
+			h**p://user:password@www.example.com/test/index.html
+			h**p://user:password@www.example.com/test/index.html.
+			h**p://192.168.0.1
+			h**p://192.168.0.1.
+			h**p://192.168.0.1/test/
+			h**p://192.168.0.1/test/.
+			h**p://192.168.0.1/test/index.html
+			h**p://192.168.0.1/test/index.html.
+			h**p://user@192.168.0.1
+			h**p://user@192.168.0.1.
+			h**p://user@192.168.0.1/test/
+			h**p://user@192.168.0.1/test/.
+			h**p://user@192.168.0.1/test/index.html
+			h**p://user@192.168.0.1/test/index.html.
+			h**p://user:password@192.168.0.1
+			h**p://user:password@192.168.0.1.
+			h**p://user:password@192.168.0.1/test/
+			h**p://user:password@192.168.0.1/test/.
+			h**p://user:password@192.168.0.1/test/index.html
+			h**p://user:password@192.168.0.1/test/index.html.
+
+			WWW (no protocol)
+			www.example.com
+			www.example.com.
+			www.example.com/test/
+			www.example.com/test/.
+			www.example.com/test/index.html
+			www.example.com/test/index.html.
+			user@www.example.com                    (ambiguous, but recognized subdomain.  not an e-mail address)
+			user@www.example.com.                   (ambiguous, but recognized subdomain.  not an e-mail address)
+			user@www.example.com/test/
+			user@www.example.com/test/.
+			user@www.example.com/test/index.html
+			user@www.example.com/test/index.html.
+			user:password@www.example.com
+			user:password@www.example.com.
+			user:password@www.example.com/test/
+			user:password@www.example.com/test/.
+			user:password@www.example.com/test/index.html
+			user:password@www.example.com/test/index.html.
+
+			FTP (no protocol)
+			ftp.example.com
+			ftp.example.com.
+			ftp.example.com/test/
+			ftp.example.com/test/.
+			ftp.example.com/test/index.html
+			ftp.example.com/test/index.html.
+			user@ftp.example.com                    (ambiguous, but recognized subdomain.  not an e-mail address)
+			user@ftp.example.com.                   (ambiguous, but recognized subdomain.  not an e-mail address)
+			user@ftp.example.com/test/
+			user@ftp.example.com/test/.
+			user@ftp.example.com/test/index.html
+			user@ftp.example.com/test/index.html.
+			user:password@ftp.example.com
+			user:password@ftp.example.com.
+			user:password@ftp.example.com/test/
+			user:password@ftp.example.com/test/.
+			user:password@ftp.example.com/test/index.html
+			user:password@ftp.example.com/test/index.html.
+
+			IRC (no protocol)
+			irc.example.com
+			irc.example.com.
+			irc.example.com/test/
+			irc.example.com/test/.
+			irc.example.com/test/index.html
+			irc.example.com/test/index.html.
+			user@irc.example.com                    (ambiguous, but recognized subdomain.  not an e-mail address)
+			user@irc.example.com.                   (ambiguous, but recognized subdomain.  not an e-mail address)
+			user@irc.example.com/test/
+			user@irc.example.com/test/.
+			user@irc.example.com/test/index.html
+			user@irc.example.com/test/index.html.
+			user:password@irc.example.com
+			user:password@irc.example.com.
+			user:password@irc.example.com/test/
+			user:password@irc.example.com/test/.
+			user:password@irc.example.com/test/index.html
+			user:password@irc.example.com/test/index.html.
+			#test-name@irc.example.com
+			#test-name@irc.example.com.
+			irc.example.com#test-name
+			irc.example.com#test-name.
+
+			IP (no protocol)
+			192.168.0.1                          (not linkified; pattern too common)
+			192.168.0.1.                         (not linkified; pattern too common)
+			192.168.0.1/test/
+			192.168.0.1/test/.
+			192.168.0.1/test/index.html
+			192.168.0.1/test/index.html.
+			user@192.168.0.1                     (ambiguous; should be recognized as e-mail)
+			user@192.168.0.1.                    (ambiguous; should be recognized as e-mail)
+			user@192.168.0.1/test/
+			user@192.168.0.1/test/.
+			user@192.168.0.1/test/index.html
+			user@192.168.0.1/test/index.html.
+			user:password@192.168.0.1
+			user:password@192.168.0.1.
+			user:password@192.168.0.1/test/
+			user:password@192.168.0.1/test/.
+			user:password@192.168.0.1/test/index.html
+			user:password@192.168.0.1/test/index.html.
+
+			OTHER (no protocol)
+			subdomain.example.com                   (not linkified; pattern too common)
+			subdomain.example.com.                  (not linkified; pattern too common)
+			subdomain.example.com/test/
+			subdomain.example.com/test/.
+			subdomain.example.com/test/index.html
+			subdomain.example.com/test/index.html.
+			user@subdomain.example.com              (ambiguous; should be recognized as e-mail)
+			user@subdomain.example.com.             (ambiguous; should be recognized as e-mail)
+			user@subdomain.example.com/test/
+			user@subdomain.example.com/test/.
+			user@subdomain.example.com/test/index.html
+			user@subdomain.example.com/test/index.html.
+			user:password@subdomain.example.com
+			user:password@subdomain.example.com.
+			user:password@subdomain.example.com/test/
+			user:password@subdomain.example.com/test/.
+			user:password@subdomain.example.com/test/index.html
+			user:password@subdomain.example.com/test/index.html.
+
+			EMAIL
+			test@example.com
+			test@example.com.
+			test.test@test.example.com
+			test.test@test.example.com.
+			test@192.168.0.1
+			test@192.168.0.1.
+			test.test@192.168.0.1
+			test.test@192.168.0.1.
+
+			IMAGE
+			http://www.example.com/image.jpg
+			http://www.example.com/image.jpeg
+			http://www.example.com/image.png
+			http://www.example.com/image.gif
+			http://www.example.com/image.bmp
+			http://www.example.com/image.jpg.test   (not an image)
+			http://www.example.com/image.jpeg.test  (not an image)
+			http://www.example.com/image.png.test   (not an image)
+			http://www.example.com/image.gif.test   (not an image)
+			http://www.example.com/image.bmp.test   (not an image)
+			http://www.example.com/image.jpg?test
+			http://www.example.com/image.jpeg?test
+			http://www.example.com/image.png?test
+			http://www.example.com/image.gif?test
+			http://www.example.com/image.bmp?test
+			http://www.example.com/image.test?jpg   (not an image)
+			http://www.example.com/image.test?jpeg  (not an image)
+			http://www.example.com/image.test?png   (not an image)
+			http://www.example.com/image.test?gif   (not an image)
+			http://www.example.com/image.test?bmp   (not an image)
+			http://www.example.com/image.jpg#test
+			http://www.example.com/image.jpeg#test
+			http://www.example.com/image.png#test
+			http://www.example.com/image.gif#test
+			http://www.example.com/image.bmp#test
+			http://www.example.com/image.test#jpg   (not an image)
+			http://www.example.com/image.test#jpeg  (not an image)
+			http://www.example.com/image.test#png   (not an image)
+			http://www.example.com/image.test#gif   (not an image)
+			http://www.example.com/image.test#bmp   (not an image)
+			https://greasyfork.org/assets/blacklogo96-0596aff6108f83c3073764496d7768ec.png
+			http://i.imgur.com/25zhGbg.jpg
+			https://f061172b00c7bca1e36fdd56f00f238cf2545831.googledrive.com/host/0B_P4A1paVEPbb1UxSUdua3Fwc1k/Vorago_chathead.png
+			https://secure.runescape.com/m=weblogin/logout.ws?.png
+
+			Dots
+			http://www.example.com
+			http://www.example.com.
+			http://www.example.com..
+			http://www.example.com...
+			http://www.example.com/
+			http://www.example.com/.
+			http://www.example.com/..
+			http://www.example.com/...
+			http://www.example.com/
+			http://www.example.com/.
+			http://www.example.com/./.
+			http://www.example.com/../.
+		</p>
+
+		<h3>Conflict with Angular</h3>
+		<div ng-non-bindable>
+			<quote>
+				Should ignore any links in <code>{{...}}</code>
+			</quote>
+			<p class="pre-line">
+				{{someVar}}
+				{{someVar.com.tw}}
+				{{"http://example.com"}}
+			</p>
+		</div>
+
+		<h3>Domain may contain dash</h3>
+		<p class="pre-line">
+			http://free-group.eu/
+			http://free-group.eu:8080/
+			http://free-group.eu:8080/?search&follow#id
+			http://free-group.eu:8080/dash-in-path?search&follow#id
+		</p>
+
+		<h3>Support IP address</h3>
+		<p class="pre-line">
+			110.110.110.110
+			12345.124.12.1
+			001.000.000.000
+			0.0.0.1
+			127.0.0.1
+			127.0.0.01
+			1271.0.0.1
+			0.0.0.256
+			0.0.0.255
+		</p>
+
+		<h3>Dealing with <code>wbr</code> tag</h3>
+		<p class="pre-line">
+			http://time.com/money/3305393/new-t<wbr>axi-service-is-like-uber-but-for-wo<wbr>men-only/
+			https://soundcloud.com/uscer/53-gir<wbr>ls
+			https://soundcloud.com/uscer/53-gir<wbr/><wbr/>ls
+		</p>
+
+		<h3>Dealing with parenthesis</h3>
+		<p class="pre-line">
+			(http://www.example.com/)
+			(Some text... http://www.example.com/)
+			http://www.example.com/(Some text...)
+			http://www.example.com/(Some)
+			http://en.wikipedia.org/wiki/Darwin_(operating_system)
+			(http://www.foobar.com/test)
+			http://www.foobar.com/test).
+			http://www.asianewsphoto.com/(S(neugxif4twuizg551ywh3f55))
+		</p>
+
+		<h3>Unicode issue</h3>
+		<p class="pre-line">
+			https://github.com/gorhill/uBlock/wiki/Does-µBlock-blocks-ads-or-just-hide-them%3F
+		</p>
+
+		<h3>Comma</h3>
+		<p class="pre-line">
+			http://www.example.com/test,example.html
+			http://www.example.com/test.html, (comma not to be linkified)
+			http://www.example.com/test,example.html, (second comma not to be linkified)
+			http://www.tomshardware.com/reviews/caselabs-ama-recap-jan-2015,4029.html
+		</p>
+
+		<h3>Blacklist</h3>
+		<p class="pre-line brush:">
+			http://www.example.com/
+		</p>
+
+		<h3>Whitelist</h3>
+		<p class="pre-line">
+			<span class="bbcode_code">http://www.example.com/</span>
+			<span class="bbcode_code brush:">http://www.example.com/</span>
+			<span class="brush:"><span class="bbcode_code">http://www.example.com/</span></span>
+		</p>
+
+		<h3>Contenteditable</h3>
+		<p class="pre-line" contenteditable="true">
+			http://www.example.com/
+		</p>
+
+		<h3>Embed youtube</h3>
+		<p class="pre-line">
+			https://www.youtube.com/watch?v=sPwd68rZk7g
+			https://youtu.be/sPwd68rZk7g
 		</p>
 	</div>
-
-	<h3>Domain may contain dash</h3>
-	<p class="pre-line">
-		http://free-group.eu/
-		http://free-group.eu:8080/
-		http://free-group.eu:8080/?search&follow#id
-		http://free-group.eu:8080/dash-in-path?search&follow#id
-	</p>
-
-	<h3>Support IP address</h3>
-	<p class="pre-line">
-		110.110.110.110
-		12345.124.12.1
-		001.000.000.000
-		0.0.0.1
-		127.0.0.1
-		127.0.0.01
-		1271.0.0.1
-		0.0.0.256
-		0.0.0.255
-	</p>
-
-	<h3>Dealing with <code>wbr</code> tag</h3>
-	<p class="pre-line">
-		http://time.com/money/3305393/new-t<wbr>axi-service-is-like-uber-but-for-wo<wbr>men-only/
-		https://soundcloud.com/uscer/53-gir<wbr>ls
-		https://soundcloud.com/uscer/53-gir<wbr/><wbr/>ls
-	</p>
-
-	<h3>Dealing with parenthesis</h3>
-	<p class="pre-line">
-		(http://www.example.com/)
-		(Some text... http://www.example.com/)
-		http://www.example.com/(Some text...)
-		http://www.example.com/(Some)
-		http://en.wikipedia.org/wiki/Darwin_(operating_system)
-		(http://www.foobar.com/test)
-		http://www.foobar.com/test).
-		http://www.asianewsphoto.com/(S(neugxif4twuizg551ywh3f55))
-	</p>
-
-	<h3>Unicode issue</h3>
-	<p class="pre-line">
-		https://github.com/gorhill/uBlock/wiki/Does-µBlock-blocks-ads-or-just-hide-them%3F
-	</p>
-
-	<h3>Comma</h3>
-	<p class="pre-line">
-		http://www.example.com/test,example.html
-		http://www.example.com/test.html, (comma not to be linkified)
-		http://www.example.com/test,example.html, (second comma not to be linkified)
-		http://www.tomshardware.com/reviews/caselabs-ama-recap-jan-2015,4029.html
-	</p>
-
-	<h3>Blacklist</h3>
-	<p class="pre-line brush:">
-		http://www.example.com/
-	</p>
-
-	<h3>Whitelist</h3>
-	<p class="pre-line">
-		<span class="bbcode_code">http://www.example.com/</span>
-		<span class="bbcode_code brush:">http://www.example.com/</span>
-		<span class="brush:"><span class="bbcode_code">http://www.example.com/</span></span>
-	</p>
-
-	<h3>Contenteditable</h3>
-	<p class="pre-line" contenteditable="true">
-		http://www.example.com/
-	</p>
-
-	<h3>Embed youtube</h3>
-	<p class="pre-line">
-		https://www.youtube.com/watch?v=sPwd68rZk7g
-		https://youtu.be/sPwd68rZk7g
-	</p>
-
-	<script src="linkify-plus-plus.user.js"></script>
 </body>
 </html>
