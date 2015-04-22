@@ -3,12 +3,16 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Linkify Plus Plus</title>
-	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular.min.js"></script>
 	<script src="https://greasyfork.org/scripts/7212-gm-config-eight-s-version/code/GM_config%20(eight's%20version).js?version=46603"></script>
+	<script src="https://rawgit.com/urish/angular-load/master/angular-load.js"></script>
 	<link rel="stylesheet" href="https://rawgit.com/eight04/end2end/master/dist/end2end.css">
+
 	<style>
-		p a {
+		body {
+			word-wrap: break-word;
+		}
+		.main a {
 			background-color: greenyellow;
 		}
 		img {
@@ -39,6 +43,9 @@
 		};
 
 		function commandBar($scope) {
+			function apply() {
+				$scope.$apply();
+			}
 			$scope.commands = commands;
 			$scope.running = false;
 			$scope.run = function(){
@@ -46,9 +53,12 @@
 					return;
 				}
 				$scope.running = true;
+
 				angular.forEach(scripts, function(url){
-					var script = angular.element("<script src='" + url + "'>");
-					angular.element("head").append(script);
+					var script = document.createElement("script");
+					script.src = url;
+					script.onload = apply;
+					document.head.appendChild(script);
 				});
 			};
 		}
@@ -70,7 +80,7 @@
 		</div>
 	</nav>
 
-	<div class="container container-sm">
+	<div class="container container-sm main">
 		<h2>Linkify Plus Plus <small>Test Page</small></h2>
 
 		<h3>Random test 1</h3>
