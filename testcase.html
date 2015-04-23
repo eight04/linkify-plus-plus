@@ -40,6 +40,51 @@
 				callback: callback
 			});
 		};
+		var GM_setValue = function(key, value) {
+			var type, strValue;
+
+			if (value === null) {
+				type = "null";
+			} else {
+				type = typeof value;
+			}
+
+			switch (type) {
+				case "object":
+					strValue = JSON.stringify(value);
+					break;
+				default:
+					strValue = value + "";
+			}
+
+			localStorage[key + "/type"] = type;
+			localStorage[key + "/value"] = strValue;
+		};
+		var GM_getValue = function(key, def) {
+			var type, strValue;
+
+			if (!(key + "/type" in localStorage && key + "/value" in localStorage)) {
+				return def;
+			}
+
+			type = localStorage[key + "/type"];
+			strValue = localStorage[key + "/value"];
+
+			switch (type) {
+				case "object":
+					return JSON.parse(strValue);
+				case "null":
+					return null;
+				case "undefined":
+					return undefined;
+				case "number":
+					return +strValue;
+				case "boolean":
+					return strValue == "true";
+				default:
+					return strValue;
+			}
+		};
 
 		function commandBar($scope) {
 			function apply() {
