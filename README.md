@@ -22,11 +22,10 @@ Testcase
 
 Todos
 -----
-* Add options to match unicode characters in path part.
-
-4.0 milestone
--------------
-* Cleanup TLDs.
+* Add options to match unicode characters in path part. (http://x.co/93ViW)
+* Cleanup TLDs. (http://x.co/93Vmt)
+* Embed more? (http://x.co/93Vp7)
+* `<wbr>` issue. (http://x.co/93VsB)
 
 Changelog
 ---------
