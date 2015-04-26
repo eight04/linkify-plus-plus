@@ -75,6 +75,9 @@ module.exports = function(grunt) {
 				src: "*.css",
 				dest: "temp/"
 			}
+		},
+		curl: {
+			"tlds.txt": "http://ftp.isc.org/www/survey/reports/current/byname.txt"
 		}
 	});
 
@@ -84,7 +87,31 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
+	grunt.loadNpmTasks('grunt-curl');
 
 	// Tasks
 	grunt.registerTask('default', ["cssmin", 'replace', 'clean', "copy"]);
+	grunt.registerTask('tlds', ['curl', 'tlds-parse']);
+	grunt.registerTask('tlds-parse', "Parse top level domains.", function(){
+		var text = grunt.file.read("tlds.txt");
+		var lines = text.split(/\r?\n/), line;
+
+		do {
+			line = lines.shift();
+		} while (!/^TOTAL/.test(line));
+
+		var tlds = {};
+		lines.forEach(function(line){
+			line = line.trim();
+			line = line.split(/\s+/);
+			if (!line[0]) {
+				return;
+			}
+			tlds[line[0].toUpperCase()] = +line[1] >= 100;
+		});
+
+		var str = JSON.stringify(tlds);
+
+		grunt.file.write("tlds", str.substring(1, str.length - 1));
+	});
 };

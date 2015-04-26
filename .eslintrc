@@ -19,6 +19,7 @@
 		"no-constant-condition": 0,
 		"no-mixed-spaces-and-tabs": 0,
 		"quotes": 0,
-		"no-use-before-define": [2, "nofunc"]
+		"no-use-before-define": [2, "nofunc"],
+		"no-shadow": 0
 	}
 }

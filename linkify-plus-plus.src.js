@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     3.6.1
+// @version     3.6.2
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -74,8 +74,7 @@ GM_config.init(
 			type: "checkbox",
 			default: false
 		}
-	},
-	"@@CSS_CONFIG"
+	}
 );
 
 GM_config.onclose = loadConfig;
@@ -346,7 +345,7 @@ function linkifyTextNode(node) {
 		}
 
 		// valid IP address
-		if (!isIP(domain) && (mm = domain.match(/\.([a-z0-9-]+)$/i)) && !tlds[mm[1].toUpperCase()]) {
+		if (!isIP(domain) && (mm = domain.match(/\.([a-z0-9-]+)$/i)) && !(mm[1].toUpperCase() in tlds)) {
 			continue;
 		}
 

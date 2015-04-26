@@ -29,6 +29,8 @@ Todos
 
 Changelog
 ---------
+* Version 3.6.2 (Apr 26, 2015):
+	- Change how tlds work.
 * Version 3.6.1 (Apr 23, 2015):
 	- Use regex to detect angular source.
 * Version 3.6.0 (Apr 21, 2015):
