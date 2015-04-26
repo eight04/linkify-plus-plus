@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     3.6.2
+// @version     3.6.3
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -146,17 +146,22 @@ var traverser = {
 		};
 
 		function traverse(){
-			var i = 0, child, sibling, parent;
+			var i = 0, child, sibling, parent, removed;
 
 			while (state.currentNode != root) {
 
 				// Remove wbr and merge textnode
 				if (state.currentNode.nodeType == 3) {
+					removed = false;
 					while (state.currentNode.nextSibling &&
 							(state.currentNode.nextSibling.nodeType == 3 ||
 							state.currentNode.nextSibling.nodeName == "WBR")) {
 						state.currentNode.nodeValue += state.currentNode.nextSibling.nodeValue || "";
 						remove(state.currentNode.nextSibling);
+						removed = true;
+					}
+					if (removed) {
+						state.currentNode.parentNode.classList.add("linkifyplus-wbr-removed");
 					}
 				}
 
@@ -165,7 +170,7 @@ var traverser = {
 				sibling = state.currentNode.nextSibling;
 				parent = state.currentNode.parentNode;
 
-				// Remove wbr and merge textnode
+				// Linkify
 				if (state.currentNode.nodeType == 3) {
 					linkifyTextNode(state.currentNode);
 				}
@@ -523,7 +528,7 @@ function embedMe(node) {
 	loop(nodes, embedContent);
 }
 
-GM_addStyle(template(".embedme-image{max-width:100%}.embedme-video{max-width:@ytWidthpx}.embedme-video-wrap{position:relative;padding-top:30px;padding-bottom:@ytRatio%}.embedme-video-iframe{position:absolute;top:0;left:0;width:100%;height:100%}#GM_config{border-radius:1em;box-shadow:0 0 1em #000;border:1px solid grey!important}", {
+GM_addStyle(template(".embedme-image{max-width:100%}.embedme-video{max-width:@ytWidthpx}.embedme-video-wrap{position:relative;padding-top:30px;padding-bottom:@ytRatio%}.embedme-video-iframe{position:absolute;top:0;left:0;width:100%;height:100%}.linkifyplus-wbr-removed{word-wrap:break-word}", {
 	ytWidth: config.ytWidth,
 	ytRatio: (config.ytHeight / config.ytWidth) * 100
 }));

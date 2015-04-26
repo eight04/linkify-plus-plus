@@ -29,6 +29,8 @@ Todos
 
 Changelog
 ---------
+* Version 3.6.3 (Apr 26, 2015):
+	- Add `word-wrap: break-word`.
 * Version 3.6.2 (Apr 26, 2015):
 	- Change how tlds work.
 * Version 3.6.1 (Apr 23, 2015):
