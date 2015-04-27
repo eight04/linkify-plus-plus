@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     3.6.3
+// @version     4.0.0
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -114,6 +114,10 @@ function validRoot(node) {
 	return true;
 }
 
+function isWbrOrText(node) {
+	return node && (node.nodeType == 3 || node.nodeName == "WBR");
+}
+
 var traverser = {
 	queue: [],
 	running: false,
@@ -146,33 +150,28 @@ var traverser = {
 		};
 
 		function traverse(){
-			var i = 0, child, sibling, parent, removed;
+			var i = 0, child, sibling, parent, range;
 
 			while (state.currentNode != root) {
-
-				// Remove wbr and merge textnode
+				// Create range to select textNode/wbr
 				if (state.currentNode.nodeType == 3) {
-					removed = false;
-					while (state.currentNode.nextSibling &&
-							(state.currentNode.nextSibling.nodeType == 3 ||
-							state.currentNode.nextSibling.nodeName == "WBR")) {
-						state.currentNode.nodeValue += state.currentNode.nextSibling.nodeValue || "";
-						remove(state.currentNode.nextSibling);
-						removed = true;
+					range = document.createRange();
+					range.setStartBefore(state.currentNode);
+					while (isWbrOrText(state.currentNode.nextSibling)) {
+						state.currentNode = state.currentNode.nextSibling;
 					}
-					if (removed) {
-						state.currentNode.parentNode.classList.add("linkifyplus-wbr-removed");
-					}
+					range.setEndAfter(state.currentNode);
 				}
 
-				// Cache node for transfer
+				// Cache next node for transfer
 				child = state.currentNode.childNodes[0];
 				sibling = state.currentNode.nextSibling;
 				parent = state.currentNode.parentNode;
 
-				// Linkify
-				if (state.currentNode.nodeType == 3) {
-					linkifyTextNode(state.currentNode);
+				if (range) {
+					linkifyTextNode(range);
+					range.detach();
+					range = null;
 				}
 
 				// State transfer
@@ -256,10 +255,6 @@ function getArray(s) {
 	return s.split(/\s+/);
 }
 
-function remove(node) {
-	node.parentNode.removeChild(node);
-}
-
 function isIP(s) {
 	var m, i;
 	if (!(m = s.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/))) {
@@ -304,7 +299,7 @@ function getYoutubeId(url) {
 	return match && match[1];
 }
 
-function createLink(text, url) {
+function createLink(url, text) {
 	var cont;
 
 	cont = document.createElement("a");
@@ -312,37 +307,86 @@ function createLink(text, url) {
 	if (config.openInNewTab) {
 		cont.target = "_blank";
 	}
-	cont.appendChild(document.createTextNode(text));
+	cont.appendChild(text);
 	cont.className = "linkifyplus";
 
 	return cont;
 }
 
-function linkifyTextNode(node) {
-	if (!node.parentNode){
-		return;
+function replaceRange(range, nodes) {
+	var i, j;
+
+	// Get text targets
+	var targets = [],
+		list = range.startContainer.childNodes,
+		offset = 0,
+		endOffset = 0;
+	for (i = range.startOffset; i < range.endOffset; i++) {
+		if (list[i].nodeType == 3) {
+			endOffset = offset + list[i].nodeValue.length;
+		}
+		targets.push({
+			offset: offset,
+			endOffset: endOffset,
+			node: list[i]
+		});
+		offset = endOffset;
 	}
-	var l, m, mm;
-	var txt = node.textContent;
-	var span = null;
-	var p = 0;
-	var protocol, user, domain, port, path;
-	var a, url;
+
+	// Compare offset with range position
+	var subRange = document.createRange(),
+		frag = document.createDocumentFragment(),
+		text;
+	for (i = 0, j = 0; i < nodes.length; i++) {
+		// Create sub range
+		while (nodes[i].start >= targets[j].endOffset) {
+			j++;
+		}
+		subRange.setStart(targets[j].node, nodes[i].start - targets[j].offset);
+		while (nodes[i].end > targets[j].endOffset) {
+			j++;
+		}
+		subRange.setEnd(targets[j].node, nodes[i].end - targets[j].offset);
+
+		// Create text and link
+		text = subRange.cloneContents();
+		if (nodes[i].type == "string") {
+			frag.appendChild(text);
+		} else {
+			frag.appendChild(createLink(nodes[i].url, text));
+		}
+	}
+	subRange.detach();
+
+	// Replace range
+	range.deleteContents();
+	range.insertNode(frag);
+}
+
+function linkifyTextNode(range) {
+	var m, mm,
+		txt = range.toString(),
+		nodes = [],
+		lastIndex = 0;
+	var face, protocol, user, domain, port, path, angular;
+	var url, linkified = false;
 
 	while (m = urlRE.exec(txt)) {
-		// Skip angular source
-		if (m[6]) {
-			if (!unsafeWindow.angular) {
-				urlRE.lastIndex = m.index + 2;
-			}
-			continue;
-		}
-
+		face = m[0];
 		protocol = m[1] || "";
 		user = m[2] || "";
 		domain = m[3] || "";
 		port = m[4] || "";
 		path = m[5] || "";
+		angular = m[6];
+
+		// Skip angular source
+		if (angular) {
+			if (!unsafeWindow.angular) {
+				urlRE.lastIndex = m.index + 2;
+			}
+			continue;
+		}
 
 		// domain shouldn't contain connected dots
 		if (domain.indexOf("..") > -1) {
@@ -354,23 +398,26 @@ function linkifyTextNode(node) {
 			continue;
 		}
 
-		if (!span) {
-			// Create a span to hold the new text with links in it.
-			span = document.createElement('span');
-			span.className = 'linkifyplus';
+		// Insert text
+		if (m.index > lastIndex) {
+			nodes.push({
+				start: lastIndex,
+				end: m.index,
+				type: "string"
+			});
 		}
 
-		l = m[0];
+		if (path) {
+			// get the link without trailing dots and comma
+			face = face.replace(/[.,]*$/, '');
+			path = path.replace(/[.,]*$/, '');
 
-		// get the link without trailing dots and comma
-		l = l.replace(/[.,]*$/, '');
-		path = path.replace(/[.,]*$/, '');
+			// Get the link without single parenthesis
+			face = stripSingleParenthesis(face);
+			path = stripSingleParenthesis(path);
+		}
 
-		// Get the link without single parenthesis
-		l = stripSingleParenthesis(l);
-		path = stripSingleParenthesis(path);
-
-		// Guess protocol and create url
+		// Guess protocol
 		if (!protocol && user && (mm = user.match(/^mailto:(.+)/))) {
 			protocol = "mailto:";
 			user = mm[1];
@@ -392,24 +439,35 @@ function linkifyTextNode(node) {
 			}
 		}
 
-		url = protocol + (user ? user + "@" : "") + domain + port + path;
+		// Create URL
+		url = protocol + (user && user + "@") + domain + port + path;
 
-		//put in text up to the link
-		span.appendChild(document.createTextNode(txt.substring(p, m.index)));
+		urlRE.lastIndex = m.index + face.length;
+		lastIndex = urlRE.lastIndex;
 
-		//create a link and put it in the span
-		a = createLink(l, url);
-		span.appendChild(a);
+		nodes.push({
+			start: m.index,
+			end: lastIndex,
+			type: "anchor",
+			url: url
+		});
 
-		//track insertion point
-		p = m.index + l.length;
+		linkified = true;
 	}
-	if (span) {
-		//take the text after the last link
-		span.appendChild(document.createTextNode(txt.substring(p, txt.length)));
-		//replace the original text with the new span
-		node.parentNode.replaceChild(span, node);
+
+	if (!linkified) {
+		return;
 	}
+
+	if (txt.length > lastIndex) {
+		nodes.push({
+			start: lastIndex,
+			end: txt.length,
+			type: "string"
+		});
+	}
+
+	replaceRange(range, nodes);
 }
 
 function template(text, option) {

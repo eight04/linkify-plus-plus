@@ -29,6 +29,8 @@ Todos
 
 Changelog
 ---------
+* Version 4.0.0 (Apr 27, 2015):
+	- LPP don't remove `<wbr>` anymore. Use `Range` to select text.
 * Version 3.6.3 (Apr 26, 2015):
 	- Add `word-wrap: break-word`.
 * Version 3.6.2 (Apr 26, 2015):
