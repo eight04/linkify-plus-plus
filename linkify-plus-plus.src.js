@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     4.0.0
+// @version     4.0.1
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -89,12 +89,18 @@ var tlds = {
 };
 
 function valid(node) {
+	// Deal with SVGAnimatedString
+	// http://x.co/9Rleu
+	var className = node.className;
+	if (typeof className == "object") {
+		className = className.baseVal;
+	}
 	return node.nodeType == 1 &&
 		(!re.excludingTag.test(node.nodeName) &&
-		!re.excludingClass.test(node.className) ||
-		re.includingClass.test(node.className)) &&
+		!re.excludingClass.test(className) ||
+		re.includingClass.test(className)) &&
 		node.contentEditable != "true" &&
-		node.className.indexOf("linkifyplus") < 0;
+		className.indexOf("linkifyplus") < 0;
 }
 
 function validRoot(node) {
