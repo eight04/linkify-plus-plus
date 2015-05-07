@@ -29,6 +29,8 @@ Todos
 
 Changelog
 ---------
+* Version 4.0.1 (May 8, 2015):
+	- Fix SVGAnimatedString issue.
 * Version 4.0.0 (Apr 27, 2015):
 	- LPP don't remove `<wbr>` anymore. Use `Range` to select text.
 * Version 3.6.3 (Apr 26, 2015):
