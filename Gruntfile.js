@@ -12,7 +12,7 @@ module.exports = function(grunt) {
 			},
 			src: {
 				files: ["*.src.js", "*.css"],
-				tasks: ["default"]
+				tasks: ["build"]
 			}
 		},
 		replace: {
@@ -62,7 +62,7 @@ module.exports = function(grunt) {
 				}
 			}
 		},
-		clean: ["temp"],
+		clean: ["temp", "tlds"],
 		copy: {
 			dist: {
 				src: "linkify-plus-plus.user.js",
@@ -90,8 +90,9 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-curl');
 
 	// Tasks
-	grunt.registerTask('default', ["cssmin", 'replace', 'clean', "copy"]);
-	grunt.registerTask('tlds', ['curl', 'tlds-parse']);
+	grunt.registerTask("default", ["curl", "build"]);
+	grunt.registerTask('build', ['tlds-parse', "cssmin", 'replace', 'clean', "copy"]);
+
 	grunt.registerTask('tlds-parse', "Parse top level domains.", function(){
 		var text = grunt.file.read("tlds.txt");
 		var lines = text.split(/\r?\n/), line;
@@ -100,15 +101,20 @@ module.exports = function(grunt) {
 			line = lines.shift();
 		} while (!/^TOTAL/.test(line));
 
-		var tlds = {};
+		var tlds = {}, total = 0;
 		lines.forEach(function(line){
 			line = line.trim();
 			line = line.split(/\s+/);
 			if (!line[0]) {
 				return;
 			}
-			tlds[line[0].toUpperCase()] = +line[1] >= 100;
+			total += tlds[line[0].toUpperCase()] = +line[1];
 		});
+
+		var key;
+		for (key in tlds) {
+			tlds[key] = Math.round(tlds[key] * 100 / total);
+		}
 
 		var str = JSON.stringify(tlds);
 

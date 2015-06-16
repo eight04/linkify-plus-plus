@@ -4,9 +4,11 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="cache-control" content="no-cache">
 	<title>Linkify Plus Plus</title>
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular.min.js"></script>
-	<script src="https://greasyfork.org/scripts/7212-gm-config-eight-s-version/code/GM_config%20(eight's%20version).js?version=46603"></script>
+	<script src="https://rawgit.com/eight04/GM_simulator/master/simulator.js"></script>
+	<script src="https://greasyfork.org/scripts/7212-gm-config-eight-s-version/code/GM_config%20(eight's%20version).js?version=56964"></script>
+	<script src="linkify-plus-plus.user.js"></script>
 	<link rel="stylesheet" href="https://rawgit.com/eight04/end2end/master/dist/end2end.css">
+	<link rel="stylesheet" href="https://rawgit.com/eight04/GM_simulator/master/simulator.css">
 	<style>
 		body {
 			word-wrap: break-word;
@@ -21,113 +23,8 @@
 			white-space: pre-line;
 		}
 	</style>
-	<script>
-		// <![CDATA[
-		// GM setup
-		var scripts = [
-			"linkify-plus-plus.user.js"
-		];
-		var unsafeWindow = Object.create(window);
-		var GM_addStyle = function(s) {
-			var style = document.createElement("style");
-			style.textContent = s;
-			document.head.appendChild(style);
-		};
-		var commands = [];
-		var GM_registerMenuCommand = function(title, callback){
-			commands.push({
-				title: title,
-				callback: callback
-			});
-		};
-		var GM_setValue = function(key, value) {
-			var type, strValue;
-
-			if (value === null) {
-				type = "null";
-			} else {
-				type = typeof value;
-			}
-
-			switch (type) {
-				case "object":
-					strValue = JSON.stringify(value);
-					break;
-				default:
-					strValue = value + "";
-			}
-
-			localStorage[key + "/type"] = type;
-			localStorage[key + "/value"] = strValue;
-		};
-		var GM_getValue = function(key, def) {
-			var type, strValue;
-
-			if (!(key + "/type" in localStorage && key + "/value" in localStorage)) {
-				return def;
-			}
-
-			type = localStorage[key + "/type"];
-			strValue = localStorage[key + "/value"];
-
-			switch (type) {
-				case "object":
-					return JSON.parse(strValue);
-				case "null":
-					return null;
-				case "undefined":
-					return undefined;
-				case "number":
-					return +strValue;
-				case "boolean":
-					return strValue == "true";
-				default:
-					return strValue;
-			}
-		};
-
-		function commandBar($scope) {
-			function apply() {
-				$scope.$apply();
-			}
-			$scope.commands = commands;
-			$scope.running = false;
-			$scope.run = function(){
-				if ($scope.running) {
-					return;
-				}
-				$scope.running = true;
-
-				angular.forEach(scripts, function(url){
-					var script = document.createElement("script");
-					script.src = url + "?" + new Date().getTime();
-					script.onload = apply;
-					document.head.appendChild(script);
-				});
-			};
-		}
-
-		function svgTest($scope) {
-			$scope.arr = [];
-		}
-		// ]]>
-	</script>
 </head>
-<body class="navbar-padded">
-	<nav class="navbar navbar-fixed" ng-controller="commandBar">
-		<div class="container container-sm">
-			<a class="navbar-brand" href="https://greasyfork.org/zh-TW/scripts/4255-linkify-plus-plus">
-				Home
-			</a>
-			<a href="" class="navbar-link" ng-click="run()" ng-hide="running">
-				Run script
-			</a>
-			<a href="" class="navbar-link" ng-repeat="command in commands" ng-click="command.callback()">
-				{{command.title}}
-			</a>
-		</div>
-	</nav>
-
+<body>
 	<div class="container container-sm main">
 		<h2>Linkify Plus Plus <small>Test Page</small></h2>
 
