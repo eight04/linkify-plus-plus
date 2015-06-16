@@ -89,26 +89,82 @@ var tlds = {
 };
 
 function valid(node) {
-	// Deal with SVGAnimatedString
-	// http://x.co/9Rleu
 	var className = node.className;
 	if (typeof className == "object") {
 		className = className.baseVal;
 	}
-	return node.nodeType == 1 &&
-		(!re.excludingTag.test(node.nodeName) &&
-		!re.excludingClass.test(className) ||
-		re.includingClass.test(className)) &&
-		node.contentEditable != "true" &&
-		className.indexOf("linkifyplus") < 0;
+	if (re.excludingTag.test(node.nodeName)) {
+		return false;
+	}
+	if (re.excludingClass.test(className)) {
+		return false;
+	}
+	if (node.contentEditable == "true" || node.contentEditable == "") {
+		return false;
+	}
+	return true;
+}
+
+var nodeFilter = {
+	acceptNode: function(node) {
+		if (!valid(node)) {
+			return NodeFilter.FILTER_REJECT;
+		}
+		if (node.nodeName == "WBR") {
+			return NodeFilter.FILTER_ACCEPT;
+		}
+		if (node.nodeType == 3) {
+			return NodeFilter.FILTER_ACCEPT;
+		}
+		return NodeFilter.FILTER_SKIP;
+	}
+};
+
+function createThread(iter) {
+	var running = false,
+		timeout;
+
+	function start() {
+		if (running) {
+			return;
+		}
+		running = true;
+		next();
+	}
+
+	function next() {
+		var count = 0, done;
+		while (!(done = iter.next().done) && count < 50) {
+			count++;
+		}
+		if (!done) {
+			timeout = setTimeout(next);
+		} else {
+			stop();
+		}
+	}
+
+	function stop() {
+		running = false;
+		clearTimeout(timeout);
+	}
+
+	return {
+		start: start,
+		stop: stop
+	};
 }
 
 function validRoot(node) {
 	var cache = node;
 	while (node.parentNode != document.documentElement) {
+		if (node.IS_VALID) {
+			cache.IS_VALID = true;
+			return true;
+		}
 		// Check if the node is valid
-		if (!valid(node) || node.LINKIFY_INVALID) {
-			cache.LINKIFY_INVALID = true;
+		if (node.INVALID || !valid(node)) {
+			cache.INVALID = true;
 			return false;
 		}
 		// The node was detached from DOM tree
@@ -117,117 +173,61 @@ function validRoot(node) {
 		}
 		node = node.parentNode;
 	}
+	cache.IS_VALID = true;
 	return true;
 }
 
-function isWbrOrText(node) {
-	return node && (node.nodeType == 3 || node.nodeName == "WBR");
-}
+var queIterer = function(){
+	var que = [];
 
-var traverser = {
-	queue: [],
-	running: false,
-	start: function(){
-		if (traverser.running) {
-			return;
+	function add(item) {
+		if (que.length) {
+			que[que.length - 1].IS_LAST = false;
 		}
-		traverser.running = true;
-		traverser.container();
-	},
-	container: function(){
-		var root = traverser.queue.shift();
-
-		if (!root) {
-			traverser.running = false;
-			return;
-		}
-
-		if (!root.childNodes || !root.childNodes.length || !validRoot(root)) {
-			root.inTraverserQueue = false;
-			setTimeout(traverser.container, 0);
-			return;
-		}
-
-		var state = {
-			currentNode: root.childNodes[0],
-			lastMove: 1,	// 1=down, 2=left, 3=up
-			loopCount: 0,
-			timeStart: Date.now()
-		};
-
-		function traverse(){
-			var i = 0, child, sibling, parent, range;
-
-			while (state.currentNode != root) {
-				// Create range to select textNode/wbr
-				if (state.currentNode.nodeType == 3) {
-					range = document.createRange();
-					range.setStartBefore(state.currentNode);
-					while (isWbrOrText(state.currentNode.nextSibling)) {
-						state.currentNode = state.currentNode.nextSibling;
-					}
-					range.setEndAfter(state.currentNode);
-				}
-
-				// Cache next node for transfer
-				child = state.currentNode.childNodes[0];
-				sibling = state.currentNode.nextSibling;
-				parent = state.currentNode.parentNode;
-
-				if (range) {
-					linkifyTextNode(range);
-					range.detach();
-					range = null;
-				}
-
-				// State transfer
-				if (valid(state.currentNode) && state.lastMove != 3 && child) {
-					state.currentNode = child;
-					state.lastMove = 1;
-				} else if (sibling) {
-					state.currentNode = sibling;
-					state.lastMove = 2;
-				} else if (parent) {
-					state.currentNode = parent;
-					state.lastMove = 3;
-				} else {
-					break;
-				}
-
-				// Loop counter
-				i++;
-				state.loopCount++;
-				if (i > 50) {
-					setTimeout(traverse, 0);
-					return;
-				}
-			}
-
-			if (config.generateLog) {
-				if (state.currentNode != root) {
-					console.log("Traversal terminated! Last node: ", state.currentNode);
-				} else {
-					console.log(
-						"Traversal end! Traversed %d nodes in %dms.",
-						state.loopCount + 1,
-						Date.now() - state.timeStart
-					);
-				}
-			}
-
-			root.inTraverserQueue = false;
-			setTimeout(traverser.container);
-		}
-		setTimeout(traverse, 0);
-	},
-	add: function(node) {
-		if (node.inTraverserQueue) {
-			return;
-		}
-		node.inTraverserQueue = true;
-		traverser.queue.push(node);
+		item.IS_LAST = true;
+		item.IN_QUE = true;
+		que.push(item);
 	}
-};
+
+	function next() {
+		if (!que[0]) {
+			return {
+				value: undefined,
+				done: true
+			};
+		}
+		var item = que[0].next();
+		if (item.done) {
+			que.shift();
+			que[0].IN_QUE = false;
+		}
+		return {
+			value: item,
+			done: false
+		};
+	}
+
+	function drop(item) {
+		var i;
+		for (i = 0; i < que.length; i++) {
+			if (que[i] == item) {
+				que.splice(i, 1);
+				que[que.length - 1].IS_LAST = false;
+				que.push(item);
+				item.IS_LAST = true;
+				item.IN_QUE = true;
+				break;
+			}
+		}
+	}
+
+	return {
+		que: que,
+		add: add,
+		drop: drop,
+		next: next
+	};
+}();
 
 function loadConfig(){
 	config = GM_config.get();
@@ -239,7 +239,7 @@ function loadConfig(){
 	];
 
 	var excludingClass = [
-		"highlight", "editbox", "code", "brush:", "bdsug", "spreadsheetinfo"
+		"highlight", "editbox", "code", "brush:", "bdsug", "spreadsheetinfo", "linkifyplus"
 	].concat(getArray(config.classBlackList));
 
 	var includingClass = [
@@ -296,13 +296,6 @@ function stripSingleParenthesis(str) {
 		return str.substring(0, pos);
 	}
 	return str;
-}
-
-function getYoutubeId(url) {
-	var match =
-		url.match(/https?:\/\/www\.youtube\.com\/watch\?v=([^&]+)/) ||
-		url.match(/https?:\/\/youtu\.be\/([^?]+)/);
-	return match && match[1];
 }
 
 function createLink(url, text) {
@@ -502,95 +495,49 @@ function observeDocument(callback) {
 	});
 }
 
-function loop(list, callback) {
-	var i = 0,
-		len = list.length;
+function createTreeWalker(node) {
+	var walker = document.createTreeWalker(
+		node,
+		NodeFilter.SHOW_TEXT + NodeFilter.SHOW_ELEMENT,
+		nodeFilter
+	), current, next;
 
-	function chunk() {
-		var j;
-		for (j = 0; j < 50 && i < len; i++, j++) {
-			callback(list[i]);
-		}
-		if (i < len) {
-			setTimeout(chunk);
-		}
-	}
-
-	setTimeout(chunk);
-}
-
-var embedFunction = {
-	image: function(url, element) {
-		var obj;
-		if (!config.useImg || !/^[^?#]+\.(jpg|png|gif|jpeg)($|[?#])/i.test(url)) {
+	function nextRange() {
+		current = next || walker.nextNode();
+		if (!current) {
 			return null;
 		}
-		obj = document.createElement("img");
-		obj.className = "embedme-image";
-		obj.alt = url;
-		obj.src = url;
-		element = element.cloneNode(false);
-		element.appendChild(obj);
-		return element;
-	},
-	youtube: function(url) {
-		var id, cont, wrap, obj;
-		if (!config.useYT || !(id = getYoutubeId(url))) {
-			return null;
-		}
-		cont = document.createElement("div");
-		cont.className = "embedme-video";
-
-		wrap = document.createElement("div");
-		wrap.className = "embedme-video-wrap";
-		cont.appendChild(wrap);
-
-		obj = document.createElement("iframe");
-		obj.className = "embedme-video-iframe";
-		obj.src = "https://www.youtube.com/embed/" + id;
-		obj.setAttribute("allowfullscreen", "true");
-		obj.setAttribute("frameborder", "0");
-		wrap.appendChild(obj);
-
-		return cont;
-	}
-};
-
-function embedContent(element) {
-	var url = element.href, key, embed;
-
-	if (!element.parentNode) {
-		return;
-	}
-
-	for (key in embedFunction) {
-		embed = embedFunction[key](url, element);
-		if (embed) {
-			embed.classList.add("embedme");
-			element.parentNode.replaceChild(embed, element);
-			return;
+		var range = document.createRange();
+		range.setStartBefore(current);
+		range.setEndAfter(current);
+		while (true) {
+			next = walker.nextNode();
+			if (current.nextSibling == next) {
+				range.setEndAfter(next);
+			} else {
+				return range;
+			}
+			current = next;
 		}
 	}
-//	element.classList.add("embedme-fail");
+
+	node.WALKER = {
+		next: function() {
+			var range = nextRange();
+			if (range) {
+				linkifyTextNode(range);
+			}
+			return {
+				value: range,
+				done: !range
+			};
+		}
+	};
+
+	return node.WALKER;
 }
 
-function embedMe(node) {
-	var result, nodes = [], i, xpath;
-
-	if (config.embedAll) {
-		xpath = ".//a[not(*) and text() and @href and not(contains(@class, 'embedme'))]";
-	} else {
-		xpath = ".//a[not(*) and text() and @href and not(contains(@class, 'embedme')) and contains(@class, 'linkifyplus')]";
-	}
-
-	result = document.evaluate(xpath, node, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
-
-	for (i = 0; i < result.snapshotLength; i++) {
-		nodes.push(result.snapshotItem(i));
-	}
-
-	loop(nodes, embedContent);
-}
+var thread = createThread(queIterer);
 
 GM_addStyle(template(".embedme-image{max-width:100%}.embedme-video{max-width:@ytWidthpx}.embedme-video-wrap{position:relative;padding-top:30px;padding-bottom:@ytRatio%}.embedme-video-iframe{position:absolute;top:0;left:0;width:100%;height:100%}", {
 	ytWidth: config.ytWidth,
@@ -602,8 +549,13 @@ GM_registerMenuCommand("Linkify Plus Plus - Configure", function(){
 });
 
 observeDocument(function(node){
-	traverser.add(node);
-	traverser.start();
+	if (!validRoot(node)) {
+		return;
+	}
+	if (!node.IN_QUE) {
+		queIterer.add(createTreeWalker(node));
+	} else if (!node.IS_LAST) {
+		queIterer.drop(node.WALKER);
+	}
+	thread.start();
 });
-
-observeDocument(embedMe);
