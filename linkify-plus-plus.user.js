@@ -15,7 +15,7 @@
 // @exclude     http://docs.google.*/*
 // @exclude     https://docs.google.*/*
 // @exclude     http://mxr.mozilla.org/*
-// @require 	https://greasyfork.org/scripts/7212-gm-config-eight-s-version/code/GM_config%20(eight's%20version).js?version=46603
+// @require https://greasyfork.org/scripts/7212-gm-config-eight-s-version/code/GM_config%20(eight's%20version).js?version=56964
 // @grant       GM_addStyle
 // @grant       GM_registerMenuCommand
 // @grant       GM_getValue
@@ -35,42 +35,17 @@ GM_config.init(
 			default: true
 		},
 		classBlackList: {
-			label: "Add classes to black-list (Separate by space)",
+			label: "Do not linkify url in these classes",
 			type: "textarea",
-			default: ""
-		},
-		classWhiteList: {
-			label: "Add classes to white-list (Separate by space)",
-			type: "textarea",
-			default: ""
+			default: "highlight editbox brush: bdsug spreadsheetinfo"
 		},
 		generateLog: {
-			label: "Generate log (useful for debugging)",
+			label: "Generate log",
 			type: "checkbox",
 			default: false
 		},
 		openInNewTab: {
 			label: "Open link in new tab",
-			type: "checkbox",
-			default: false
-		},
-		useYT: {
-			label: "Embed youtube video",
-			type: "checkbox",
-			default: false
-		},
-		ytWidth: {
-			label: "Video width",
-			type: "text",
-			default: "560"
-		},
-		ytHeight: {
-			label: "Video height",
-			type: "text",
-			default: "315"
-		},
-		embedAll: {
-			label: "Enable embedding globally (It might mess up your page!)",
 			type: "checkbox",
 			default: false
 		}
@@ -122,13 +97,15 @@ var nodeFilter = {
 
 function createThread(iter) {
 	var running = false,
-		timeout;
+		timeout,
+		time;
 
 	function start() {
 		if (running) {
 			return;
 		}
 		running = true;
+		time = Date.now();
 		next();
 	}
 
@@ -147,6 +124,9 @@ function createThread(iter) {
 	function stop() {
 		running = false;
 		clearTimeout(timeout);
+		if (config.generateLog) {
+			console.log("Thread stop. Elapsed " + (Date.now() - time) + "ms");
+		}
 	}
 
 	return {
@@ -199,7 +179,9 @@ var queIterer = function(){
 		var item = que[0].next();
 		if (item.done) {
 			que.shift();
-			que[0].IN_QUE = false;
+			if (que[0]) {
+				que[0].IN_QUE = false;
+			}
 		}
 		return {
 			value: item,
@@ -233,23 +215,14 @@ function loadConfig(){
 	config = GM_config.get();
 
 	var excludingTag = [
-		'a', 'code', 'head', 'noscript', 'option', 'script', 'style',
-		'title', 'textarea', "svg", "canvas", "button", "select", "template",
-		"meter", "progress", "math", "h1", "h2", "h3", "h4", "h5", "h6", "time"
+		'a', 'noscript', 'option', 'script', 'style', 'textarea', "svg", "canvas", "button", "select", "template", "meter", "progress", "math", "h1", "h2", "h3", "h4", "h5", "h6", "time"
 	];
 
-	var excludingClass = [
-		"highlight", "editbox", "code", "brush:", "bdsug", "spreadsheetinfo", "linkifyplus"
-	].concat(getArray(config.classBlackList));
-
-	var includingClass = [
-		"bbcode_code"
-	].concat(getArray(config.classWhiteList));
+	var excludingClass = getArray(config.classBlackList);
 
 	re = {
 		excludingTag: new RegExp("^(" + excludingTag.join("|") + ")$", "i"),
-		excludingClass: new RegExp("(^|\\s)(" + excludingClass.join("|") + ")($|\\s)"),
-		includingClass: new RegExp("(^|\\s)(" + includingClass.join("|") + ")($|\\s)")
+		excludingClass: new RegExp("(^|\\s)(" + excludingClass.join("|") + ")($|\\s)")
 	};
 }
 
@@ -355,7 +328,6 @@ function replaceRange(range, nodes) {
 			frag.appendChild(createLink(nodes[i].url, text));
 		}
 	}
-	subRange.detach();
 
 	// Replace range
 	range.deleteContents();
@@ -469,14 +441,6 @@ function linkifyTextNode(range) {
 	replaceRange(range, nodes);
 }
 
-function template(text, option) {
-	var key;
-	for (key in option) {
-		text = text.split("@" + key).join(option[key]);
-	}
-	return text;
-}
-
 function observeDocument(callback) {
 
 	callback(document.body);
@@ -512,7 +476,7 @@ function createTreeWalker(node) {
 		range.setEndAfter(current);
 		while (true) {
 			next = walker.nextNode();
-			if (current.nextSibling == next) {
+			if (next && current.nextSibling == next) {
 				range.setEndAfter(next);
 			} else {
 				return range;
@@ -539,10 +503,7 @@ function createTreeWalker(node) {
 
 var thread = createThread(queIterer);
 
-GM_addStyle(template(".embedme-image{max-width:100%}.embedme-video{max-width:@ytWidthpx}.embedme-video-wrap{position:relative;padding-top:30px;padding-bottom:@ytRatio%}.embedme-video-iframe{position:absolute;top:0;left:0;width:100%;height:100%}", {
-	ytWidth: config.ytWidth,
-	ytRatio: (config.ytHeight / config.ytWidth) * 100
-}));
+GM_addStyle(".embedme-image{max-width:100%}.embedme-video{max-width:@ytWidthpx}.embedme-video-wrap{position:relative;padding-top:30px;padding-bottom:@ytRatio%}.embedme-video-iframe{position:absolute;top:0;left:0;width:100%;height:100%}");
 
 GM_registerMenuCommand("Linkify Plus Plus - Configure", function(){
 	GM_config.open();

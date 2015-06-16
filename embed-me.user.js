@@ -87,3 +87,12 @@ var embedMe = function() {
 }();
 
 observeDocument(embedMe.embed);
+
+function template(text, option) {
+	var key;
+	for (key in option) {
+		text = text.split("@" + key).join(option[key]);
+	}
+	return text;
+}
+
