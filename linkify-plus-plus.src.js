@@ -71,7 +71,7 @@ function valid(node) {
 	if (re.excludingTag.test(node.nodeName)) {
 		return false;
 	}
-	if (re.excludingClass.test(className)) {
+	if (className && re.excludingClass.test(className)) {
 		return false;
 	}
 	if (node.contentEditable == "true" || node.contentEditable == "") {
