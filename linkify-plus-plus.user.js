@@ -15,7 +15,7 @@
 // @exclude     http://docs.google.*/*
 // @exclude     https://docs.google.*/*
 // @exclude     http://mxr.mozilla.org/*
-// @require https://greasyfork.org/scripts/7212-gm-config-eight-s-version/code/GM_config%20(eight's%20version).js?version=56964
+// @require     https://greasyfork.org/scripts/7212-gm-config-eight-s-version/code/GM_config%20(eight's%20version).js?version=57385
 // @grant       GM_addStyle
 // @grant       GM_registerMenuCommand
 // @grant       GM_getValue
