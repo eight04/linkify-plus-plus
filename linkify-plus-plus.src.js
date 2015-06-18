@@ -88,6 +88,9 @@ function valid(node) {
 	if (node.contentEditable == "true" || node.contentEditable == "") {
 		return false;
 	}
+	if (className && className.indexOf("linkifyplus") >= 0) {
+		return false;
+	}
 	return true;
 }
 
