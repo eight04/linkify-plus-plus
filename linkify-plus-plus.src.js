@@ -35,12 +35,17 @@ GM_config.init(
 			type: "checkbox",
 			default: true
 		},
-		tagBlackList: {
+		unidcode: {
+			label: "Allow non-ascii character",
+			type: "checkbox",
+			default: false
+		},
+		ignoreTags: {
 			label: "Do not linkify urls in these tags",
 			type: "textarea",
 			default: "a noscript option script style textarea svg canvas button select template meter progress math h1 h2 h3 h4 h5 h6 time code"
 		},
-		classBlackList: {
+		ignoreClasses: {
 			label: "Do not linkify urls in these classes",
 			type: "textarea",
 			default: "highlight editbox brush: bdsug spreadsheetinfo"
@@ -220,8 +225,8 @@ var queIterer = function(){
 function loadConfig(){
 	config = GM_config.get();
 
-	var excludingTag = getArray(config.tagBlackList),
-		excludingClass = getArray(config.classBlackList);
+	var excludingTag = getArray(config.ignoreTags),
+		excludingClass = getArray(config.ignoreClasses);
 
 	re = {
 		excludingTag: new RegExp("^(" + excludingTag.join("|") + ")$", "i"),
