@@ -5,76 +5,34 @@ module.exports = function(grunt) {
 	// Project configuration.
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
-		env: grunt.file.readJSON('env.json'),
 		watch: {
 			grunt: {
-				files: ["Gruntfile.js"]
+				files: ["Gruntfile.js"],
+				tasks: ["default"]
 			},
 			src: {
-				files: ["*.src.js", "*.css"],
-				tasks: ["build"]
+				files: ["src/*"],
+				tasks: ["replace"]
 			}
 		},
 		replace: {
-			css: {
+			js: {
 				options: {
-					patterns: [
-						{
-							match: /'|"/g,
-							replacement: "\\$0"
+					patterns: [{
+						match: /TLDS\.(\w+)/g,
+						replacement: function(match, name) {
+							return grunt.file.read("tlds/" + name + ".txt");
 						}
-					]
+					}],
+					usePrefix: false
 				},
 				files: {
-					"temp/style.css": "temp/style.css",
-					"temp/style-config.css": "temp/style-config.css"
+					"dist/linkify-plus-plus.user.js": "src/linkify-plus-plus.user.js"
 				}
-			},
-			includeCss: {
-				options: {
-					patterns: [
-
-					]
-				},
-				files: {
-					"temp/lpp.js": "linkify-plus-plus.src.js"
-				}
-			},
-			includeTlds: {
-				options: {
-					patterns: [
-						{
-							json: {
-								CSS: "<%= grunt.file.read('temp/style.css') %>",
-								TLD_SET: "<%= grunt.file.read('tld-set.txt') %>",
-								TLD_CHARS: "<%= grunt.file.read('tld-char-set.txt') %>",
-								TLD_LENGTH: "<%= grunt.file.read('tld-max-length.txt') %>"
-							}
-						}
-					],
-					prefix: "$REPLACE."
-				},
-				files: {
-					"linkify-plus-plus.user.js": "linkify-plus-plus.src.js"
-				}
-			}
-		},
-		clean: ["temp", "tlds"],
-		copy: {
-			dist: {
-				src: "linkify-plus-plus.user.js",
-				dest: "<%= env.GM_FOLDER %>\\Linkify_Plus_Plus\\Linkify_Plus_Plus.user.js"
-			}
-		},
-		cssmin: {
-			css: {
-				expand: true,
-				src: "*.css",
-				dest: "temp/"
 			}
 		},
 		curl: {
-			"tlds.txt": "http://ftp.isc.org/www/survey/reports/current/byname.txt"
+			"tlds/raw.txt": "http://ftp.isc.org/www/survey/reports/current/byname.txt"
 		}
 	});
 
@@ -87,11 +45,10 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-curl');
 
 	// Tasks
-	grunt.registerTask("default", ["curl", "build"]);
-	grunt.registerTask('build', ['tlds-parse', "cssmin", 'replace', 'clean', "copy"]);
-
+	grunt.registerTask("default", ["tlds", "replace"]);
+	grunt.registerTask('tlds', ['curl', 'tlds-parse']);
 	grunt.registerTask('tlds-parse', "Parse top level domains.", function(){
-		var text = grunt.file.read("tlds.txt");
+		var text = grunt.file.read("tlds/raw.txt");
 		var lines = text.split(/\r?\n/), line;
 
 		do {
@@ -118,7 +75,9 @@ module.exports = function(grunt) {
 		var newKey, charSet = {}, maxLength = 0;
 
 		function addChar(c) {
-			charSet[c] = true;
+			if (c.charCodeAt(0) >= 128) {
+				charSet[c] = true;
+			}
 		}
 
 		for (key in tlds) {
@@ -134,12 +93,12 @@ module.exports = function(grunt) {
 			}
 		}
 
-		grunt.file.write("tld-set.txt", JSON.stringify(tlds));
+		grunt.file.write("tlds/set.txt", JSON.stringify(tlds));
 
 		var chars = Object.keys(charSet);
-		grunt.file.write("tld-char-set.txt", chars.sort().join(""));
+		grunt.file.write("tlds/charSet.txt", chars.sort().join(""));
 
-		grunt.file.write("tld-max-length.txt", maxLength);
+		grunt.file.write("tlds/maxLength.txt", maxLength);
 
 	});
 };

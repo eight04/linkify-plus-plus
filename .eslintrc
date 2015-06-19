@@ -8,7 +8,7 @@
 		"GM_config": false,
 		"GM_addStyle": false,
 		"GM_registerMenuCommand": false,
-		"$REPLACE": false
+		"TLDS": false
 	},
 	"rules": {
 		"no-trailing-spaces": 0,
@@ -21,6 +21,7 @@
 		"no-mixed-spaces-and-tabs": 0,
 		"quotes": 0,
 		"no-use-before-define": [2, "nofunc"],
-		"no-shadow": 0
+		"no-shadow": 0,
+		"new-parens": 0
 	}
 }

@@ -25,17 +25,17 @@
 
 "use strict";
 
-var config, re;
+var config, re = {}, tlds = TLDS.set, selectors;
 
 GM_config.init(
 	"Linkify Plus Plus",
 	{
-		useImg: {
+		image: {
 			label: "Embed images",
 			type: "checkbox",
 			default: true
 		},
-		unidcode: {
+		unicode: {
 			label: "Allow non-ascii character",
 			type: "checkbox",
 			default: false
@@ -50,12 +50,17 @@ GM_config.init(
 			type: "textarea",
 			default: "highlight editbox brush: bdsug spreadsheetinfo"
 		},
-		generateLog: {
+		selectors: {
+			label: "Always linkify these elements. One CSS selector per line.",
+			type: "textarea",
+			default: ""
+		},
+		log: {
 			label: "Generate log",
 			type: "checkbox",
 			default: false
 		},
-		openInNewTab: {
+		newTab: {
 			label: "Open link in new tab",
 			type: "checkbox",
 			default: false
@@ -67,20 +72,44 @@ GM_config.onclose = loadConfig;
 
 loadConfig();
 
-// 1=protocol, 2=user, 3=domain, 4=port, 5=path, 6=angular source
-var urlRE = /\b([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.]+\.[$REPLACE.TLD_CHARS]{1, $REPLACE.TLD_LENGTH})\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#(),'\[\]]*)?|\{\{(.+?)\}\}/gi;
+function loadConfig(){
+	config = GM_config.get();
 
-var tlds = $REPLACE.TLD_SET;
+	selectors = config.selectors.trim().replace(/\n/, ", ");
+
+	var arr;
+
+	arr = getArray(config.ignoreTags);
+	if (arr) {
+		re.ignoreTags = new RegExp("^(" + arr.join("|") + ")$", "i");
+	} else {
+		re.ignoreTags = null;
+	}
+
+	arr = getArray(config.ignoreClasses);
+	if (arr) {
+		re.ignoreClasses = new RegExp("(^|\\s)(" + arr.join("|") + ")($|\\s)");
+	} else {
+		re.ignoreClasses = null;
+	}
+
+	// 1=protocol, 2=user, 3=domain, 4=port, 5=path, 6=angular source
+	if (config.unicode) {
+		re.url = /\b([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.\u00b7-\u2a6d6]+\.[a-z0-9-TLDS.charSet]{1,TLDS.maxLength})\b(:\d+)?([/?#]\S*)?|\{\{(.+?)\}\}/gi;
+	} else {
+		re.url = /\b([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.]+\.[a-z0-9-]{1,TLDS.maxLength})\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#(),'\[\]]*)?|\{\{(.+?)\}\}/gi;
+	}
+}
 
 function valid(node) {
 	var className = node.className;
 	if (typeof className == "object") {
 		className = className.baseVal;
 	}
-	if (re.excludingTag.test(node.nodeName)) {
+	if (re.ignoreTags && re.ignoreTags.test(node.nodeName)) {
 		return false;
 	}
-	if (className && re.excludingClass.test(className)) {
+	if (className && re.ignoreClasses && re.ignoreClasses.test(className)) {
 		return false;
 	}
 	if (node.contentEditable == "true" || node.contentEditable == "") {
@@ -136,7 +165,7 @@ function createThread(iter) {
 	function stop() {
 		running = false;
 		clearTimeout(timeout);
-		if (config.generateLog) {
+		if (config.log) {
 			console.log("Thread stop. Elapsed " + (Date.now() - time) + "ms");
 		}
 	}
@@ -223,22 +252,10 @@ var queIterer = function(){
 	};
 }();
 
-function loadConfig(){
-	config = GM_config.get();
-
-	var excludingTag = getArray(config.ignoreTags),
-		excludingClass = getArray(config.ignoreClasses);
-
-	re = {
-		excludingTag: new RegExp("^(" + excludingTag.join("|") + ")$", "i"),
-		excludingClass: new RegExp("(^|\\s)(" + excludingClass.join("|") + ")($|\\s)")
-	};
-}
-
 function getArray(s) {
 	s = s.trim();
 	if (!s) {
-		return [];
+		return null;
 	}
 	return s.split(/\s+/);
 }
@@ -256,39 +273,43 @@ function isIP(s) {
 	return true;
 }
 
-function stripSingleParenthesis(str) {
-	var i, pos, c = ")";
+function stripSingleSymbol(str, left, right) {
+//	var re = new RegExp("[\\" + left + "\\" + right + "]", "g");
+	var i, pos, c = right;
 	for (i = 0; i < str.length; i++) {
-		if (str[i] == "(") {
-			if (c != ")") {
+		if (str[i] == left) {
+			if (c != right) {
 				return str.substring(0, pos);
 			}
 			pos = i;
-			c = "(";
+			c = left;
 		}
-		if (str[i] == ")") {
-			if (c != "(") {
+		if (str[i] == right) {
+			if (c != left) {
 				return str.substring(0, i);
 			}
 			pos = i;
-			c = ")";
+			c = right;
 		}
 	}
-	if (c != ")") {
+	if (c != right) {
 		return str.substring(0, pos);
 	}
 	return str;
 }
 
-function createLink(url, text) {
-	var cont;
-
-	cont = document.createElement("a");
+function createLink(url, child) {
+	var cont = document.createElement("a");
 	cont.href = url;
-	if (config.openInNewTab) {
+	cont.title = "Linkify Plus Plus";
+	if (config.newTab) {
 		cont.target = "_blank";
 	}
-	cont.appendChild(text);
+	if (config.image && re.image.test(url)) {
+		child = new Image;
+		child.src = url;
+	}
+	cont.appendChild(child);
 	cont.className = "linkifyplus";
 
 	return cont;
@@ -351,7 +372,7 @@ function linkifyTextNode(range) {
 	var face, protocol, user, domain, port, path, angular;
 	var url, linkified = false;
 
-	while (m = urlRE.exec(txt)) {
+	while (m = re.url.exec(txt)) {
 		face = m[0];
 		protocol = m[1] || "";
 		user = m[2] || "";
@@ -363,7 +384,7 @@ function linkifyTextNode(range) {
 		// Skip angular source
 		if (angular) {
 			if (!unsafeWindow.angular) {
-				urlRE.lastIndex = m.index + 2;
+				re.url.lastIndex = m.index + 2;
 			}
 			continue;
 		}
@@ -393,8 +414,8 @@ function linkifyTextNode(range) {
 			path = path.replace(/[.,]*$/, '');
 
 			// Get the link without single parenthesis
-			face = stripSingleParenthesis(face);
-			path = stripSingleParenthesis(path);
+			face = stripSingleSymbol(face, "(", ")");
+			path = stripSingleSymbol(path, "(", ")");
 		}
 
 		// Guess protocol
@@ -422,8 +443,8 @@ function linkifyTextNode(range) {
 		// Create URL
 		url = protocol + (user && user + "@") + domain + port + path;
 
-		urlRE.lastIndex = m.index + face.length;
-		lastIndex = urlRE.lastIndex;
+		re.url.lastIndex = m.index + face.length;
+		lastIndex = re.url.lastIndex;
 
 		nodes.push({
 			start: m.index,
@@ -512,20 +533,24 @@ function createTreeWalker(node) {
 
 var thread = createThread(queIterer);
 
-GM_addStyle("$REPLACE.CSS");
-
 GM_registerMenuCommand("Linkify Plus Plus - Configure", function(){
 	GM_config.open();
 });
 
-observeDocument(function(node){
-	if (!validRoot(node)) {
-		return;
-	}
+function addToQue(node) {
 	if (!node.IN_QUE) {
 		queIterer.add(createTreeWalker(node));
 	} else if (!node.IS_LAST) {
 		queIterer.drop(node.WALKER);
+	}
+}
+
+observeDocument(function(node){
+	if (validRoot(node)) {
+		addToQue(node);
+	}
+	if (selectors) {
+		Array.prototype.forEach.call(node.querySelectorAll(selectors), addToQue);
 	}
 	thread.start();
 });
