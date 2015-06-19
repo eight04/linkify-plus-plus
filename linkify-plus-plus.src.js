@@ -68,11 +68,9 @@ GM_config.onclose = loadConfig;
 loadConfig();
 
 // 1=protocol, 2=user, 3=domain, 4=port, 5=path, 6=angular source
-var urlRE = /\b([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.]+\.[a-z0-9-]+)\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#(),]*)?|\{\{(.+?)\}\}/gi;
+var urlRE = /\b([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.]+\.[$REPLACE.TLD_CHARS]{1, $REPLACE.TLD_LENGTH})\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#(),'\[\]]*)?|\{\{(.+?)\}\}/gi;
 
-var tlds = {
-	// @@TLDS
-};
+var tlds = $REPLACE.TLD_SET;
 
 function valid(node) {
 	var className = node.className;
@@ -376,7 +374,7 @@ function linkifyTextNode(range) {
 		}
 
 		// valid IP address
-		if (!isIP(domain) && (mm = domain.match(/\.([a-z0-9-]+)$/i)) && !(mm[1].toUpperCase() in tlds)) {
+		if (!isIP(domain) && (mm = domain.match(/\.([a-z0-9-]+)$/i)) && !(mm[1].toLowerCase() in tlds)) {
 			continue;
 		}
 
@@ -514,7 +512,7 @@ function createTreeWalker(node) {
 
 var thread = createThread(queIterer);
 
-GM_addStyle("@@CSS");
+GM_addStyle("$REPLACE.CSS");
 
 GM_registerMenuCommand("Linkify Plus Plus - Configure", function(){
 	GM_config.open();

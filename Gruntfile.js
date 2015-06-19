@@ -8,7 +8,7 @@ module.exports = function(grunt) {
 		env: grunt.file.readJSON('env.json'),
 		watch: {
 			grunt: {
-				files: "Gruntfile.js"
+				files: ["Gruntfile.js"]
 			},
 			src: {
 				files: ["*.src.js", "*.css"],
@@ -33,14 +33,7 @@ module.exports = function(grunt) {
 			includeCss: {
 				options: {
 					patterns: [
-						{
-							match: "CSS",
-							replacement: "<%= grunt.file.read('temp/style.css') %>"
-						},
-						{
-							match: "CSS_CONFIG",
-							replacement: "<%= grunt.file.read('temp/style-config.css') %>"
-						}
+
 					]
 				},
 				files: {
@@ -51,14 +44,18 @@ module.exports = function(grunt) {
 				options: {
 					patterns: [
 						{
-							match: "TLDS",
-							replacement: "<%= grunt.file.read('tlds') %>"
+							json: {
+								CSS: "<%= grunt.file.read('temp/style.css') %>",
+								TLD_SET: "<%= grunt.file.read('tld-set.txt') %>",
+								TLD_CHARS: "<%= grunt.file.read('tld-char-set.txt') %>",
+								TLD_LENGTH: "<%= grunt.file.read('tld-max-length.txt') %>"
+							}
 						}
 					],
-					prefix: "// @@"
+					prefix: "$REPLACE."
 				},
 				files: {
-					"linkify-plus-plus.user.js": "temp/lpp.js"
+					"linkify-plus-plus.user.js": "linkify-plus-plus.src.js"
 				}
 			}
 		},
@@ -108,7 +105,7 @@ module.exports = function(grunt) {
 			if (!line[0]) {
 				return;
 			}
-			total += tlds[line[0].toUpperCase()] = +line[1];
+			total += tlds[line[0]] = +line[1];
 		});
 
 		var key;
@@ -116,8 +113,33 @@ module.exports = function(grunt) {
 			tlds[key] = Math.round(tlds[key] * 100 / total);
 		}
 
-		var str = JSON.stringify(tlds);
+		// Encode IDN TLDs, collect tld chars matching set.
+		var punycode = require("punycode");
+		var newKey, charSet = {}, maxLength = 0;
 
-		grunt.file.write("tlds", str.substring(1, str.length - 1));
+		function addChar(c) {
+			charSet[c] = true;
+		}
+
+		for (key in tlds) {
+			Array.prototype.forEach.call(key, addChar);
+			maxLength = key.length > maxLength ? key.length : maxLength;
+			if (key.indexOf("xn--") == 0) {
+				newKey = punycode.decode(key.substr(4));
+				Array.prototype.forEach.call(newKey, addChar);
+				newKey = newKey.toLowerCase();
+				Array.prototype.forEach.call(newKey, addChar);
+				tlds[newKey] = tlds[key];
+				maxLength = newKey.length > maxLength ? newKey.length : maxLength;
+			}
+		}
+
+		grunt.file.write("tld-set.txt", JSON.stringify(tlds));
+
+		var chars = Object.keys(charSet);
+		grunt.file.write("tld-char-set.txt", chars.sort().join(""));
+
+		grunt.file.write("tld-max-length.txt", maxLength);
+
 	});
 };

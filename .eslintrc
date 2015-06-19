@@ -7,7 +7,8 @@
 		"unsafeWindow": false,
 		"GM_config": false,
 		"GM_addStyle": false,
-		"GM_registerMenuCommand": false
+		"GM_registerMenuCommand": false,
+		"$REPLACE": false
 	},
 	"rules": {
 		"no-trailing-spaces": 0,
