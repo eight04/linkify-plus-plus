@@ -25,7 +25,12 @@
 
 "use strict";
 
-var config, re = {}, tlds = TLDS.set, selectors;
+var config,
+	re = {
+		image: /^[^?#]+\.(?:jpg|png|gif|jpeg)(?:$|[?#])/i
+	},
+	tlds = TLDS.set,
+	selectors;
 
 GM_config.init(
 	"Linkify Plus Plus",
@@ -274,9 +279,17 @@ function isIP(s) {
 }
 
 function stripSingleSymbol(str, left, right) {
-	var re = new RegExp("[\\" + left + "\\" + right + "]", "g"),
-		match, count = 0, end;
-	while ((match = re.exec(str))) {
+	var reStr = "[\\" + left + "\\" + right + "]",
+		reObj, match, count = 0, end;
+
+	// Cache regex
+	if (!(reStr in re)) {
+		re[reStr] = new RegExp(reStr, "g");
+	}
+	reObj = re[reStr];
+
+	// Match loop
+	while ((match = reObj.exec(str))) {
 		if (count % 2 == 0) {
 			end = match.index;
 			if (match[0] == right) {
@@ -289,10 +302,12 @@ function stripSingleSymbol(str, left, right) {
 		}
 		count++;
 	}
-	if (!match) {
-		end = str.length;
+
+	if (!match && count % 2 == 0) {
+		return str;
 	}
-	return str.substr(str, 0, end);
+
+	return str.substr(0, end);
 }
 
 function createLink(url, child) {
@@ -406,13 +421,17 @@ function linkifyTextNode(range) {
 		}
 
 		if (path) {
-			// get the link without trailing dots and comma
+			// Remove trailing dots and comma
 			face = face.replace(/[.,]*$/, '');
 			path = path.replace(/[.,]*$/, '');
 
-			// Get the link without single parenthesis
+			// Strip parens "()"
 			face = stripSingleSymbol(face, "(", ")");
 			path = stripSingleSymbol(path, "(", ")");
+
+			// Strip bracket "[]"
+			face = stripSingleSymbol(face, "[", "]");
+			path = stripSingleSymbol(path, "[", "]");
 		}
 
 		// Guess protocol
@@ -541,6 +560,8 @@ function addToQue(node) {
 		queIterer.drop(node.WALKER);
 	}
 }
+
+GM_addStyle(".linkifyplus img { max-width: 90%; }");
 
 observeDocument(function(node){
 	if (validRoot(node)) {
