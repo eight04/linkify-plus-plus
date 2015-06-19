@@ -144,20 +144,23 @@ var nodeFilter = {
 function createThread(iter) {
 	var running = false,
 		timeout,
-		time;
+		time,
+		chunks;
 
 	function start() {
 		if (running) {
 			return;
 		}
+		chunks = 0;
 		running = true;
 		time = Date.now();
 		next();
 	}
 
 	function next() {
+		chunks++;
 		var count = 0, done;
-		while (!(done = iter.next().done) && count < 50) {
+		while (!(done = iter.next().done) && count < 20) {
 			count++;
 		}
 		if (!done) {
@@ -171,7 +174,7 @@ function createThread(iter) {
 		running = false;
 		clearTimeout(timeout);
 		if (config.log) {
-			console.log("Thread stop. Elapsed " + (Date.now() - time) + "ms");
+			console.log("Thread stop. Elapsed " + (Date.now() - time) + "ms in " + chunks + " chunks.");
 		}
 	}
 
