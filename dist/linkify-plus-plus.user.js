@@ -274,28 +274,25 @@ function isIP(s) {
 }
 
 function stripSingleSymbol(str, left, right) {
-//	var re = new RegExp("[\\" + left + "\\" + right + "]", "g");
-	var i, pos, c = right;
-	for (i = 0; i < str.length; i++) {
-		if (str[i] == left) {
-			if (c != right) {
-				return str.substring(0, pos);
+	var re = new RegExp("[\\" + left + "\\" + right + "]", "g"),
+		match, count = 0, end;
+	while ((match = re.exec(str))) {
+		if (count % 2 == 0) {
+			end = match.index;
+			if (match[0] == right) {
+				break;
 			}
-			pos = i;
-			c = left;
-		}
-		if (str[i] == right) {
-			if (c != left) {
-				return str.substring(0, i);
+		} else {
+			if (match[0] == left) {
+				break;
 			}
-			pos = i;
-			c = right;
 		}
+		count++;
 	}
-	if (c != right) {
-		return str.substring(0, pos);
+	if (!match) {
+		end = str.length;
 	}
-	return str;
+	return str.substr(str, 0, end);
 }
 
 function createLink(url, child) {
