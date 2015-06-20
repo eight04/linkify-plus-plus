@@ -292,7 +292,7 @@ function isIP(s) {
 		return false;
 	}
 	for (i = 1; i < m.length; i++) {
-		if (m[i] * 1 > 255 || (m[i].length > 1 && m[i][0] == "0")) {
+		if (+m[i] > 255 || (m[i].length > 1 && m[i][0] == "0")) {
 			return false;
 		}
 	}
