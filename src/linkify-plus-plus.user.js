@@ -185,25 +185,33 @@ function createThread(iter) {
 }
 
 function validRoot(node) {
-	var cache = node;
-	while (node.parentNode != document.documentElement) {
-		if (node.IS_VALID) {
-			cache.IS_VALID = true;
-			return true;
+	if (node.VALID !== undefined) {
+		return node.VALID;
+	}
+	var cache = [], isValid;
+	while (node != document.documentElement) {
+		cache.push(node);
+		if (!valid(node)) {
+			isValid = false;
+			break;
 		}
-		// Check if the node is valid
-		if (node.INVALID || !valid(node)) {
-			cache.INVALID = true;
-			return false;
-		}
-		// The node was detached from DOM tree
 		if (!node.parentNode) {
 			return false;
 		}
 		node = node.parentNode;
+		if (node.VALID !== undefined) {
+			isValid = node.VALID;
+			break;
+		}
 	}
-	cache.IS_VALID = true;
-	return true;
+	if (isValid === undefined) {
+		isValid = true;
+	}
+	var i;
+	for (i = 0; i < cache.length; i++) {
+		cache[i].VALID = isValid;
+	}
+	return isValid;
 }
 
 var queIterer = function(){
