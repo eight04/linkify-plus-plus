@@ -218,16 +218,23 @@ var queIterer = function(){
 	var que = [];
 
 	function add(item) {
+		item.root.IS_LAST = true;
+		item.root.IN_QUE = true;
+		item.root.IS_FIRST = false;
+
 		if (que.length) {
-			que[que.length - 1].IS_LAST = false;
+			que[que.length - 1].root.IS_LAST = false;
 		}
-		item.IS_LAST = true;
-		item.IN_QUE = true;
+
+		if (!que.length) {
+			item.root.IS_FIRST = true;
+		}
+
 		que.push(item);
 	}
 
 	function next() {
-		if (!que[0]) {
+		if (!que.length) {
 			return {
 				value: undefined,
 				done: true
@@ -235,33 +242,36 @@ var queIterer = function(){
 		}
 		var item = que[0].next();
 		if (item.done) {
+			que[0].root.IN_QUE = false;
+			que[0].root.IS_LAST = false;
+			que[0].root.IS_FIRST = false;
 			que.shift();
-			if (que[0]) {
-				que[0].IN_QUE = false;
+			if (que.length) {
+				que[0].root.IS_FIRST = true;
 			}
+			return next();
 		}
-		return {
-			value: item,
-			done: false
-		};
+		return item;
 	}
 
-	function drop(item) {
-		var i;
-		for (i = 0; i < que.length; i++) {
-			if (que[i] == item) {
+	function drop(node) {
+		if (que.length < 2) {
+			return;
+		}
+		var i, item;
+		for (i = 1; i < que.length; i++) {
+			if (que[i].root == node) {
+				item = que[i];
+				que[que.length - 1].root.IS_LAST = false;
 				que.splice(i, 1);
-				que[que.length - 1].IS_LAST = false;
 				que.push(item);
-				item.IS_LAST = true;
-				item.IN_QUE = true;
+				item.root.IS_LAST = true;
 				break;
 			}
 		}
 	}
 
 	return {
-		que: que,
 		add: add,
 		drop: drop,
 		next: next
@@ -568,7 +578,7 @@ function addToQue(node) {
 	if (!node.IN_QUE) {
 		queIterer.add(createTreeWalker(node));
 	} else if (!node.IS_LAST) {
-		queIterer.drop(node.WALKER);
+		queIterer.drop(node);
 	}
 }
 
