@@ -575,7 +575,7 @@ GM_registerMenuCommand("Linkify Plus Plus - Configure", function(){
 });
 
 function addToQue(node) {
-	if (!node.IN_QUE) {
+	if (!node.IN_QUE || node.IS_FIRST) {
 		queIterer.add(createTreeWalker(node));
 	} else if (!node.IS_LAST) {
 		queIterer.drop(node);
