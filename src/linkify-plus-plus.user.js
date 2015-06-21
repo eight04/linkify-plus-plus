@@ -578,9 +578,7 @@ function addToQue(node) {
 
 var thread = createThread(queIterer);
 
-GM_registerMenuCommand("Linkify Plus Plus - Configure", function(){
-	GM_config.open();
-});
+GM_registerMenuCommand("Linkify Plus Plus - Configure", GM_config.open);
 
 GM_addStyle(".linkifyplus img { max-width: 90%; }");
 
