@@ -6,8 +6,9 @@ Features
 --------
 * Detect text url and convert them into links.
 * Support dynamic content.
-* Custom whitelist, blacklist according class name.
-* Embed youtube videos, images.
+* Support unicode characters.
+* Custom whitelist, blacklist.
+* Embed images.
 
 You can find the configuration from greasemonkey menu.
 ![Greasemonkey Menu](https://i.imgur.com/tOTr7ys.jpg)
@@ -18,17 +19,23 @@ Install
 
 Testcase
 --------
-<https://rawgit.com/eight04/linkify-plus-plus/master/testcase.html>
+<https://rawgit.com/eight04/linkify-plus-plus/master/demo/demo.html>
 
 Todos
 -----
-* Add options to match unicode characters in path part. (http://x.co/93ViW)
-* Cleanup TLDs. (http://x.co/93Vmt)
-* Embed more? (http://x.co/93Vp7)
-* `<wbr>` issue. (http://x.co/93VsB)
+Nothing to do here!
 
 Changelog
 ---------
+* Version 5.0.0 (Jun 21, 2015):
+	- Fix url regex: add valid characters `'[]`.
+	- Enhance traverser: use TreeWalker to parse DOM tree.
+	- Enhance white-list: use multiple CSS selectors to specify valid nodes.
+	- Enhance black-list: be able to remove built-in filter.
+	- Enhance stripSingleParens: support brackets.
+	- Add an option to use non-ascii characters in url.
+	- Remove embedding function. Use [Embed Me!](https://greasyfork.org/zh-TW/scripts/10481-embed-me) instead.
+	- Update GM_config to 2.0.2.
 * Version 4.0.1 (May 8, 2015):
 	- Fix SVGAnimatedString issue.
 * Version 4.0.0 (Apr 27, 2015):
