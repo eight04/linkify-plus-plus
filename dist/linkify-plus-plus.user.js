@@ -21,6 +21,9 @@
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       unsafeWindow
+// @compatible  firefox
+// @compatible  chrome
+// @compatible  opera
 // ==/UserScript==
 
 "use strict";
@@ -218,8 +221,11 @@ var queIterer = function(){
 	var que = [];
 
 	function add(item) {
+		if (item.root.IN_QUE === undefined) {
+			item.root.IN_QUE = 0;
+		}
 		item.root.IS_LAST = true;
-		item.root.IN_QUE = true;
+		item.root.IN_QUE++;
 		item.root.IS_FIRST = false;
 
 		if (que.length) {
@@ -242,7 +248,7 @@ var queIterer = function(){
 		}
 		var item = que[0].next();
 		if (item.done) {
-			que[0].root.IN_QUE = false;
+			que[0].root.IN_QUE--;
 			que[0].root.IS_LAST = false;
 			que[0].root.IS_FIRST = false;
 			que.shift();
