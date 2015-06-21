@@ -27,6 +27,9 @@ Nothing to do here!
 
 Changelog
 ---------
+* Version 5.0.1 (Jun 21, 2015):
+	- Add compatibility info.
+	- Fix IN_QUE counting bug.
 * Version 5.0.0 (Jun 21, 2015):
 	- Fix url regex: add valid characters `'[]`.
 	- Enhance traverser: use TreeWalker to parse DOM tree.
