@@ -8,7 +8,8 @@
 		"GM_config": false,
 		"GM_addStyle": false,
 		"GM_registerMenuCommand": false,
-		"TLDS": false
+		"TLDS": false,
+		"benchmark": false
 	},
 	"rules": {
 		"no-trailing-spaces": 0,
