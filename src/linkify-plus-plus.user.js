@@ -299,18 +299,23 @@ function isIP(s) {
 	return true;
 }
 
-function stripSingleSymbol(str, left, right) {
-	var reStr = "[\\" + left + "\\" + right + "]",
-		reObj, match, count = 0, end;
+var createRe = function(){
+	var pool = {};
 
-	// Cache regex
-	if (!(reStr in re)) {
-		re[reStr] = new RegExp(reStr, "g");
-	}
-	reObj = re[reStr];
+	return function (str, flags) {
+		if (!(str in pool)) {
+			pool[str] = new RegExp(str, flags);
+		}
+		return pool[str];
+	};
+}();
+
+function stripSingleSymbol(str, left, right) {
+	var re = createRe("[\\" + left + "\\" + right + "]", "g"),
+		match, count = 0, end;
 
 	// Match loop
-	while ((match = reObj.exec(str))) {
+	while ((match = re.exec(str))) {
 		if (count % 2 == 0) {
 			end = match.index;
 			if (match[0] == right) {
