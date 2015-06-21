@@ -408,7 +408,7 @@ function linkifyTextNode(range) {
 		nodes = [],
 		lastIndex = 0;
 	var face, protocol, user, domain, port, path, angular;
-	var url, linkified = false;
+	var url;
 
 	while (m = re.url.exec(txt)) {
 		face = m[0];
@@ -494,11 +494,9 @@ function linkifyTextNode(range) {
 			type: "anchor",
 			url: url
 		});
-
-		linkified = true;
 	}
 
-	if (!linkified) {
+	if (!nodes.length) {
 		return;
 	}
 
@@ -557,7 +555,8 @@ function createTreeWalker(node) {
 		}
 	}
 
-	node.WALKER = {
+	return {
+		root: node,
 		next: function() {
 			var range = nextRange();
 			if (range) {
@@ -569,8 +568,6 @@ function createTreeWalker(node) {
 			};
 		}
 	};
-
-	return node.WALKER;
 }
 
 var thread = createThread(queIterer);
