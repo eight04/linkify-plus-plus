@@ -543,16 +543,14 @@ function createTreeWalker(node) {
 		}
 		var range = document.createRange();
 		range.setStartBefore(current);
-		range.setEndAfter(current);
-		while (true) {
-			next = walker.nextNode();
-			if (next && current.nextSibling == next) {
-				range.setEndAfter(next);
-			} else {
-				return range;
+		while ((next = walker.nextNode())) {
+			if (!next || current.nextSibling != next) {
+				break;
 			}
 			current = next;
 		}
+		range.setEndAfter(current);
+		return range;
 	}
 
 	return {
