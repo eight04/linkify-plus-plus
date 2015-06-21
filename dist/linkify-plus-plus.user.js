@@ -185,41 +185,56 @@ function createThread(iter) {
 }
 
 function validRoot(node) {
-	var cache = node;
-	while (node.parentNode != document.documentElement) {
-		if (node.IS_VALID) {
-			cache.IS_VALID = true;
-			return true;
+	if (node.VALID !== undefined) {
+		return node.VALID;
+	}
+	var cache = [], isValid;
+	while (node != document.documentElement) {
+		cache.push(node);
+		if (!valid(node)) {
+			isValid = false;
+			break;
 		}
-		// Check if the node is valid
-		if (node.INVALID || !valid(node)) {
-			cache.INVALID = true;
-			return false;
-		}
-		// The node was detached from DOM tree
 		if (!node.parentNode) {
 			return false;
 		}
 		node = node.parentNode;
+		if (node.VALID !== undefined) {
+			isValid = node.VALID;
+			break;
+		}
 	}
-	cache.IS_VALID = true;
-	return true;
+	if (isValid === undefined) {
+		isValid = true;
+	}
+	var i;
+	for (i = 0; i < cache.length; i++) {
+		cache[i].VALID = isValid;
+	}
+	return isValid;
 }
 
 var queIterer = function(){
 	var que = [];
 
 	function add(item) {
+		item.root.IS_LAST = true;
+		item.root.IN_QUE = true;
+		item.root.IS_FIRST = false;
+
 		if (que.length) {
-			que[que.length - 1].IS_LAST = false;
+			que[que.length - 1].root.IS_LAST = false;
 		}
-		item.IS_LAST = true;
-		item.IN_QUE = true;
+
+		if (!que.length) {
+			item.root.IS_FIRST = true;
+		}
+
 		que.push(item);
 	}
 
 	function next() {
-		if (!que[0]) {
+		if (!que.length) {
 			return {
 				value: undefined,
 				done: true
@@ -227,33 +242,36 @@ var queIterer = function(){
 		}
 		var item = que[0].next();
 		if (item.done) {
+			que[0].root.IN_QUE = false;
+			que[0].root.IS_LAST = false;
+			que[0].root.IS_FIRST = false;
 			que.shift();
-			if (que[0]) {
-				que[0].IN_QUE = false;
+			if (que.length) {
+				que[0].root.IS_FIRST = true;
 			}
+			return next();
 		}
-		return {
-			value: item,
-			done: false
-		};
+		return item;
 	}
 
-	function drop(item) {
-		var i;
-		for (i = 0; i < que.length; i++) {
-			if (que[i] == item) {
+	function drop(node) {
+		if (que.length < 2) {
+			return;
+		}
+		var i, item;
+		for (i = 1; i < que.length; i++) {
+			if (que[i].root == node) {
+				item = que[i];
+				que[que.length - 1].root.IS_LAST = false;
 				que.splice(i, 1);
-				que[que.length - 1].IS_LAST = false;
 				que.push(item);
-				item.IS_LAST = true;
-				item.IN_QUE = true;
+				item.root.IS_LAST = true;
 				break;
 			}
 		}
 	}
 
 	return {
-		que: que,
 		add: add,
 		drop: drop,
 		next: next
@@ -274,25 +292,30 @@ function isIP(s) {
 		return false;
 	}
 	for (i = 1; i < m.length; i++) {
-		if (m[i] * 1 > 255 || (m[i].length > 1 && m[i][0] == "0")) {
+		if (+m[i] > 255 || (m[i].length > 1 && m[i][0] == "0")) {
 			return false;
 		}
 	}
 	return true;
 }
 
-function stripSingleSymbol(str, left, right) {
-	var reStr = "[\\" + left + "\\" + right + "]",
-		reObj, match, count = 0, end;
+var createRe = function(){
+	var pool = {};
 
-	// Cache regex
-	if (!(reStr in re)) {
-		re[reStr] = new RegExp(reStr, "g");
-	}
-	reObj = re[reStr];
+	return function (str, flags) {
+		if (!(str in pool)) {
+			pool[str] = new RegExp(str, flags);
+		}
+		return pool[str];
+	};
+}();
+
+function stripSingleSymbol(str, left, right) {
+	var re = createRe("[\\" + left + "\\" + right + "]", "g"),
+		match, count = 0, end;
 
 	// Match loop
-	while ((match = reObj.exec(str))) {
+	while ((match = re.exec(str))) {
 		if (count % 2 == 0) {
 			end = match.index;
 			if (match[0] == right) {
@@ -385,7 +408,7 @@ function linkifyTextNode(range) {
 		nodes = [],
 		lastIndex = 0;
 	var face, protocol, user, domain, port, path, angular;
-	var url, linkified = false;
+	var url;
 
 	while (m = re.url.exec(txt)) {
 		face = m[0];
@@ -471,11 +494,9 @@ function linkifyTextNode(range) {
 			type: "anchor",
 			url: url
 		});
-
-		linkified = true;
 	}
 
-	if (!linkified) {
+	if (!nodes.length) {
 		return;
 	}
 
@@ -534,7 +555,8 @@ function createTreeWalker(node) {
 		}
 	}
 
-	node.WALKER = {
+	return {
+		root: node,
 		next: function() {
 			var range = nextRange();
 			if (range) {
@@ -546,8 +568,14 @@ function createTreeWalker(node) {
 			};
 		}
 	};
+}
 
-	return node.WALKER;
+function addToQue(node) {
+	if (!node.IN_QUE || node.IS_FIRST) {
+		queIterer.add(createTreeWalker(node));
+	} else if (!node.IS_LAST) {
+		queIterer.drop(node);
+	}
 }
 
 var thread = createThread(queIterer);
@@ -555,14 +583,6 @@ var thread = createThread(queIterer);
 GM_registerMenuCommand("Linkify Plus Plus - Configure", function(){
 	GM_config.open();
 });
-
-function addToQue(node) {
-	if (!node.IN_QUE) {
-		queIterer.add(createTreeWalker(node));
-	} else if (!node.IS_LAST) {
-		queIterer.drop(node.WALKER);
-	}
-}
 
 GM_addStyle(".linkifyplus img { max-width: 90%; }");
 

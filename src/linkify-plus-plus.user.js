@@ -570,12 +570,6 @@ function createTreeWalker(node) {
 	};
 }
 
-var thread = createThread(queIterer);
-
-GM_registerMenuCommand("Linkify Plus Plus - Configure", function(){
-	GM_config.open();
-});
-
 function addToQue(node) {
 	if (!node.IN_QUE || node.IS_FIRST) {
 		queIterer.add(createTreeWalker(node));
@@ -583,6 +577,12 @@ function addToQue(node) {
 		queIterer.drop(node);
 	}
 }
+
+var thread = createThread(queIterer);
+
+GM_registerMenuCommand("Linkify Plus Plus - Configure", function(){
+	GM_config.open();
+});
 
 GM_addStyle(".linkifyplus img { max-width: 90%; }");
 
