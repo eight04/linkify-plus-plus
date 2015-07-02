@@ -63,11 +63,6 @@ GM_config.init(
 			type: "textarea",
 			default: ""
 		},
-		log: {
-			label: "Generate log",
-			type: "checkbox",
-			default: false
-		},
 		newTab: {
 			label: "Open link in new tab",
 			type: "checkbox",
@@ -144,10 +139,9 @@ var nodeFilter = {
 	}
 };
 
-function createThread(iter) {
+function createThread(iter, callback) {
 	var running = false,
 		timeout,
-		time,
 		chunks;
 
 	function start() {
@@ -156,7 +150,6 @@ function createThread(iter) {
 		}
 		chunks = 0;
 		running = true;
-		time = Date.now();
 		next();
 	}
 
@@ -176,8 +169,8 @@ function createThread(iter) {
 	function stop() {
 		running = false;
 		clearTimeout(timeout);
-		if (config.log) {
-			console.log("Thread stop. Elapsed " + (Date.now() - time) + "ms in " + chunks + " chunks.");
+		if (callback) {
+			callback();
 		}
 	}
 
@@ -312,6 +305,8 @@ var createRe = function(){
 		if (!(str in pool)) {
 			pool[str] = new RegExp(str, flags);
 		}
+		// Reset RE
+		pool[str].lastIndex = 0;
 		return pool[str];
 	};
 }();
@@ -564,26 +559,14 @@ function addToQue(node) {
 	}
 }
 
-function* mutationGenNode(mutations) {
+function* mutationGen(mutations) {
 	// Generate nodes
-	var i, j;
+	var i;
 	for (i = 0; i < mutations.length; i++) {
-		for (j = 0; j < mutations[i].addedNodes.length; j++) {
-			yield mutations[i].addedNodes[j];
+		if (mutations[i].addedNodes.length) {
+			yield processNode(mutations[i].target);
 		}
 	}
-}
-
-function* nodeGenRoot(nodeIter) {
-
-}
-
-function* rootGenWalker(nodeIter) {
-
-}
-
-function* walkerGenRange(nodeIter) {
-	
 }
 
 function processNode(node) {
@@ -602,12 +585,11 @@ GM_registerMenuCommand("Linkify Plus Plus - Configure", GM_config.open);
 GM_addStyle(".linkifyplus img { max-width: 90%; }");
 
 new MutationObserver(function(mutations){
-	walkerGen(mutationGen(mutations));
+	createThread(mutationGen(mutations), thread.start).start();
 }).observe(document.body, {
 	childList: true,
 	subtree: true
 });
 
 processNode(document.body);
-
 thread.start();
