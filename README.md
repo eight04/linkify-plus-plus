@@ -27,6 +27,8 @@ Nothing to do here!
 
 Changelog
 ---------
+* Version 6.0.1 (Jul 3, 2015):
+	- Add alt attribute to image.
 * Version 6.0.0 (Jul 3, 2015):
 	- Enhance: use ES6 generator.
 	- Fix hanging bug in observer.
