@@ -27,6 +27,11 @@ Nothing to do here!
 
 Changelog
 ---------
+* Version 6.0.0 (Jul 3, 2015):
+	- Enhance: use ES6 generator.
+	- Fix hanging bug in observer.
+	- Fix lastIndex issue in createRE.
+	- Remove config.log.
 * Version 5.0.1 (Jun 21, 2015):
 	- Add compatibility info.
 	- Fix IN_QUE counting bug.
