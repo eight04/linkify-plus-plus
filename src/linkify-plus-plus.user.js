@@ -211,68 +211,41 @@ function validRoot(node) {
 }
 
 var queIterer = function(){
-	var que = [];
+	var que = [], walker;
 
-	function add(item) {
-		if (item.root.IN_QUE === undefined) {
-			item.root.IN_QUE = 0;
-		}
-		item.root.IS_LAST = true;
-		item.root.IN_QUE++;
-		item.root.IS_FIRST = false;
-
-		if (que.length) {
-			que[que.length - 1].root.IS_LAST = false;
+	function add(node) {
+		if (node.QUE_COUNT === undefined) {
+			node.QUE_COUNT = 0;
 		}
 
-		if (!que.length) {
-			item.root.IS_FIRST = true;
-		}
-
-		que.push(item);
+		node.QUE_COUNT++;
+		que.push(node);
 	}
 
 	function next() {
-		if (!que.length) {
-			return {
-				value: undefined,
-				done: true
-			};
-		}
-		var item = que[0].next();
-		if (item.done) {
-			que[0].root.IN_QUE--;
-			que[0].root.IS_LAST = false;
-			que[0].root.IS_FIRST = false;
-			que.shift();
-			if (que.length) {
-				que[0].root.IS_FIRST = true;
+		if (!walker) {
+			var node = que.shift();
+			if (!node) {
+				return {
+					done: true
+				};
 			}
+			node.QUE_COUNT--;
+			if (node.QUE_COUNT > 0) {
+				return next();
+			}
+			walker = createTreeWalker(node);
+		}
+		var item = walker.next();
+		if (item.done) {
+			walker = null;
 			return next();
 		}
 		return item;
 	}
 
-	function drop(node) {
-		if (que.length < 2) {
-			return;
-		}
-		var i, item;
-		for (i = 1; i < que.length; i++) {
-			if (que[i].root == node) {
-				item = que[i];
-				que[que.length - 1].root.IS_LAST = false;
-				que.splice(i, 1);
-				que.push(item);
-				item.root.IS_LAST = true;
-				break;
-			}
-		}
-	}
-
 	return {
 		add: add,
-		drop: drop,
 		next: next
 	};
 }();
@@ -537,7 +510,6 @@ function createTreeWalker(node) {
 	}
 
 	return {
-		root: node,
 		next: function() {
 			var range = nextRange();
 			if (range) {
@@ -551,13 +523,9 @@ function createTreeWalker(node) {
 	};
 }
 
-function addToQue(node) {
-	if (!node.IN_QUE || node.IS_FIRST) {
-		queIterer.add(createTreeWalker(node));
-	} else if (!node.IS_LAST) {
-		queIterer.drop(node);
-	}
-}
+//function addToQue(node) {
+//	queIterer.add(createTreeWalker(node));
+//}
 
 function* mutationGen(mutations) {
 	// Generate nodes
@@ -571,10 +539,12 @@ function* mutationGen(mutations) {
 
 function processNode(node) {
 	if (validRoot(node)) {
-		addToQue(node);
+//		addToQue(node);
+		queIterer.add(node);
 	}
 	if (selectors) {
-		Array.prototype.forEach.call(node.querySelectorAll(selectors), addToQue);
+//		Array.prototype.forEach.call(node.querySelectorAll(selectors), addToQue);
+		Array.prototype.forEach.call(node.querySelectorAll(selectors), queIterer.add);
 	}
 }
 
