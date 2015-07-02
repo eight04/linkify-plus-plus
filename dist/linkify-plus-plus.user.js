@@ -517,24 +517,6 @@ function linkifyTextNode(range) {
 	replaceRange(range, nodes);
 }
 
-function observeDocument(callback) {
-
-	callback(document.body);
-
-	new MutationObserver(function(mutations){
-		var i;
-		for (i = 0; i < mutations.length; i++) {
-			if (!mutations[i].addedNodes.length) {
-				continue;
-			}
-			callback(mutations[i].target);
-		}
-	}).observe(document.body, {
-		childList: true,
-		subtree: true
-	});
-}
-
 function createTreeWalker(node) {
 	var walker = document.createTreeWalker(
 		node,
@@ -582,18 +564,50 @@ function addToQue(node) {
 	}
 }
 
-var thread = createThread(queIterer);
+function* mutationGenNode(mutations) {
+	// Generate nodes
+	var i, j;
+	for (i = 0; i < mutations.length; i++) {
+		for (j = 0; j < mutations[i].addedNodes.length; j++) {
+			yield mutations[i].addedNodes[j];
+		}
+	}
+}
 
-GM_registerMenuCommand("Linkify Plus Plus - Configure", GM_config.open);
+function* nodeGenRoot(nodeIter) {
 
-GM_addStyle(".linkifyplus img { max-width: 90%; }");
+}
 
-observeDocument(function(node){
+function* rootGenWalker(nodeIter) {
+
+}
+
+function* walkerGenRange(nodeIter) {
+	
+}
+
+function processNode(node) {
 	if (validRoot(node)) {
 		addToQue(node);
 	}
 	if (selectors) {
 		Array.prototype.forEach.call(node.querySelectorAll(selectors), addToQue);
 	}
-	thread.start();
+}
+
+var thread = createThread(queIterer);
+
+GM_registerMenuCommand("Linkify Plus Plus - Configure", GM_config.open);
+
+GM_addStyle(".linkifyplus img { max-width: 90%; }");
+
+new MutationObserver(function(mutations){
+	walkerGen(mutationGen(mutations));
+}).observe(document.body, {
+	childList: true,
+	subtree: true
 });
+
+processNode(document.body);
+
+thread.start();
