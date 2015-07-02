@@ -305,6 +305,7 @@ function createLink(url, child) {
 	if (config.image && re.image.test(url)) {
 		child = new Image;
 		child.src = url;
+		child.alt = url;
 	}
 	cont.appendChild(child);
 	cont.className = "linkifyplus";
