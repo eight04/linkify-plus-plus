@@ -8,6 +8,7 @@
 		"GM_config": false,
 		"GM_addStyle": false,
 		"GM_registerMenuCommand": false,
+		"GM_info": false,
 		"TLDS": false,
 		"benchmark": false
 	},

@@ -35,45 +35,44 @@ var config,
 	tlds = TLDS.set,
 	selectors;
 
-GM_config.init(
-	"Linkify Plus Plus",
-	{
-		image: {
-			label: "Embed images",
-			type: "checkbox",
-			default: true
-		},
-		unicode: {
-			label: "Allow non-ascii character",
-			type: "checkbox",
-			default: false
-		},
-		ignoreTags: {
-			label: "Do not linkify urls in these tags",
-			type: "textarea",
-			default: "a noscript option script style textarea svg canvas button select template meter progress math h1 h2 h3 h4 h5 h6 time code"
-		},
-		ignoreClasses: {
-			label: "Do not linkify urls in these classes",
-			type: "textarea",
-			default: "highlight editbox brush: bdsug spreadsheetinfo"
-		},
-		selectors: {
-			label: "Always linkify these elements. One CSS selector per line.",
-			type: "textarea",
-			default: ""
-		},
-		newTab: {
-			label: "Open link in new tab",
-			type: "checkbox",
-			default: false
-		}
+initConfig({
+	image: {
+		label: "Embed images",
+		type: "checkbox",
+		default: true
+	},
+	unicode: {
+		label: "Allow non-ascii character",
+		type: "checkbox",
+		default: false
+	},
+	ignoreTags: {
+		label: "Do not linkify urls in these tags",
+		type: "textarea",
+		default: "a noscript option script style textarea svg canvas button select template meter progress math h1 h2 h3 h4 h5 h6 time code"
+	},
+	ignoreClasses: {
+		label: "Do not linkify urls in these classes",
+		type: "textarea",
+		default: "highlight editbox brush: bdsug spreadsheetinfo"
+	},
+	selectors: {
+		label: "Always linkify these elements. One CSS selector per line.",
+		type: "textarea",
+		default: ""
+	},
+	newTab: {
+		label: "Open link in new tab",
+		type: "checkbox",
+		default: false
 	}
-);
+});
 
-GM_config.onclose = loadConfig;
-
-loadConfig();
+function initConfig(options) {
+	GM_config.init(GM_info.script.name, options);
+	GM_config.onclose = loadConfig;
+	loadConfig();
+}
 
 function loadConfig(){
 	config = GM_config.get();
@@ -139,7 +138,7 @@ var nodeFilter = {
 	}
 };
 
-function createThread(iter, callback) {
+function createThread(iter, done) {
 	var running = false,
 		timeout,
 		chunks;
@@ -169,8 +168,8 @@ function createThread(iter, callback) {
 	function stop() {
 		running = false;
 		clearTimeout(timeout);
-		if (callback) {
-			callback();
+		if (done) {
+			done();
 		}
 	}
 
