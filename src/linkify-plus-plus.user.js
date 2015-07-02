@@ -149,7 +149,7 @@ function createThread(iter, done) {
 		}
 		chunks = 0;
 		running = true;
-		next();
+		timeout = setTimeout(next);
 	}
 
 	function next() {
@@ -522,10 +522,6 @@ function createTreeWalker(node) {
 	};
 }
 
-//function addToQue(node) {
-//	queIterer.add(createTreeWalker(node));
-//}
-
 function* mutationGen(mutations) {
 	// Generate nodes
 	var i;
@@ -538,11 +534,9 @@ function* mutationGen(mutations) {
 
 function processNode(node) {
 	if (validRoot(node)) {
-//		addToQue(node);
 		queIterer.add(node);
 	}
 	if (selectors) {
-//		Array.prototype.forEach.call(node.querySelectorAll(selectors), addToQue);
 		Array.prototype.forEach.call(node.querySelectorAll(selectors), queIterer.add);
 	}
 }
