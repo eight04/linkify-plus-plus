@@ -418,6 +418,10 @@ function linkifyTextNode(range) {
 			// Strip bracket "[]"
 			face = stripSingleSymbol(face, "[", "]");
 			path = stripSingleSymbol(path, "[", "]");
+
+			// Strip BBCode
+			face = face.replace(/\[\/?(b|i|u|url|img|quote|code|size|color)\].*/i);
+			path = path.replace(/\[\/?(b|i|u|url|img|quote|code|size|color)\].*/i);
 		}
 
 		// Guess protocol
