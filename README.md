@@ -27,6 +27,9 @@ Nothing to do here!
 
 Changelog
 ---------
+* Version 6.1.0 (Jul 14, 2015):
+	- Enhance: strip BBCode.
+	- Enhance: strip trailing question mark.
 * Version 6.0.1 (Jul 3, 2015):
 	- Add alt attribute to image.
 * Version 6.0.0 (Jul 3, 2015):

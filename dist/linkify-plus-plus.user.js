@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     6.0.1
+// @version     6.1.0
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -407,9 +407,9 @@ function linkifyTextNode(range) {
 		}
 
 		if (path) {
-			// Remove trailing dots and comma
-			face = face.replace(/[.,]*$/, '');
-			path = path.replace(/[.,]*$/, '');
+			// Remove trailing ".,?"
+			face = face.replace(/[.,?]*$/, '');
+			path = path.replace(/[.,?]*$/, '');
 
 			// Strip parens "()"
 			face = stripSingleSymbol(face, "(", ")");
@@ -418,6 +418,10 @@ function linkifyTextNode(range) {
 			// Strip bracket "[]"
 			face = stripSingleSymbol(face, "[", "]");
 			path = stripSingleSymbol(path, "[", "]");
+
+			// Strip BBCode
+			face = face.replace(/\[\/?(b|i|u|url|img|quote|code|size|color)\].*/i, "");
+			path = path.replace(/\[\/?(b|i|u|url|img|quote|code|size|color)\].*/i, "");
 		}
 
 		// Guess protocol
