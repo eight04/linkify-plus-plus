@@ -407,9 +407,9 @@ function linkifyTextNode(range) {
 		}
 
 		if (path) {
-			// Remove trailing dots and comma
-			face = face.replace(/[.,]*$/, '');
-			path = path.replace(/[.,]*$/, '');
+			// Remove trailing ".,?"
+			face = face.replace(/[.,?]*$/, '');
+			path = path.replace(/[.,?]*$/, '');
 
 			// Strip parens "()"
 			face = stripSingleSymbol(face, "(", ")");
