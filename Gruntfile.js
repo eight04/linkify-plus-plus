@@ -34,7 +34,7 @@ module.exports = function(grunt) {
 			}
 		},
 		curl: {
-			"tlds/raw.txt": "http://ftp.isc.org/www/survey/reports/current/byname.txt"
+			"tlds/raw.txt": "http://data.iana.org/TLD/tlds-alpha-by-domain.txt"
 		}
 	});
 
@@ -50,55 +50,44 @@ module.exports = function(grunt) {
 	grunt.registerTask("default", ["tlds", "replace"]);
 	grunt.registerTask('tlds', ['curl', 'tlds-parse']);
 	grunt.registerTask('tlds-parse', "Parse top level domains.", function(){
-		var text = grunt.file.read("tlds/raw.txt");
-		var lines = text.split(/\r?\n/), line;
+		// Parse raw data
+		var raw = grunt.file.read("tlds/raw.txt"),
+			tlds = raw.match(/^[\w-]+$/gm).map(function(tld){
+				return tld.toLowerCase();
+			});
 
-		do {
-			line = lines.shift();
-		} while (!/^TOTAL/.test(line));
+		// Decode punycode
+		var punycode = require("punycode");
+		tlds = tlds.concat(tlds.filter(function(tld){
+			return tld.lastIndexOf("xn--", 0) == 0;
+		}).map(function(tld){
+			return punycode.decode(tld.substr(4));
+		}));
 
-		var tlds = {}, total = 0;
-		lines.forEach(function(line){
-			line = line.trim();
-			line = line.split(/\s+/);
-			if (!line[0]) {
-				return;
-			}
-			total += tlds[line[0]] = +line[1];
+		// Get max length
+		var maxLength = tlds.reduce(function(len, tld){
+			return len > tld.length ? len : tld.length;
+		}, 0);
+
+		// Collect unicode character set
+		var charSet = {};
+		tlds.forEach(function(tld){
+			Array.prototype.forEach.call(tld, function(char){
+				if (char.charCodeAt(0) >= 128) {
+					charSet[char] = true;
+				}
+			});
 		});
 
-		var key;
-		for (key in tlds) {
-			tlds[key] = Math.round(tlds[key] * 100 / total);
-		}
+		// Create tld set
+		var tldSet = {};
+		tlds.forEach(function(tld){
+			tldSet[tld] = true;
+		});
 
-		// Encode IDN TLDs, collect tld chars matching set.
-		var punycode = require("punycode");
-		var newKey, charSet = {}, maxLength = 0;
+		grunt.file.write("tlds/set.txt", JSON.stringify(tldSet));
 
-		function addChar(c) {
-			if (c.charCodeAt(0) >= 128) {
-				charSet[c] = true;
-			}
-		}
-
-		for (key in tlds) {
-			Array.prototype.forEach.call(key, addChar);
-			maxLength = key.length > maxLength ? key.length : maxLength;
-			if (key.indexOf("xn--") == 0) {
-				newKey = punycode.decode(key.substr(4));
-				Array.prototype.forEach.call(newKey, addChar);
-				newKey = newKey.toLowerCase();
-				Array.prototype.forEach.call(newKey, addChar);
-				tlds[newKey] = tlds[key];
-				maxLength = newKey.length > maxLength ? newKey.length : maxLength;
-			}
-		}
-
-		grunt.file.write("tlds/set.txt", JSON.stringify(tlds));
-
-		var chars = Object.keys(charSet);
-		grunt.file.write("tlds/charSet.txt", chars.sort().join(""));
+		grunt.file.write("tlds/charSet.txt", Object.keys(charSet).join(""));
 
 		grunt.file.write("tlds/maxLength.txt", maxLength);
 
