@@ -27,6 +27,8 @@ Nothing to do here!
 
 Changelog
 ---------
+* Version 6.2.0 (Sep 5, 2015):
+	- Use newest TLDs.
 * Version 6.1.0 (Jul 14, 2015):
 	- Enhance: strip BBCode.
 	- Enhance: strip trailing question mark.

@@ -1,593 +1,1057 @@
-Domain                 Hosts =     All   -    Dup     Level 2    Level 3
-                                  Hosts      Names    Domains    Domains
-
-TOTAL             1012706608 1089598953   76892345    4929189  134724852
-
- ac                     3335       3433         98        240       2417    Ascension Island
- academy                  31         32          1         27         15
- active                    4          4          0          1          4
- ad                    28861      28889         28        186      28666    Andorra
- ae                   368959     369589        630       1792       3249    United Arab Emirates
- aero                   3446       3684        238        553       3264    Air-transport industry
- af                      327        429        102         44        235    Afghanistan
- ag                    11185      13172       1987        523      10094    Antigua And Barbuda
- agency                   54         57          3         39         31
- ai                      274        301         27        145        161    Anguilla
- al                     9556      19475       9919        214       1874    Albania
- alsace                    4          4          0          1          3
- am                   193937     206840      12903        715      76617    Armenia
- an                   110239     110327         88         88       7393    Netherlands Antilles
- ao                    37527      37604         77         63        504    Angola
- aq                     7739       7742          3         15         60    Antarctica
- ar                 15009212   15248399     239187         42      14330    Argentina
- archi                     1          1          0          1          1
- army                      2          3          1          2          0
- arpa                3404792    4550498    1145706         25      13232    Mistakes
- as                     3526       3666        140        453       3037    American Samoa
- asia                   3581       3831        250       1180       2851    Asia
- associates                3          3          0          3          3
- at                  3630078    3664730      34652      26985     372672    Austria
- au                 16141810   16269704     127894         75      95636    Australia
- auction                   1          1          0          1          0
- audio                     3          3          0          3          1
- autos                     4          4          0          1          4
- aw                    39643      39654         11         44      37611    Aruba
- ax                     4668       4672          4         98       4262
- axa                       6          6          0          1          1
- az                    46468      48014       1546        781      38654    Azerbaijan
- ba                   159898     162162       2264        413      20149    Bosnia And Herzegowina
- bar                       4          7          3          4          0
- bargains                  1          1          0          1          0
- bayern                   19         20          1         13         13
- bb                     1540       1616         76         75       1449    Barbados
- bd                   130008     147276      17268          8      39695    Bangladesh
- be                  5383214    5415900      32686      21533     169820    Belgium
- beer                     13         13          0         10          3
- berlin                   44         45          1         27         30
- best                     12         12          0          7          3
- bf                     2090       2112         22         27         80    Burkina Faso
- bg                   885101    1010777     125676       2410     674627    Bulgaria
- bh                    28187      28711        524         80        412    Bahrain
- bi                      238        254         16         54         99    Burundi
- bid                      11         12          1          6          2
- bike                     12         12          0         12          4
- bio                       3          3          0          3          0
- biz                  279719     299340      19621      30437     166542    Businesses
- bj                     1952       1966         14         36       1947    Benin
- black                    13         13          0          9          8
- blackfriday               1          1          0          1          0
- blue                     45         46          1         33         23
- bm                    20458      28189       7731        591       5440    Bermuda
- bn                    50835      54572       3737         15       2166    Brunei Darussalam
- bnpparibas                4          4          0          1          4
- bo                   343314     345232       1918         74     149967    Bolivia
- boutique                 14         14          0         14          6
- br                 43920127   44571390     651263        565     252374    Brazil
- brussels                  7          7          0          3          4
- bs                      603        683         80         66        222    Bahamas
- bt                    12892      13185        293         31       1304    Bhutan
- budapest                  4          4          0          1          1
- build                     6          6          0          6          4
- builders                  1          1          0          1          0
- business                  2          2          0          2          1
- buzz                     16         17          1         10          5
- bv                        6          6          0          1          1    Bouvet Island
- bw                     4229       4353        124         65        852    Botswana
- by                   320634     332909      12275       1755      87415    Belarus
- bz                     4134       4343        209       1169       2699    Belize
- bzh                       8          8          0          5          6
- ca                  9364599    9759592     394993      38371    1200509    Canada
- cab                       8          8          0          8          2
- camera                    5          5          0          5          0
- camp                    572        572          0         18         54
- capetown                  1          1          0          1          0
- capital                   2          5          3          2          1
- caravan                   6          6          0          1          1
- cards                     6          6          0          6          3
- care                     27         29          2         13         21
- careers                   5          5          0          5          3
- casa                      4          4          0          1          1
- cash                      7          7          0          5          5
- cat                   11146      11402        256        847      10214    Catalan community
- catering                  1          1          0          1          0
- cc                    44206      53785       9579       5691      29213    Cocos (Keeling) Islands
- cd                     2300       2323         23        114       1511    Congo (Democratic Republic)
- center                  129        132          3         55         65
- ceo                      10         10          0          5          4
- cern                      4          4          0          1          4
- cf                      361        383         22        326        132    Central African Republic
- cg                       25         26          1         11         21    Congo (Republic)
- ch                  5201309    5318294     116985      29578    1340521    Switzerland
- channel                   1          1          0          1          0
- christmas                 1          2          1          1          1
- church                   13         13          0          8          2
- ci                    67177      67973        796        238      16755    Cote D'Ivoire
- city                     16         16          0         10         10
- ck                     3674       3695         21         11          9    Cook Islands
- cl                  3380700    3467658      86958      10646      62492    Chile
- click                    46         46          0         45         20
- clinic                    2          2          0          2          0
- clothing                  7         10          3          7          2
- club                   1785       1897        112        412       1584
- cm                    24244      24529        285        126      24199    Cameroon
- cn                 20647046   22479302    1832256       6726      16991    China
- co                  5640252    6018184     377932       6341      30241    Colombia
- codes                    35         35          0         35          6
- coffee                   23         23          0         22         13
- cologne                   1          1          0          1          1
- com               133840276  168407822   34567546    2866805   24717815    Commercial
- community                12         12          0         11          2
- company                  80         98         18         60         55
- computer                 21         21          0         21          4
- condos                    1          1          0          1          1
- construction              1          1          0          1          0
- consulting                9          9          0          9          3
- contractors               1          1          0          1          1
- cooking                   6          6          0          3          2
- cool                     25         25          0         22         15
- coop                  21347      21629        282        776      18836    Cooperatives
- country                   5          5          0          2          1
- cr                   195706     197810       2104        219       1114    Costa Rica
- credit                    2          2          0          1          2
- creditcard                1          2          1          1          1
- cu                     4703      14438       9735        316       1846    Cuba
- cv                    15026      15032          6         38         47    Cape Verde
- cw                    30963      30971          8         29      30729
- cx                     2736       3130        394        633       2366    Christmas Island
- cy                   264583     267065       2482          8        783    Cyprus
- cymru                     2          2          0          1          2
- cz                  3600924    3641563      40639      25877    1081547    Czech Republic
- dance                     6          6          0          6          2
- dating                    3          3          0          3          0
- day                       1         10          9          1          1
- de                 39324363   39513242     188879     181206    2789344    Germany
- deals                     4          4          0          4          2
- dental                    1          1          0          1          0
- desi                      5          5          0          2          4
- diamonds                  3          3          0          3          2
- diet                      6          6          0          1          1
- digital                  14         17          3         13          6
- direct                    6          6          0          3          5
- directory                20         21          1         17          9
- discount                  1          1          0          1          1
- dj                      187        201         14        101        147    Djibouti
- dk                  2438330    2478167      39837      17295     148317    Denmark
- dm                     1771       2016        245         31       1739    Dominica
- do                   601424     641151      39727        220        719    Dominican Republic
- domains                  31         32          1         26         21
- dz                      794       7356       6562        175        646    Algeria
- ec                   330116     331898       1782       2573      42208    Ecuador
- edu                12088163   12527677     439514       9605    3795144    Educational
- education                22         22          0         21         10
- ee                   750544     753699       3155       2735     100222    Estonia
- eg                  2962340    2972493      10153         29        899    Egypt
- email                   673        701         28        203        522
- engineer                  2          2          0          1          1
- engineering              12         12          0         10          6
- enterprises              17         17          0         11          8
- equipment                38         38          0         18         21
- er                      404        613        209          5         57    Eritrea
- es                  4279761    4418368     138607      13266     538974    Spain
- estate                   22         30          8         18         12
- et                      203        213         10         16        139    Ethiopia
- eu                   354654     395161      40507      25376     172201    European Union
- eus                      12         12          0          3         11
- events                    8          9          1          8          4
- exchange                778        778          0          8          5
- expert                   28         28          0         25         15
- exposed                   4          4          0          4          2
- fail                     12         12          0         11          6
- farm                     28         29          1         15         20
- feedback                  2          2          0          2          1
- fi                  4525416    4555381      29965      14727    2023213    Finland
- fish                      5          5          0          5          4
- fishing                   5          5          0          2          1
- fitness                   7          7          0          4          5
- fj                    22654      22728         74          7        260    Fiji
- fk                      508        510          2          5         12    Falkland Islands (Malvinas)
- florist                   1          1          0          1          1
- fly                       3          3          0          2          2
- fm                     4970       5264        294        725       1403    Micronesia, Federated States Of
- fo                     7052       7345        293        465       2216    Faroe Islands
- foo                      19         22          3         19          2
- forsale                   4          4          0          1          4
- foundation                5          7          2          5          3
- fr                 17543320   17663980     120660      37738     661478    France
- frl                       2          2          0          1          2
- frogans                   7          8          1          1          3
- fund                      4          4          0          4          3
- furniture                 1          1          0          1          0
- futbol                    3          3          0          3          1
- ga                      470        480         10        259        319    Gabon
- gal                       2          2          0          2          0
- gallery                  13         13          0         13          4
- gb                       22         22          0          3          1    United Kingdom
- gd                      129        135          6         64         98    Grenada
- ge                   339824     340512        688        610      17322    Georgia
- gent                      2          2          0          1          2
- gf                      110        110          0          4        110    French Guiana
- gg                      270        292         22        154        209    Guernsey
- gh                    57216      58287       1071         14        144    Ghana
- gi                     3518       3562         44         73       3381    Gibraltar
- gift                     12         12          0          7          3
- gifts                     5          5          0          2          5
- gl                    15746      15809         63        127      15667    Greenland
- glass                     8          8          0          8          0
- global                  465        491         26         18        461
- gm                      900        912         12         35        880    Gambia
- gn                       11         11          0          4          8    Guinea
- gop                       6          6          0          3          1
- gov                 2254496    3256285    1001789       2136     655899    Government
- gp                      147        147          0        122        143    Guadeloupe
- gq                     1766       2041        275         26       1746    Equatorial Guinea
- gr                  3291429    3299274       7845       8971      96491    Greece
- graphics                 16         16          0         10         10
- green                    11         11          0          2          5
- gs                      546        583         37        196        339    South Georgia And The South Sandwich Islands
- gt                   402693     406688       3995         38       1020    Guatemala
- gu                       25         28          3          4          6    Guam
- guide                     8          8          0          8          2
- guru                    255        354         99        164        163
- gw                       91         92          1         91         38    Guinea-Bissau
- gy                    28241      32568       4327         49         52    Guyana
- hamburg                  10         10          0          7          3
- haus                      5          5          0          5          1
- help                      9          9          0          4          3
- here                     10         25         15          9          8
- hiv                       4          4          0          1          4
- hk                   814732     819830       5098       1018      47797    Hong Kong
- hm                      101        203        102         30         61    Heard And Mc Donald Islands
- hn                    35442      36673       1231        298       5726    Honduras
- holdings                  8          8          0          8          4
- holiday                   1          1          0          1          0
- homes                     5          5          0          1          4
- horse                    10         16          6          7          6
- host                   7858      13862       6004        121       7785
- hosting                 443        444          1         84         41
- house                    22         22          0         21         10
- hr                  1060502    1062877       2375       1774      77085    Croatia (local name: Hrvatska)
- ht                     4608       4622         14         44        320    Haiti
- hu                  3375298    3389418      14120      16791     704046    Hungary
- id                  1921636    1964244      42608         74       6831    Indonesia
- ie                  1528673    1539319      10646       8941     277729    Ireland
- il                  2507844    2555164      47320         22      12159    Israel
- im                     2161       2631        470        686        958    Isle of Man
- immo                      2          2          0          2          2
- in                  7042589    7108896      66307      10158      60166    India
- industries                3          3          0          2          2
- info                 363816     400334      36518      59313     321439    Info
- ink                      19         19          0         18          8
- institute                12         13          1         11          4
- insure                    4          4          0          3          4
- int                   20897      41735      20838        201       1407    International Organizations
- international            18         19          1         14         12
- io                    20851      27121       6270       3169       4520    British Indian Ocean Territory
- iq                       46         52          6         12         44    Iraq
- ir                  1363225    1364801       1576       1019    1276217    Iran (Islamic Republic Of)
- is                   393361     395859       2498       2853      92264    Iceland
- it                 26879289   26940544      61255      39549     830851    Italy
- je                    10536      10574         38        107        208    Jersey
- jetzt                     9          9          0          4          3
- jm                      631        669         38         10        221    Jamaica
- jo                    55538     151723      96185        226      50230    Jordan
- jobs                     96        114         18         83         78    Jobs
- jp                 74731799   74915166     183367      51592     887507    Japan
- kaufen                    3          3          0          3          1
- ke                    83234     255168     171934          7       1228    Kenya
- kg                   131140     132107        967        342      48293    Kyrgyzstan
- kh                    23202      24757       1555          8        206    Cambodia
- ki                       33         34          1          9         26    Kiribati
- kim                      13         14          1         10          7
- kitchen                   9          9          0          7          5
- kiwi                     15         15          0         10          8
- km                       11         11          0          7          9    Comoros
- kn                       57         63          6          5          6    Saint Kitts And Nevis
- koeln                    14         14          0          7         11
- kp                       10         12          2          7          6    Korea, Democratic People's Republic Of
- kr                   288516     304692      16176        604      23305    Korea, Republic Of
- kred                      6          6          0          1          1
- kw                     1583       1794        211          9        424    Kuwait
- ky                    27811      28154        343        207        435    Cayman Islands
- kz                  1212864    1243221      30357       3398     541925    Kazakhstan
- la                     1456       9243       7787        592       1031    Lao People's Democratic Republic
- land                     74         75          1         49         41
- lb                    57469      82448      24979         10        443    Lebanon
- lc                      139        147          8         53        111    Saint Lucia
- lease                     1          1          0          1          0
- lgbt                      4          4          0          1          4
- li                    15131      17858       2727       1018       5985    Liechtenstein
- life                     16         16          0         16          7
- lighting                  2          2          0          2          1
- limited                   4          4          0          4          3
- limo                      2          2          0          2          2
- link                   1765       1797         32       1121       1487
- lk                    11614      83714      72100        842       3456    Sri Lanka
- loans                     2          2          0          1          2
- london                  230        230          0         30        194
- lotto                     4          4          0          1          4
- lr                      262        264          2          2          7    Liberia
- ls                     4040       4054         14         58        100    Lesotho
- lt                  1295755    1300375       4620       5253     413853    Lithuania
- ltda                      5        133        128          2          5
- lu                   264662     276948      12286       2007      69034    Luxembourg
- luxe                      4          4          0          1          1
- lv                   475368     480122       4754       3648     259762    Latvia
- ly                    88822      89520        698        247        304    Libyan Arab Jamahiriya
- ma                   276964     281135       4171       1128       1872    Morocco
- maison                    1          1          0          1          0
- management               19         20          1         12         13
- market                    1          1          0          1          0
- marketing                17         17          0         16          7
- mc                    25799      25819         20        139        958    Monaco
- md                   821717     824495       2778       1135     727392    Moldova, Republic Of
- me                    23141      25317       2176       8674      12046
- media                    54         54          0         41         32
- meet                      4          4          0          1          4
- melbourne                 1          1          0          1          1
- menu                      7          7          0          6          2
- mg                    79517      79958        441        245      22755    Madagascar
- mh                      250        252          2          4        188    Marshall Islands
- miami                     5          5          0          2          1
- mil                 2619322    4876197    2256875        195     112233    US Military
- mk                    78010      78228        218        222       1602    Macedonia, The Former Yugoslav Republic Of
- ml                      772        867         95        240        154    Mali
- mm                     1094       1132         38          7         65    Myanmar
- mn                     4541       4743        202        338       4270    Mongolia
- mo                      377        393         16         14        213    Macau
- mobi                   6287       7633       1346       1718       3584
- moda                      2          2          0          2          0
- moe                     105        107          2         83         44
- moscow                   10         10          0          9          5
- motorcycles               4          4          0          1          4
- mp                       25         25          0         18         16    Northern Mariana Islands
- mq                       36         38          2         36         34    Martinique
- mr                       59         60          1         19         58    Mauritania
- ms                     1494       4507       3013        327        673    Montserrat
- mt                    10664      11194        530         11        570    Malta
- mu                    51710      56562       4852        269      51260    Mauritius
- museum                   34         38          4         23         26    Museums
- mv                     3325       3355         30         31         87    Maldives
- mw                     1127       1170         43         62        209    Malawi
- mx                 18494661   19802645    1307984       1799     118761    Mexico
- my                   476831     504537      27706        597      10462    Malaysia
- mz                    93720      95082       1362         20       9267    Mozambique
- na                    78390      78625        235         47      70222    Namibia
- nagoya                   12         12          0         11          5
- name                   3751       4504        753       1734       2279    Individuals
- nc                    57366      57406         40        458       8744    New Caledonia
- ne                      467        473          6        142        157    Niger
- net               389472955  400640165   11167210     385465   69400976    Networks
- network                4557     286171     281614        372       1938
- neustar                  15         15          0          4          8
- new                      20         20          0         17         12
- nexus                     1          1          0          1          0
- nf                      162        167          5         24        143    Norfolk Island
- ng                     2029       2166        137         53        377    Nigeria
- ni                   334875     335655        780         15        873    Nicaragua
- ninja                  2587       2600         13        223        167
- nl                 14203565   14456226     252661      68755    3420937    Netherlands
- no                  3205403    3260112      54709      14266     297131    Norway
- np                    28727     104194      75467         10        349    Nepal
- nr                     8160       8177         17          5        260    Nauru
- nra                       4          4          0          1          4
- nrw                       4          4          0          1          1
- nu                    60226      62836       2610       2793      52420    Niue
- nyc                      78         79          1         51         47
- nz                  3118183    3158904      40721         72      23022    New Zealand
- om                    18763      19611        848         87        300    Oman
- ong                       1          1          0          1          1
- onl                      24         24          0         17         18
- ooo                       2          2          0          2          1
- org                 2096153    2303680     207527     270389    1327826    Organizations
- organic                   4          4          0          1          4
- ovh                     668        673          5        303        542
- pa                    48980      50081       1101         20        793    Panama
- paris                    36         36          0         11         14
- partners                 13         15          2          3         12
- parts                     2          2          0          2          1
- pe                   496200     499434       3234        810       5501    Peru
- pf                    54925      54943         18         66       1185    French Polynesia
- pg                     4947       5087        140          7        436    Papua New Guinea
- ph                   409584     440324      30740        707      22154    Philippines
- pharmacy                  8          8          0          3          2
- photo                    11         11          0         11          2
- photography              29         29          0         27         10
- photos                   15         15          0         15          6
- pics                     13         13          0         13          3
- pictures                 14         14          0          8          9
- pink                     19         20          1         15          8
- pk                   439668     567853     128185        209      42053    Pakistan
- pl                 13329004   13418275      89271      24537    2331633    Poland
- place                     2          2          0          2          2
- plumbing                  3          3          0          3          1
- pm                     1322       1333         11         92        160    St. Pierre And Miquelon
- pn                       18         22          4         13         13    Pitcairn
- post                      1          1          0          1          1
- pr                      284        314         30         34        114    Puerto Rico
- praxi                     6          6          0          1          1
- press                     4          4          0          3          2
- pro                    9604      10444        840       1577       2732    Professionals
- prod                    129        130          1         28         40
- productions               5          6          1          5          1
- properties                1          1          0          1          1
- ps                    42983      43868        885        181      14456
- pt                  3950307    3964133      13826       7342     312561    Portugal
- pub                      35         35          0         21         22
- pw                     5513       6297        784       1406       4957    Palau
- py                   843590     851572       7982         11       1465    Paraguay
- qa                     1025       1068         43        120        512    Qatar
- qpon                      6          6          0          1          1
- quebec                   11         11          0          8          7
- re                    32375      32413         38        278      32200    Reunion
- realtor                   1          1          0          1          0
- recipes                   2          2          0          2          1
- red                     543        545          2         80        511
- reise                     5          5          0          1          1
- reisen                    1          1          0          1          0
- rentals                   2          2          0          2          1
- repair                    7          8          1          5          4
- report                    3          3          0          3          0
- republican                2          2          0          2          0
- rest                      3          3          0          3          1
- restaurant                7          7          0          2          2
- reviews                   1          1          0          1          0
- rich                      4          4          0          1          4
- rio                       2          2          0          2          1
- ro                  2873801    3090500     216699      25341    2131684    Romania
- rocks                   249        261         12        218        183
- rodeo                     4          4          0          1          1
- rs                  1121724    1124229       2505       1710      56353
- ru                 14227782   15019488     791706     101103    3821838    Russian Federation
- ruhr                      9         10          1          9          6
- rw                      352        379         27         29        147    Rwanda
- sa                   140907     159553      18646        109       1426    Saudi Arabia
- saarland                  2          3          1          1          1
- sarl                      4          4          0          1          4
- sb                     3935       3944          9          8         81    Solomon Islands
- sc                      285        448        163        187        212    Seychelles
- scb                       6          6          0          1          6
- scot                     12         17          5          8          8
- sd                      136        293        157         41         93    Sudan
- se                  5746263    5833093      86830      16524     431989    Sweden
- services                 47         51          4         36         36
- sexy                     53         53          0         51         23
- sg                  1524472    2127000     602528       1003      10209    Singapore
- sh                    10284      10370         86        274        568    St. Helena
- shiksha                   4          4          0          1          4
- shoes                     6          6          0          6          3
- si                   418108     422487       4379       3809      48334    Slovenia
- singles                   8          8          0          4          5
- sk                  1345652    1351730       6078       6536     416604    Slovakia (Slovak Republic)
- sl                     1314       1320          6         28       1300    Sierra Leone
- sm                     5330       7376       2046         66       5317    San Marino
- sn                      406        505         99         93        383    Senegal
- so                      444        475         31        234        308    Somalia
- social                   18         18          0         18          5
- software                  3          3          0          3          1
- solar                     5          5          0          5          1
- solutions               180        214         34         92        143
- soy                       1          1          0          1          1
- space                     4         26         22          4          3
- sr                      112        121          9         76         97    Suriname
- st                     1803       2168        365        465       1405    Sao Tome And Principe
- su                   270933     278370       7437      45328     185257    Soviet Union
- supply                    5          5          0          5          0
- support                  60         68          8         49         32
- surf                      4          4          0          1          1
- sv                    30375      31003        628         19        633    El Salvador
- sx                      195        211         16         82        149
- sy                      606        621         15         26        570    Syrian Arab Republic
- systems                4158       4181         23        164       4035
- sz                     1507       1751        244         14        221    Swaziland
- tatar                     2          2          0          2          2
- tattoo                    2          2          0          2          1
- tax                       8          8          0          7          6
- tc                    55912      56180        268        271       5505    Turks And Caicos Islands
- td                        1          1          0          1          0    Chad
- technology              125        129          4         78         87
- tel                      59         70         11         18         28    Tel
- tf                      156        171         15         69         97    French Southern Territories
- tg                      761        837         76         32        754    Togo
- th                  3765562    3778636      13074         17       4456    Thailand
- tips                     32         32          0         32         18
- tirol                     3          3          0          1          1
- tj                     8329       8360         31        139        460    Tajikistan
- tk                     4596       5766       1170       2488       2962    Tokelau
- tl                     1082       1151         69         64       1021
- tm                      631        686         55         51        563    Turkmenistan
- tn                      726        904        178        120        603    Tunisia
- to                    14333      14971        638       1362      13362    Tonga
- today                    96        169         73         92         38
- tokyo                    84         84          0         78         28
- tools                    33         33          0         22         17
- town                     48         48          0         32         17
- tp                      117        117          0          6        115    East Timor
- tr                  7053928    7083079      29151         33       8282    Turkey
- trade                    20         21          1         12          7
- training                 12         12          0         10          3
- travel                 5036       5170        134       4852       4899    Travel
- tt                   249419     252054       2635         43        293    Trinidad And Tobago
- tv                   145648     150574       4926       7103      77740    Tuvalu
- tw                  6652551    6715697      63146       1388      27786    Taiwan
- tz                    31121      31569        448          6        540    Tanzania, United Republic Of
- ua                  2578882    2780203     201321       2287     136496    Ukraine
- ug                    32567      34065       1498         54        697    Uganda
- uk                  6820673    7949697    1129024        476     120468    United Kingdom
- university                2          2          0          2          1
- unknown             1268937   14406139   13137202     245378     463599    Unknown
- uno                      32        123         91         17         17
- us                  2050334    2175288     124954      24100     101759    United States
- uy                  1796293    1800276       3983         42       1755    Uruguay
- uz                    53703      69258      15555        504      11572    Uzbekistan
- va                      161        168          7         31        160    Vatican City State (Holy See)
- vc                      539        551         12        184        206    Saint Vincent And The Grenadines
- ve                  1534624    1545174      10550         29       3204    Venezuela
- vegas                     8          8          0          4          8
- ventures                 13         13          0          7          9
- versicherung              5          5          0          1          1
- vg                      493        600        107        170        382    Virgin Islands (British)
- vi                    10373      10716        343         56      10106    Virgin Islands (U.S.)
- villas                    1          1          0          1          1
- vision                    2          2          0          2          0
- vlaanderen                3          3          0          1          2
- vn                   220470    1589908    1369438       2070      76720    Viet Nam
- vodka                     6          6          0          3          2
- vote                      4          4          0          1          4
- voting                    5          5          0          1          1
- voto                      4          4          0          1          4
- voyage                    7          7          0          7          2
- vu                     7728       7741         13         76        885    Vanuatu
- wang                      5          5          0          5          3
- watch                     8          8          0          6          4
- webcam                    8          8          0          3          1
- website                 128        129          1         98         76
- wed                       2          2          0          1          1
- wf                     2787       2787          0         36         50    Wallis And Futuna Islands
- whoswho                   6          6          0          1          1
- wien                     14         14          0          5          9
- wiki                     10         10          0          9          2
- williamhill               6          6          0          1          1
- work                      7          7          0          4          3
- works                    32         34          2         24         18
- world                    35         38          3         13         25
- ws                    26801      27856       1055       2961      21233    Samoa
- wtf                      52         54          2         30         34
- xn--3ds443g               4          4          0          1          4
- xn--4gbrim                4          4          0          1          4
- xn--55qx5d                1          1          0          1          0
- xn--6frz82g               4          4          0          1          4
- xn--80adxhks              2          2          0          2          1
- xn--80ao21a               1          1          0          1          1
- xn--80asehdb              3          3          0          3          0
- xn--80aswg                3          3          0          3          0
- xn--c1avg                 4          4          0          1          4
- xn--d1acj3b               1          1          0          1          1
- xn--fiq228c5hs            4          4          0          1          4
- xn--fiqs8s                5          5          0          4          5
- xn--fiqz9s                1          1          0          1          1
- xn--i1b6b1a6a2e           4          4          0          1          4
- xn--j1amh                 2          2          0          2          0
- xn--j6w193g               2          3          1          1          2
- xn--kpry57d               2          2          0          2          1
- xn--kput3i                4          4          0          1          4
- xn--mgbaam7a8h            1          1          0          1          1
- xn--mgberp4a5d4ar          3          4          1          3          0
- xn--ngbc5azd              1          1          0          1          1
- xn--nqv7f                 4          4          0          1          4
- xn--nqv7fs00ema           4          4          0          1          4
- xn--p1acf                 1          1          0          1          1
- xn--p1ai                504        546         42        497         49
- xn--q9jyb4c               5          5          0          5          2
- xn--rhqv96g               6          6          0          1          1
- xn--ses554g               6          6          0          1          1
- xxx                     731       1702        971        181        636
- xyz                     545        576         31        359        380
- yachts                    4          4          0          1          4
- yandex                    6          6          0          1          1
- ye                    31770      31774          4         15         61    Yemen
- yokohama                  3          3          0          3          0
- yt                       83         84          1         32         47    Mayotte
- za                  4292951    4411236     118285         60      23357    South Africa
- zm                    24061      24665        604         30      21292    Zambia
- zone                    812       1107        295        224        367
- zw                    47543      58942      11399         13       2342    Zimbabwe
+# Version 2015091200, Last Updated Sat Sep 12 07:07:01 2015 UTC
+AAA
+ABB
+ABBOTT
+ABOGADO
+AC
+ACADEMY
+ACCENTURE
+ACCOUNTANT
+ACCOUNTANTS
+ACO
+ACTIVE
+ACTOR
+AD
+ADS
+ADULT
+AE
+AEG
+AERO
+AF
+AFL
+AG
+AGENCY
+AI
+AIG
+AIRFORCE
+AIRTEL
+AL
+ALLFINANZ
+ALSACE
+AM
+AMICA
+AMSTERDAM
+ANDROID
+AO
+APARTMENTS
+APP
+AQ
+AQUARELLE
+AR
+ARCHI
+ARMY
+ARPA
+AS
+ASIA
+ASSOCIATES
+AT
+ATTORNEY
+AU
+AUCTION
+AUDIO
+AUTO
+AUTOS
+AW
+AX
+AXA
+AZ
+AZURE
+BA
+BAND
+BANK
+BAR
+BARCELONA
+BARCLAYCARD
+BARCLAYS
+BARGAINS
+BAUHAUS
+BAYERN
+BB
+BBC
+BBVA
+BCN
+BD
+BE
+BEER
+BENTLEY
+BERLIN
+BEST
+BET
+BF
+BG
+BH
+BHARTI
+BI
+BIBLE
+BID
+BIKE
+BING
+BINGO
+BIO
+BIZ
+BJ
+BLACK
+BLACKFRIDAY
+BLOOMBERG
+BLUE
+BM
+BMW
+BN
+BNL
+BNPPARIBAS
+BO
+BOATS
+BOND
+BOO
+BOOTS
+BOUTIQUE
+BR
+BRADESCO
+BRIDGESTONE
+BROKER
+BROTHER
+BRUSSELS
+BS
+BT
+BUDAPEST
+BUILD
+BUILDERS
+BUSINESS
+BUZZ
+BV
+BW
+BY
+BZ
+BZH
+CA
+CAB
+CAFE
+CAL
+CAMERA
+CAMP
+CANCERRESEARCH
+CANON
+CAPETOWN
+CAPITAL
+CAR
+CARAVAN
+CARDS
+CARE
+CAREER
+CAREERS
+CARS
+CARTIER
+CASA
+CASH
+CASINO
+CAT
+CATERING
+CBA
+CBN
+CC
+CD
+CEB
+CENTER
+CEO
+CERN
+CF
+CFA
+CFD
+CG
+CH
+CHANEL
+CHANNEL
+CHAT
+CHEAP
+CHLOE
+CHRISTMAS
+CHROME
+CHURCH
+CI
+CISCO
+CITIC
+CITY
+CK
+CL
+CLAIMS
+CLEANING
+CLICK
+CLINIC
+CLOTHING
+CLOUD
+CLUB
+CM
+CN
+CO
+COACH
+CODES
+COFFEE
+COLLEGE
+COLOGNE
+COM
+COMMBANK
+COMMUNITY
+COMPANY
+COMPUTER
+CONDOS
+CONSTRUCTION
+CONSULTING
+CONTRACTORS
+COOKING
+COOL
+COOP
+CORSICA
+COUNTRY
+COUPONS
+COURSES
+CR
+CREDIT
+CREDITCARD
+CRICKET
+CROWN
+CRS
+CRUISES
+CSC
+CU
+CUISINELLA
+CV
+CW
+CX
+CY
+CYMRU
+CYOU
+CZ
+DABUR
+DAD
+DANCE
+DATE
+DATING
+DATSUN
+DAY
+DCLK
+DE
+DEALS
+DEGREE
+DELIVERY
+DELTA
+DEMOCRAT
+DENTAL
+DENTIST
+DESI
+DESIGN
+DEV
+DIAMONDS
+DIET
+DIGITAL
+DIRECT
+DIRECTORY
+DISCOUNT
+DJ
+DK
+DM
+DNP
+DO
+DOCS
+DOG
+DOHA
+DOMAINS
+DOOSAN
+DOWNLOAD
+DRIVE
+DURBAN
+DVAG
+DZ
+EARTH
+EAT
+EC
+EDU
+EDUCATION
+EE
+EG
+EMAIL
+EMERCK
+ENERGY
+ENGINEER
+ENGINEERING
+ENTERPRISES
+EPSON
+EQUIPMENT
+ER
+ERNI
+ES
+ESQ
+ESTATE
+ET
+EU
+EUROVISION
+EUS
+EVENTS
+EVERBANK
+EXCHANGE
+EXPERT
+EXPOSED
+EXPRESS
+FAGE
+FAIL
+FAITH
+FAMILY
+FAN
+FANS
+FARM
+FASHION
+FEEDBACK
+FI
+FILM
+FINANCE
+FINANCIAL
+FIRMDALE
+FISH
+FISHING
+FIT
+FITNESS
+FJ
+FK
+FLIGHTS
+FLORIST
+FLOWERS
+FLSMIDTH
+FLY
+FM
+FO
+FOO
+FOOTBALL
+FOREX
+FORSALE
+FORUM
+FOUNDATION
+FR
+FRL
+FROGANS
+FUND
+FURNITURE
+FUTBOL
+FYI
+GA
+GAL
+GALLERY
+GAME
+GARDEN
+GB
+GBIZ
+GD
+GDN
+GE
+GEA
+GENT
+GENTING
+GF
+GG
+GGEE
+GH
+GI
+GIFT
+GIFTS
+GIVES
+GIVING
+GL
+GLASS
+GLE
+GLOBAL
+GLOBO
+GM
+GMAIL
+GMO
+GMX
+GN
+GOLD
+GOLDPOINT
+GOLF
+GOO
+GOOG
+GOOGLE
+GOP
+GOV
+GP
+GQ
+GR
+GRAPHICS
+GRATIS
+GREEN
+GRIPE
+GROUP
+GS
+GT
+GU
+GUGE
+GUIDE
+GUITARS
+GURU
+GW
+GY
+HAMBURG
+HANGOUT
+HAUS
+HEALTHCARE
+HELP
+HERE
+HERMES
+HIPHOP
+HITACHI
+HIV
+HK
+HM
+HN
+HOCKEY
+HOLDINGS
+HOLIDAY
+HOMEDEPOT
+HOMES
+HONDA
+HORSE
+HOST
+HOSTING
+HOTELES
+HOTMAIL
+HOUSE
+HOW
+HR
+HSBC
+HT
+HU
+IBM
+ICBC
+ICE
+ICU
+ID
+IE
+IFM
+IINET
+IL
+IM
+IMMO
+IMMOBILIEN
+IN
+INDUSTRIES
+INFINITI
+INFO
+ING
+INK
+INSTITUTE
+INSURE
+INT
+INTERNATIONAL
+INVESTMENTS
+IO
+IPIRANGA
+IQ
+IR
+IRISH
+IS
+IST
+ISTANBUL
+IT
+ITAU
+IWC
+JAVA
+JCB
+JE
+JETZT
+JEWELRY
+JLC
+JLL
+JM
+JO
+JOBS
+JOBURG
+JP
+JPRS
+JUEGOS
+KAUFEN
+KDDI
+KE
+KG
+KH
+KI
+KIM
+KITCHEN
+KIWI
+KM
+KN
+KOELN
+KOMATSU
+KP
+KR
+KRD
+KRED
+KW
+KY
+KYOTO
+KZ
+LA
+LACAIXA
+LANCASTER
+LAND
+LASALLE
+LAT
+LATROBE
+LAW
+LAWYER
+LB
+LC
+LDS
+LEASE
+LECLERC
+LEGAL
+LEXUS
+LGBT
+LI
+LIAISON
+LIDL
+LIFE
+LIGHTING
+LIMITED
+LIMO
+LINK
+LIVE
+LIXIL
+LK
+LOAN
+LOANS
+LOL
+LONDON
+LOTTE
+LOTTO
+LOVE
+LR
+LS
+LT
+LTDA
+LU
+LUPIN
+LUXE
+LUXURY
+LV
+LY
+MA
+MADRID
+MAIF
+MAISON
+MAN
+MANAGEMENT
+MANGO
+MARKET
+MARKETING
+MARKETS
+MARRIOTT
+MBA
+MC
+MD
+ME
+MEDIA
+MEET
+MELBOURNE
+MEME
+MEMORIAL
+MEN
+MENU
+MG
+MH
+MIAMI
+MICROSOFT
+MIL
+MINI
+MK
+ML
+MM
+MMA
+MN
+MO
+MOBI
+MODA
+MOE
+MOM
+MONASH
+MONEY
+MONTBLANC
+MORMON
+MORTGAGE
+MOSCOW
+MOTORCYCLES
+MOV
+MOVIE
+MOVISTAR
+MP
+MQ
+MR
+MS
+MT
+MTN
+MTPC
+MU
+MUSEUM
+MV
+MW
+MX
+MY
+MZ
+NA
+NADEX
+NAGOYA
+NAME
+NAVY
+NC
+NE
+NEC
+NET
+NETBANK
+NETWORK
+NEUSTAR
+NEW
+NEWS
+NEXUS
+NF
+NG
+NGO
+NHK
+NI
+NICO
+NINJA
+NISSAN
+NL
+NO
+NOKIA
+NP
+NR
+NRA
+NRW
+NTT
+NU
+NYC
+NZ
+OFFICE
+OKINAWA
+OM
+OMEGA
+ONE
+ONG
+ONL
+ONLINE
+OOO
+ORACLE
+ORANGE
+ORG
+ORGANIC
+OSAKA
+OTSUKA
+OVH
+PA
+PAGE
+PANERAI
+PARIS
+PARTNERS
+PARTS
+PARTY
+PE
+PET
+PF
+PG
+PH
+PHARMACY
+PHILIPS
+PHOTO
+PHOTOGRAPHY
+PHOTOS
+PHYSIO
+PIAGET
+PICS
+PICTET
+PICTURES
+PINK
+PIZZA
+PK
+PL
+PLACE
+PLAY
+PLUMBING
+PLUS
+PM
+PN
+POHL
+POKER
+PORN
+POST
+PR
+PRAXI
+PRESS
+PRO
+PROD
+PRODUCTIONS
+PROF
+PROPERTIES
+PROPERTY
+PS
+PT
+PUB
+PW
+PY
+QA
+QPON
+QUEBEC
+RACING
+RE
+REALTOR
+REALTY
+RECIPES
+RED
+REDSTONE
+REHAB
+REISE
+REISEN
+REIT
+REN
+RENT
+RENTALS
+REPAIR
+REPORT
+REPUBLICAN
+REST
+RESTAURANT
+REVIEW
+REVIEWS
+RICH
+RICOH
+RIO
+RIP
+RO
+ROCKS
+RODEO
+RS
+RSVP
+RU
+RUHR
+RUN
+RW
+RYUKYU
+SA
+SAARLAND
+SAKURA
+SALE
+SAMSUNG
+SANDVIK
+SANDVIKCOROMANT
+SANOFI
+SAP
+SARL
+SAXO
+SB
+SC
+SCA
+SCB
+SCHMIDT
+SCHOLARSHIPS
+SCHOOL
+SCHULE
+SCHWARZ
+SCIENCE
+SCOR
+SCOT
+SD
+SE
+SEAT
+SEEK
+SENER
+SERVICES
+SEW
+SEX
+SEXY
+SG
+SH
+SHIKSHA
+SHOES
+SHOW
+SHRIRAM
+SI
+SINGLES
+SITE
+SJ
+SK
+SKI
+SKY
+SKYPE
+SL
+SM
+SN
+SNCF
+SO
+SOCCER
+SOCIAL
+SOFTWARE
+SOHU
+SOLAR
+SOLUTIONS
+SONY
+SOY
+SPACE
+SPIEGEL
+SPREADBETTING
+SR
+SRL
+ST
+STARHUB
+STATOIL
+STC
+STCGROUP
+STUDIO
+STUDY
+STYLE
+SU
+SUCKS
+SUPPLIES
+SUPPLY
+SUPPORT
+SURF
+SURGERY
+SUZUKI
+SV
+SWATCH
+SWISS
+SX
+SY
+SYDNEY
+SYSTEMS
+SZ
+TAIPEI
+TATAMOTORS
+TATAR
+TATTOO
+TAX
+TAXI
+TC
+TD
+TEAM
+TECH
+TECHNOLOGY
+TEL
+TELEFONICA
+TEMASEK
+TENNIS
+TF
+TG
+TH
+THD
+THEATER
+TICKETS
+TIENDA
+TIPS
+TIRES
+TIROL
+TJ
+TK
+TL
+TM
+TN
+TO
+TODAY
+TOKYO
+TOOLS
+TOP
+TORAY
+TOSHIBA
+TOURS
+TOWN
+TOYOTA
+TOYS
+TR
+TRADE
+TRADING
+TRAINING
+TRAVEL
+TRUST
+TT
+TUI
+TV
+TW
+TZ
+UA
+UBS
+UG
+UK
+UNIVERSITY
+UNO
+UOL
+US
+UY
+UZ
+VA
+VACATIONS
+VC
+VE
+VEGAS
+VENTURES
+VERSICHERUNG
+VET
+VG
+VI
+VIAJES
+VIDEO
+VILLAS
+VIN
+VISION
+VISTA
+VISTAPRINT
+VIVA
+VLAANDEREN
+VN
+VODKA
+VOTE
+VOTING
+VOTO
+VOYAGE
+VU
+WALES
+WALTER
+WANG
+WATCH
+WEBCAM
+WEBSITE
+WED
+WEDDING
+WEIR
+WF
+WHOSWHO
+WIEN
+WIKI
+WILLIAMHILL
+WIN
+WINDOWS
+WINE
+WME
+WORK
+WORKS
+WORLD
+WS
+WTC
+WTF
+XBOX
+XEROX
+XIN
+XN--11B4C3D
+XN--1QQW23A
+XN--30RR7Y
+XN--3BST00M
+XN--3DS443G
+XN--3E0B707E
+XN--3PXU8K
+XN--42C2D9A
+XN--45BRJ9C
+XN--45Q11C
+XN--4GBRIM
+XN--55QW42G
+XN--55QX5D
+XN--6FRZ82G
+XN--6QQ986B3XL
+XN--80ADXHKS
+XN--80AO21A
+XN--80ASEHDB
+XN--80ASWG
+XN--90A3AC
+XN--90AIS
+XN--9DBQ2A
+XN--9ET52U
+XN--B4W605FERD
+XN--C1AVG
+XN--C2BR7G
+XN--CG4BKI
+XN--CLCHC0EA0B2G2A9GCD
+XN--CZR694B
+XN--CZRS0T
+XN--CZRU2D
+XN--D1ACJ3B
+XN--D1ALF
+XN--EFVY88H
+XN--ESTV75G
+XN--FHBEI
+XN--FIQ228C5HS
+XN--FIQ64B
+XN--FIQS8S
+XN--FIQZ9S
+XN--FJQ720A
+XN--FLW351E
+XN--FPCRJ9C3D
+XN--FZC2C9E2C
+XN--GECRJ9C
+XN--H2BRJ9C
+XN--HXT814E
+XN--I1B6B1A6A2E
+XN--IMR513N
+XN--IO0A7I
+XN--J1AEF
+XN--J1AMH
+XN--J6W193G
+XN--KCRX77D1X4A
+XN--KPRW13D
+XN--KPRY57D
+XN--KPUT3I
+XN--L1ACC
+XN--LGBBAT1AD8J
+XN--MGB9AWBF
+XN--MGBA3A4F16A
+XN--MGBAAM7A8H
+XN--MGBAB2BD
+XN--MGBAYH7GPA
+XN--MGBBH1A71E
+XN--MGBC0A9AZCG
+XN--MGBERP4A5D4AR
+XN--MGBPL2FH
+XN--MGBX4CD0AB
+XN--MK1BU44C
+XN--MXTQ1M
+XN--NGBC5AZD
+XN--NODE
+XN--NQV7F
+XN--NQV7FS00EMA
+XN--NYQY26A
+XN--O3CW4H
+XN--OGBPF8FL
+XN--P1ACF
+XN--P1AI
+XN--PGBS0DH
+XN--PSSY2U
+XN--Q9JYB4C
+XN--QCKA1PMC
+XN--RHQV96G
+XN--S9BRJ9C
+XN--SES554G
+XN--T60B56A
+XN--TCKWE
+XN--UNUP4Y
+XN--VERMGENSBERATER-CTB
+XN--VERMGENSBERATUNG-PWB
+XN--VHQUV
+XN--VUQ861B
+XN--WGBH1C
+XN--WGBL6A
+XN--XHQ521B
+XN--XKC2AL3HYE2A
+XN--XKC2DL3A5EE0H
+XN--Y9A3AQ
+XN--YFRO4I67O
+XN--YGBI2AMMX
+XN--ZFR164B
+XPERIA
+XXX
+XYZ
+YACHTS
+YANDEX
+YE
+YODOBASHI
+YOGA
+YOKOHAMA
+YOUTUBE
+YT
+ZA
+ZIP
+ZM
+ZONE
+ZUERICH
+ZW
