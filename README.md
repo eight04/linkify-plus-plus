@@ -27,6 +27,8 @@ Nothing to do here!
 
 Changelog
 ---------
+* Version 6.2.1 (Oct 7, 2015):
+	- Update excluding list, TLDs.
 * Version 6.2.0 (Sep 5, 2015):
 	- Use newest TLDs.
 * Version 6.1.0 (Jul 14, 2015):
