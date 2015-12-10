@@ -8,6 +8,7 @@
     "grunt-contrib-cssmin": "^0.10.0",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-curl": "^2.2.0",
+    "grunt-eslint": "^17.3.1",
     "grunt-replace": "^0.8.0"
   }
 }

@@ -7,6 +7,9 @@ module.exports = function(grunt) {
 	// Project configuration.
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
+		eslint: {
+			target: ["src/*.js"]
+		},
 		watch: {
 			grunt: {
 				files: ["Gruntfile.js"],
@@ -14,7 +17,7 @@ module.exports = function(grunt) {
 			},
 			src: {
 				files: ["src/*"],
-				tasks: ["replace"]
+				tasks: ["eslint", "replace"]
 			}
 		},
 		replace: {
@@ -44,6 +47,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
+	grunt.loadNpmTasks('grunt-eslint');
 	grunt.loadNpmTasks('grunt-curl');
 
 	// Tasks
