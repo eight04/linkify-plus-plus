@@ -23,7 +23,10 @@ Testcase
 
 Todos
 -----
-Nothing to do here!
+* Use multithread?
+	- A que for root node
+	- A que for range to linkify
+	- A que for links to replace
 
 Changelog
 ---------
