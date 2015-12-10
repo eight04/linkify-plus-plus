@@ -23,10 +23,17 @@ Testcase
 
 Todos
 -----
-* Use multithread?
-	- A que for root node
-	- A que for range to linkify
-	- A que for links to replace
+* Fix blocking issue
+	* Use multithread?
+		- A que for root node
+		- A que for range to linkify
+		- A que for links to replace
+	* Generator?
+		- Generate roots
+		- Generate tree
+		- Generate range
+		- Generate link range
+	* Create a global event loop?
 * Ignore document by checking `document.contentType`?
 
 Changelog
