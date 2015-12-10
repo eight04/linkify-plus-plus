@@ -27,6 +27,7 @@ Todos
 	- A que for root node
 	- A que for range to linkify
 	- A que for links to replace
+* Ignore document by checking `document.contentType`?
 
 Changelog
 ---------
