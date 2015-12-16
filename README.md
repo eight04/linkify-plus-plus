@@ -35,6 +35,18 @@ Todos
 		- Generate link range
 	* Create a global event loop?
 * Ignore document by checking `document.contentType`?
+* Create a linkify module?
+  ```
+  var options = {
+    done: finishCallback,
+	ignoreTags: ["a", "style"],
+	ignoreClasses: [":brush"],
+	image: true,
+	unicode: false,
+	newTab: false
+  };
+  linkify(element, options);
+  ```
 
 Changelog
 ---------

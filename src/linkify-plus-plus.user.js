@@ -29,6 +29,42 @@
 
 "use strict";
 
+// Create a linkify module, which has its own thread to process DOM tree
+
+function linkify(root, options) {
+	var ranges = generateRanges(root),
+		range;
+
+	setTimeout(nextRange);
+
+	function nextRange() {
+		if (!range) {
+			range = ranges.next().value;
+		}
+		if (!range) {
+			return;
+		}
+
+		range = linkifyRange(range);
+
+		setTimeout(nextRange);
+	}
+}
+
+var options = {
+	done: finishCallback,
+	ignoreTags: {
+		a: true,
+		style: true
+	},
+	tlds: {
+
+	}
+};
+
+linkify(node, options);
+
+
 var config,
 	re = {
 		image: /^[^?#]+\.(?:jpg|png|gif|jpeg)(?:$|[?#])/i
@@ -363,49 +399,68 @@ function replaceRange(range, nodes) {
 	range.insertNode(frag);
 }
 
-function linkifyTextNode(range) {
+function inTLDS(domain) {
+	return (match = domain.match(/\.([a-z0-9-]+)$/i)) && (match[1].toLowerCase() in tlds);
+}
+
+function createPos(cont, offset) {
+	return {
+		container: cont,
+		offset: offset,
+		add: function (change) {
+			return posAdd(cont, offset, change);
+		}
+	};
+}
+
+function nextSibling(node) {
+	while (!node.nextSibling && node.parentNode) {
+		node = node.parentNode;
+	}
+	return node.nextSibling;
+}
+
+function posAdd(cont, offset, change) {
+	// Currently we only support positive add
+
+	// If the container is #text
+	if (cont.nodeType == 3) {
+		if (offset + change <= cont.nodeValue.length) {
+			return {
+				container: cont,
+				offset: offset + change
+			};
+		} else {
+			return posAdd(nextSibling(cont), 0, offset + change - cont.nodeValue.length)
+		}
+	}
+
+	return posAdd(cont.childNodes[offset], 0, change);
+}
+
+function linkifyRange(range) {
 	var m, mm,
 		txt = range.toString(),
-		nodes = [],
-		lastIndex = 0;
-	var face, protocol, user, domain, port, path, angular;
+	var face, protocol, user, domain, port, path, angular, nextOffset = 0;
 	var url;
 
-	while (m = re.url.exec(txt)) {
-		face = m[0];
-		protocol = m[1] || "";
-		user = m[2] || "";
-		domain = m[3] || "";
-		port = m[4] || "";
-		path = m[5] || "";
-		angular = m[6];
+	m = re.url.exec(txt);
 
-		// Skip angular source
-		if (angular) {
-			if (!unsafeWindow.angular) {
-				re.url.lastIndex = m.index + 2;
-			}
-			continue;
-		}
+	if (!m) {
+		return null;
+	}
 
-		// domain shouldn't contain connected dots
-		if (domain.indexOf("..") > -1) {
-			continue;
-		}
+	face = m[0];
+	protocol = m[1] || "";
+	user = m[2] || "";
+	domain = m[3] || "";
+	port = m[4] || "";
+	path = m[5] || "";
+	angular = m[6];
 
-		// valid IP address
-		if (!isIP(domain) && (mm = domain.match(/\.([a-z0-9-]+)$/i)) && !(mm[1].toLowerCase() in tlds)) {
-			continue;
-		}
+	var rangePos = createPos(range.startContainer, range.startOffset);
 
-		// Insert text
-		if (m.index > lastIndex) {
-			nodes.push({
-				start: lastIndex,
-				end: m.index,
-				type: "string"
-			});
-		}
+	if (!angular && domain.indexOf("..") <= -1 && (isIP(domain) || inTLDS(domain))) {
 
 		if (path) {
 			// Remove trailing ".,?"
@@ -450,33 +505,28 @@ function linkifyTextNode(range) {
 		// Create URL
 		url = protocol + (user && user + "@") + domain + port + path;
 
-		re.url.lastIndex = m.index + face.length;
-		lastIndex = re.url.lastIndex;
+		// Create range to replace
+		var urlPos = rangePos.add(m.index);
+			urlEndPos = urlPos.add(face.length);
 
-		nodes.push({
-			start: m.index,
-			end: lastIndex,
-			type: "anchor",
-			url: url
-		});
+		urlRange.set
+
+		nextPos = urlEndPos;
+
+	} else if (angular && !unsafeWindow.angular) {
+		// Next start after "{{" if there is no window.angular
+		nextPos = rangePos.add(m.index + 2);
+
+	} else {
+		nextPos = rangePos.add(m.index + face.length);
 	}
 
-	if (!nodes.length) {
-		return;
-	}
+	range.setStart(nextPos.container, nextPos.offset);
 
-	if (txt.length > lastIndex) {
-		nodes.push({
-			start: lastIndex,
-			end: txt.length,
-			type: "string"
-		});
-	}
-
-	replaceRange(range, nodes);
+	return range;
 }
 
-function* createTreeWalker(node) {
+function* generateRanges(node) {
 	// Generate linkified ranges.
 	var walker = document.createTreeWalker(
 		node,
@@ -496,14 +546,14 @@ function* createTreeWalker(node) {
 			continue;
 		}
 		range.setEndAfter(end);
-		yield linkifyTextNode(range);
+		yield range;
 
 		end = start = current;
 		range = document.createRange();
 		range.setStartBefore(start);
 	}
 	range.setEndAfter(end);
-	yield linkifyTextNode(range);
+	yield range;
 }
 
 function* mutationGen(mutations) {
