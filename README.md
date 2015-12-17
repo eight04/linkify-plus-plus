@@ -23,30 +23,11 @@ Testcase
 
 Todos
 -----
-* Fix blocking issue
-	* Use multithread?
-		- A que for root node
-		- A que for range to linkify
-		- A que for links to replace
-	* Generator?
-		- Generate roots
-		- Generate tree
-		- Generate range
-		- Generate link range
-	* Create a global event loop?
 * Ignore document by checking `document.contentType`?
-* Create a linkify module?
-  ```
-  var options = {
-    done: finishCallback,
-	ignoreTags: ["a", "style"],
-	ignoreClasses: [":brush"],
-	image: true,
-	unicode: false,
-	newTab: false
-  };
-  linkify(element, options);
-  ```
+* There are some performance problems
+	- `Array.unshift` has poor performance.
+	- We always put no-need mutations into que. This make que become so large.
+	- What if duplicate item put into que? Since we doesn't loop through mutation records, it is impossible to identify them before adding into que.
 
 Changelog
 ---------
