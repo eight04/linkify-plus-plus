@@ -325,7 +325,7 @@ var linkify = function(){
 			ranges = generateRanges(root, filter),
 			range;
 
-		setTimeout(nextRange);
+		requestAnimationFrame(nextRange);
 
 		function nextRange() {
 
@@ -335,14 +335,14 @@ var linkify = function(){
 
 			if (!range) {
 				if (options.done) {
-					setTimeout(options.done);
+					requestAnimationFrame(options.done);
 				}
 				return;
 			}
 
 			range = linkifyRange(range, options.newTab, options.image);
 
-			setTimeout(nextRange);
+			requestAnimationFrame(nextRange);
 		}
 
 	}
@@ -375,7 +375,7 @@ function createQue(handler) {
 
 	function start() {
 		running = true;
-		setTimeout(next);
+		requestAnimationFrame(next);
 	}
 
 	function next() {
@@ -397,7 +397,7 @@ function createQue(handler) {
 	}
 
 	function nextDone() {
-		setTimeout(next);
+		requestAnimationFrame(next);
 	}
 
 	function isRunning() {
