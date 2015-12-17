@@ -29,50 +29,453 @@
 
 "use strict";
 
-// Create a linkify module, which has its own thread to process DOM tree
+// Linkify Plus Plus core
+var linkify = function(){
 
-function linkify(root, options) {
-	var ranges = generateRanges(root),
-		range;
+	var urlRE = /\b([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.\u00b7-\u2a6d6]+\.[a-z0-9-TLDS.charSet]{1,TLDS.maxLength})\b(:\d+)?([/?#]\S*)?|\{\{(.+?)\}\}/i,
+		urlUnicodeRE =  /\b([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.]+\.[a-z0-9-]{1,TLDS.maxLength})\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#(),'\[\]]*)?|\{\{(.+?)\}\}/i,
+		tlds = TLDS.set;
 
-	setTimeout(nextRange);
+	function inTLDS(domain) {
+		return (match = domain.match(/\.([a-z0-9-]+)$/i)) && (match[1].toLowerCase() in tlds);
+	}
 
-	function nextRange() {
-		if (!range) {
-			range = ranges.next().value;
+	function createPos(cont, offset) {
+		return {
+			container: cont,
+			offset: offset,
+			add: function (change) {
+				return posAdd(cont, offset, change);
+			}
+		};
+	}
+
+	function nextSibling(node) {
+		while (!node.nextSibling && node.parentNode) {
+			node = node.parentNode;
 		}
-		if (!range) {
+		return node.nextSibling;
+	}
+
+	function posAdd(cont, offset, change) {
+		// Currently we only support positive add
+
+		// If the container is #text
+		if (cont.nodeType == 3) {
+			if (offset + change <= cont.nodeValue.length) {
+				return createPos(cont, offset + change);
+			} else {
+				return posAdd(nextSibling(cont), 0, offset + change - cont.nodeValue.length)
+			}
+		}
+
+		return posAdd(cont.childNodes[offset], 0, change);
+	}
+
+	function* generateRanges(node, filter) {
+		// Generate linkified ranges.
+		var walker = document.createTreeWalker(
+			node,
+			NodeFilter.SHOW_TEXT + NodeFilter.SHOW_ELEMENT,
+			filter
+		), start, end, current, range;
+
+		end = start = walker.nextNode();
+		if (!start) {
+			return;
+		}
+		range = document.createRange();
+		range.setStartBefore(start);
+		while ((current = walker.nextNode())) {
+			if (end.nextSibling == current) {
+				end = current;
+				continue;
+			}
+			range.setEndAfter(end);
+			yield range;
+
+			end = start = current;
+			range = document.createRange();
+			range.setStartBefore(start);
+		}
+		range.setEndAfter(end);
+		yield range;
+	}
+
+	function isIP(s) {
+		var m, i;
+		if (!(m = s.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/))) {
+			return false;
+		}
+		for (i = 1; i < m.length; i++) {
+			if (+m[i] > 255 || (m[i].length > 1 && m[i][0] == "0")) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	var createRe = function(){
+		var pool = {};
+
+		return function (str, flags) {
+			if (!(str in pool)) {
+				pool[str] = new RegExp(str, flags);
+			}
+			// Reset RE
+			pool[str].lastIndex = 0;
+			return pool[str];
+		};
+	}();
+
+	function stripSingleSymbol(str, left, right) {
+		var re = createRe("[\\" + left + "\\" + right + "]", "g"),
+			match, count = 0, end;
+
+		// Match loop
+		while ((match = re.exec(str))) {
+			if (count % 2 == 0) {
+				end = match.index;
+				if (match[0] == right) {
+					break;
+				}
+			} else {
+				if (match[0] == left) {
+					break;
+				}
+			}
+			count++;
+		}
+
+		if (!match && count % 2 == 0) {
+			return str;
+		}
+
+		return str.substr(0, end);
+	}
+
+	function createLink(url, child, newTab, useImage) {
+		var cont = document.createElement("a");
+		cont.href = url;
+		cont.title = "Linkify Plus Plus";
+		if (newTab) {
+			cont.target = "_blank";
+		}
+		if (useImage && /^[^?#]+\.(?:jpg|png|gif|jpeg)(?:$|[?#])/i.test(url)) {
+			child = new Image;
+			child.src = url;
+			child.alt = url;
+		}
+		cont.appendChild(child);
+		cont.className = "linkifyplus";
+
+		return cont;
+	}
+
+	function valid(node, ignoreTags, ignoreClasses) {
+
+		// TODO: build cache on array?
+		var tagRE = ignoreTags && createRe("^(" + ignoreTags.join("|") + ")$", "i"),
+			classRE = ignoreClasses && createRe("(^|\\s)(" + ignoreClasses.join("|") + ")($|\\s)"),
+			className = node.className;
+
+		if (typeof className == "object") {
+			className = className.baseVal;
+		}
+		if (tagRE && tagRE.test(node.nodeName)) {
+			return false;
+		}
+		if (className && classRE && classRE.test(className)) {
+			return false;
+		}
+		if (node.contentEditable == "true" || node.contentEditable == "") {
+			return false;
+		}
+		if (className && className.indexOf("linkifyplus") >= 0) {
+			return false;
+		}
+		return true;
+	}
+
+	function createFilter(ignoreTags, ignoreClasses) {
+		return {
+			acceptNode: function(node) {
+				if (!valid(node, ignoreTags, ignoreClasses)) {
+					return NodeFilter.FILTER_REJECT;
+				}
+				if (node.nodeName == "WBR") {
+					return NodeFilter.FILTER_ACCEPT;
+				}
+				if (node.nodeType == 3) {
+					return NodeFilter.FILTER_ACCEPT;
+				}
+				return NodeFilter.FILTER_SKIP;
+			}
+		};
+	}
+
+	function linkifyRange(range, newTab, image, unicode) {
+		var m, mm, txt = range.toString(),
+			face, protocol, user, domain, port, path, angular,
+			url;
+
+		if (!unicode) {
+			m = urlRE.exec(txt);
+		} else {
+			m = urlUnicodeRE.exec(txt);
+		}
+
+		if (!m) {
+			return null;
+		}
+
+		face = m[0];
+		protocol = m[1] || "";
+		user = m[2] || "";
+		domain = m[3] || "";
+		port = m[4] || "";
+		path = m[5] || "";
+		angular = m[6];
+
+		var rangePos = createPos(range.startContainer, range.startOffset);
+
+		if (!angular && domain.indexOf("..") <= -1 && (isIP(domain) || inTLDS(domain))) {
+
+			if (path) {
+				// Remove trailing ".,?"
+				face = face.replace(/[.,?]*$/, '');
+				path = path.replace(/[.,?]*$/, '');
+
+				// Strip parens "()"
+				face = stripSingleSymbol(face, "(", ")");
+				path = stripSingleSymbol(path, "(", ")");
+
+				// Strip bracket "[]"
+				face = stripSingleSymbol(face, "[", "]");
+				path = stripSingleSymbol(path, "[", "]");
+
+				// Strip BBCode
+				face = face.replace(/\[\/?(b|i|u|url|img|quote|code|size|color)\].*/i, "");
+				path = path.replace(/\[\/?(b|i|u|url|img|quote|code|size|color)\].*/i, "");
+			}
+
+			// Guess protocol
+			if (!protocol && user && (mm = user.match(/^mailto:(.+)/))) {
+				protocol = "mailto:";
+				user = mm[1];
+			}
+
+			if (protocol && protocol.match(/^(hxxp|h\*\*p|ttp)/)) {
+				protocol = "http://";
+			}
+
+			if (!protocol) {
+				if (mm = domain.match(/^(ftp|irc)/)) {
+					protocol = mm[0] + "://";
+				} else if (domain.match(/^(www|web)/)) {
+					protocol = "http://";
+				} else if (user && user.indexOf(":") < 0 && !path) {
+					protocol = "mailto:";
+				} else {
+					protocol = "http://";
+				}
+			}
+
+			// Create URL
+			url = protocol + (user && user + "@") + domain + port + path;
+
+			// Create range to replace
+			var urlPos = rangePos.add(m.index);
+				urlEndPos = urlPos.add(face.length);
+
+			var urlRange = document.createRange();
+			urlRange.setStart(urlPos.container, urlPos.offset);
+			urlRange.setEnd(urlEndPos.container, urlEndPos.offset);
+
+			urlRange.insertNode(createLink(url, urlRange.extractContents(), newTab, image));
+
+			nextPos = createPos(urlRange.endContainer, urlRange.endOffset);
+
+		} else if (angular && !unsafeWindow.angular) {
+			// Next start after "{{" if there is no window.angular
+			nextPos = rangePos.add(m.index + 2);
+
+		} else {
+			nextPos = rangePos.add(m.index + face.length);
+		}
+
+		range.setStart(nextPos.container, nextPos.offset);
+
+		return range;
+	}
+
+	function linkify(root, options) {
+		var filter = createFilter(options.ignoreTags, options.ignoreClasses),
+			ranges = generateRanges(root, filter),
+			range;
+
+		setTimeout(nextRange);
+
+		function nextRange() {
+
+			if (!range) {
+				range = ranges.next().value;
+			}
+
+			if (!range) {
+				if (options.done) {
+					setTimeout(options.done);
+				}
+				return;
+			}
+
+			range = linkifyRange(range, options.newTab, options.image);
+
+			setTimeout(nextRange);
+		}
+
+	}
+
+	return {
+		linkify: linkify,
+		valid: valid
+	};
+}();
+
+// Deliver que item to handler
+function createQue(handler) {
+
+	var que = [],
+		running = false;
+
+	function unshift(item) {
+		que.unshift(item);
+		if (!running) {
+			start();
+		}
+	}
+
+	function push(item) {
+		que.push(item);
+		if (!running) {
+			start();
+		}
+	}
+
+	function start() {
+		running = true;
+		setTimeout(next);
+	}
+
+	function next() {
+		if (!que.length) {
+			running = false;
 			return;
 		}
 
-		range = linkifyRange(range);
+		var item = que.shift();
 
-		setTimeout(nextRange);
+		// Array like object
+		if (typeof item == "object" && Number.isInteger(item.length)) {
+			que.unshift.apply(que, item);
+			nextDone();
+			return;
+		}
+
+		handler(item, nextDone);
+	}
+
+	function nextDone() {
+		setTimeout(next);
+	}
+
+	return {
+		unshift: unshift,
+		push: push
+	};
+}
+
+// Working with GM_config
+function initConfig(options, reloadHandler) {
+
+	function reload() {
+		reloadHandler(GM_config.get());
+	}
+
+	GM_config.init(GM_info.script.name, options);
+	GM_config.onclose = reload;
+	GM_registerMenuCommand(GM_info.script.name + " - Configure", GM_config.open);
+	reload();
+}
+
+// Valid root node before sending to linkifyplus
+function validRoot(node) {
+	if (node.VALID !== undefined) {
+		return node.VALID;
+	}
+	var cache = [], isValid;
+	while (node != document.documentElement) {
+		cache.push(node);
+		if (!linkify.valid(node, options.ignoreTags, options.ignoreClasses)) {
+			isValid = false;
+			break;
+		}
+		if (!node.parentNode) {
+			return false;
+		}
+		node = node.parentNode;
+		if (node.VALID !== undefined) {
+			isValid = node.VALID;
+			break;
+		}
+	}
+	if (isValid === undefined) {
+		isValid = true;
+	}
+	var i;
+	for (i = 0; i < cache.length; i++) {
+		cache[i].VALID = isValid;
+	}
+	return isValid;
+}
+
+// Get array from string
+function getArray(s) {
+	s = s.trim();
+	if (!s) {
+		return null;
+	}
+	return s.split(/\s+/);
+}
+
+// Main logic
+function queHandler(item, done) {
+	var target;
+
+	if (item instanceof Element) {
+		target = item;
+	} else if (item instanceof MutationRecord && item.addedNodes.length) {
+		target = item.target;
+	}
+
+	if (validRoot(target)) {
+		linkify.linkify(target, {
+			image: options.image,
+			unicode: options.unicode,
+			ignoreTags: options.ignoreTags,
+			ignoreClasses: options.ignoreClasses,
+			newTab: options.newTab,
+			done: done
+		});
+	}
+
+	if (selectors) {
+		que.unshift(target.querySelectorAll(selectors));
 	}
 }
 
-var options = {
-	done: finishCallback,
-	ignoreTags: {
-		a: true,
-		style: true
-	},
-	tlds: {
-
-	}
-};
-
-linkify(node, options);
-
-
-var config,
-	re = {
-		image: /^[^?#]+\.(?:jpg|png|gif|jpeg)(?:$|[?#])/i
-	},
-	tlds = TLDS.set,
-	selectors,
-	que = [],
-	thread = createThread(queGen);
+// Program init
+var options, selectors, que = createQue(queHandler);
 
 initConfig({
 	image: {
@@ -105,484 +508,20 @@ initConfig({
 		type: "checkbox",
 		default: false
 	}
-});
-
-function initConfig(options) {
-	GM_config.init(GM_info.script.name, options);
-	GM_config.onclose = loadConfig;
-	loadConfig();
-	GM_registerMenuCommand(GM_info.script.name + " - Configure", GM_config.open);
-}
-
-function loadConfig(){
-	config = GM_config.get();
-
+}, function(config){
+	options = config;
+	options.ignoreTags = getArray(options.ignoreTags);
+	options.ignoreClasses = getArray(options.ignoreClasses);
 	selectors = config.selectors.trim().replace(/\n/, ", ");
-
-	var arr;
-
-	arr = getArray(config.ignoreTags);
-	if (arr) {
-		re.ignoreTags = new RegExp("^(" + arr.join("|") + ")$", "i");
-	} else {
-		re.ignoreTags = null;
-	}
-
-	arr = getArray(config.ignoreClasses);
-	if (arr) {
-		re.ignoreClasses = new RegExp("(^|\\s)(" + arr.join("|") + ")($|\\s)");
-	} else {
-		re.ignoreClasses = null;
-	}
-
-	// 1=protocol, 2=user, 3=domain, 4=port, 5=path, 6=angular source
-	if (config.unicode) {
-		re.url = /\b([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.\u00b7-\u2a6d6]+\.[a-z0-9-TLDS.charSet]{1,TLDS.maxLength})\b(:\d+)?([/?#]\S*)?|\{\{(.+?)\}\}/gi;
-	} else {
-		re.url = /\b([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.]+\.[a-z0-9-]{1,TLDS.maxLength})\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#(),'\[\]]*)?|\{\{(.+?)\}\}/gi;
-	}
-}
-
-function valid(node) {
-	var className = node.className;
-	if (typeof className == "object") {
-		className = className.baseVal;
-	}
-	if (re.ignoreTags && re.ignoreTags.test(node.nodeName)) {
-		return false;
-	}
-	if (className && re.ignoreClasses && re.ignoreClasses.test(className)) {
-		return false;
-	}
-	if (node.contentEditable == "true" || node.contentEditable == "") {
-		return false;
-	}
-	if (className && className.indexOf("linkifyplus") >= 0) {
-		return false;
-	}
-	return true;
-}
-
-var nodeFilter = {
-	acceptNode: function(node) {
-		if (!valid(node)) {
-			return NodeFilter.FILTER_REJECT;
-		}
-		if (node.nodeName == "WBR") {
-			return NodeFilter.FILTER_ACCEPT;
-		}
-		if (node.nodeType == 3) {
-			return NodeFilter.FILTER_ACCEPT;
-		}
-		return NodeFilter.FILTER_SKIP;
-	}
-};
-
-function createThread(gen, done) {
-	var running = false,
-		timeout,
-		chunks,
-		iter;
-
-	function start(param) {
-		if (running) {
-			return;
-		}
-		chunks = 0;
-		running = true;
-		iter = gen(param);
-		timeout = setTimeout(next);
-	}
-
-	function next() {
-		chunks++;
-		var count = 0, done;
-		while (!(done = iter.next().done) && count < 20) {
-			count++;
-		}
-		if (!done) {
-			timeout = setTimeout(next);
-		} else {
-			stop();
-		}
-	}
-
-	function stop() {
-		running = false;
-		clearTimeout(timeout);
-		if (done) {
-			done();
-		}
-	}
-
-	return {
-		start: start,
-		stop: stop
-	};
-}
-
-function validRoot(node) {
-	if (node.VALID !== undefined) {
-		return node.VALID;
-	}
-	var cache = [], isValid;
-	while (node != document.documentElement) {
-		cache.push(node);
-		if (!valid(node)) {
-			isValid = false;
-			break;
-		}
-		if (!node.parentNode) {
-			return false;
-		}
-		node = node.parentNode;
-		if (node.VALID !== undefined) {
-			isValid = node.VALID;
-			break;
-		}
-	}
-	if (isValid === undefined) {
-		isValid = true;
-	}
-	var i;
-	for (i = 0; i < cache.length; i++) {
-		cache[i].VALID = isValid;
-	}
-	return isValid;
-}
-
-function queAdd(node) {
-	if (node.QUE_COUNT === undefined) {
-		node.QUE_COUNT = 0;
-	}
-
-	node.QUE_COUNT++;
-	que.push(node);
-}
-
-function* queGen () {
-	// Generate linkified range from que.
-	var node;
-	while ((node = que.shift())) {
-		node.QUE_COUNT--;
-		if (node.QUE_COUNT > 0) {
-			continue;
-		}
-		yield* createTreeWalker(node);
-	}
-}
-
-function getArray(s) {
-	s = s.trim();
-	if (!s) {
-		return null;
-	}
-	return s.split(/\s+/);
-}
-
-function isIP(s) {
-	var m, i;
-	if (!(m = s.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/))) {
-		return false;
-	}
-	for (i = 1; i < m.length; i++) {
-		if (+m[i] > 255 || (m[i].length > 1 && m[i][0] == "0")) {
-			return false;
-		}
-	}
-	return true;
-}
-
-var createRe = function(){
-	var pool = {};
-
-	return function (str, flags) {
-		if (!(str in pool)) {
-			pool[str] = new RegExp(str, flags);
-		}
-		// Reset RE
-		pool[str].lastIndex = 0;
-		return pool[str];
-	};
-}();
-
-function stripSingleSymbol(str, left, right) {
-	var re = createRe("[\\" + left + "\\" + right + "]", "g"),
-		match, count = 0, end;
-
-	// Match loop
-	while ((match = re.exec(str))) {
-		if (count % 2 == 0) {
-			end = match.index;
-			if (match[0] == right) {
-				break;
-			}
-		} else {
-			if (match[0] == left) {
-				break;
-			}
-		}
-		count++;
-	}
-
-	if (!match && count % 2 == 0) {
-		return str;
-	}
-
-	return str.substr(0, end);
-}
-
-function createLink(url, child) {
-	var cont = document.createElement("a");
-	cont.href = url;
-	cont.title = "Linkify Plus Plus";
-	if (config.newTab) {
-		cont.target = "_blank";
-	}
-	if (config.image && re.image.test(url)) {
-		child = new Image;
-		child.src = url;
-		child.alt = url;
-	}
-	cont.appendChild(child);
-	cont.className = "linkifyplus";
-
-	return cont;
-}
-
-function replaceRange(range, nodes) {
-	var i, j;
-
-	// Get text targets
-	var targets = [],
-		list = range.startContainer.childNodes,
-		offset = 0,
-		endOffset = 0;
-	for (i = range.startOffset; i < range.endOffset; i++) {
-		if (list[i].nodeType == 3) {
-			endOffset = offset + list[i].nodeValue.length;
-		}
-		targets.push({
-			offset: offset,
-			endOffset: endOffset,
-			node: list[i]
-		});
-		offset = endOffset;
-	}
-
-	// Compare offset with range position
-	var subRange = document.createRange(),
-		frag = document.createDocumentFragment(),
-		text;
-	for (i = 0, j = 0; i < nodes.length; i++) {
-		// Create sub range
-		while (nodes[i].start >= targets[j].endOffset) {
-			j++;
-		}
-		subRange.setStart(targets[j].node, nodes[i].start - targets[j].offset);
-		while (nodes[i].end > targets[j].endOffset) {
-			j++;
-		}
-		subRange.setEnd(targets[j].node, nodes[i].end - targets[j].offset);
-
-		// Create text and link
-		text = subRange.cloneContents();
-		if (nodes[i].type == "string") {
-			frag.appendChild(text);
-		} else {
-			frag.appendChild(createLink(nodes[i].url, text));
-		}
-	}
-
-	// Replace range
-	range.deleteContents();
-	range.insertNode(frag);
-}
-
-function inTLDS(domain) {
-	return (match = domain.match(/\.([a-z0-9-]+)$/i)) && (match[1].toLowerCase() in tlds);
-}
-
-function createPos(cont, offset) {
-	return {
-		container: cont,
-		offset: offset,
-		add: function (change) {
-			return posAdd(cont, offset, change);
-		}
-	};
-}
-
-function nextSibling(node) {
-	while (!node.nextSibling && node.parentNode) {
-		node = node.parentNode;
-	}
-	return node.nextSibling;
-}
-
-function posAdd(cont, offset, change) {
-	// Currently we only support positive add
-
-	// If the container is #text
-	if (cont.nodeType == 3) {
-		if (offset + change <= cont.nodeValue.length) {
-			return {
-				container: cont,
-				offset: offset + change
-			};
-		} else {
-			return posAdd(nextSibling(cont), 0, offset + change - cont.nodeValue.length)
-		}
-	}
-
-	return posAdd(cont.childNodes[offset], 0, change);
-}
-
-function linkifyRange(range) {
-	var m, mm,
-		txt = range.toString(),
-	var face, protocol, user, domain, port, path, angular, nextOffset = 0;
-	var url;
-
-	m = re.url.exec(txt);
-
-	if (!m) {
-		return null;
-	}
-
-	face = m[0];
-	protocol = m[1] || "";
-	user = m[2] || "";
-	domain = m[3] || "";
-	port = m[4] || "";
-	path = m[5] || "";
-	angular = m[6];
-
-	var rangePos = createPos(range.startContainer, range.startOffset);
-
-	if (!angular && domain.indexOf("..") <= -1 && (isIP(domain) || inTLDS(domain))) {
-
-		if (path) {
-			// Remove trailing ".,?"
-			face = face.replace(/[.,?]*$/, '');
-			path = path.replace(/[.,?]*$/, '');
-
-			// Strip parens "()"
-			face = stripSingleSymbol(face, "(", ")");
-			path = stripSingleSymbol(path, "(", ")");
-
-			// Strip bracket "[]"
-			face = stripSingleSymbol(face, "[", "]");
-			path = stripSingleSymbol(path, "[", "]");
-
-			// Strip BBCode
-			face = face.replace(/\[\/?(b|i|u|url|img|quote|code|size|color)\].*/i, "");
-			path = path.replace(/\[\/?(b|i|u|url|img|quote|code|size|color)\].*/i, "");
-		}
-
-		// Guess protocol
-		if (!protocol && user && (mm = user.match(/^mailto:(.+)/))) {
-			protocol = "mailto:";
-			user = mm[1];
-		}
-
-		if (protocol && protocol.match(/^(hxxp|h\*\*p|ttp)/)) {
-			protocol = "http://";
-		}
-
-		if (!protocol) {
-			if (mm = domain.match(/^(ftp|irc)/)) {
-				protocol = mm[0] + "://";
-			} else if (domain.match(/^(www|web)/)) {
-				protocol = "http://";
-			} else if (user && user.indexOf(":") < 0 && !path) {
-				protocol = "mailto:";
-			} else {
-				protocol = "http://";
-			}
-		}
-
-		// Create URL
-		url = protocol + (user && user + "@") + domain + port + path;
-
-		// Create range to replace
-		var urlPos = rangePos.add(m.index);
-			urlEndPos = urlPos.add(face.length);
-
-		urlRange.set
-
-		nextPos = urlEndPos;
-
-	} else if (angular && !unsafeWindow.angular) {
-		// Next start after "{{" if there is no window.angular
-		nextPos = rangePos.add(m.index + 2);
-
-	} else {
-		nextPos = rangePos.add(m.index + face.length);
-	}
-
-	range.setStart(nextPos.container, nextPos.offset);
-
-	return range;
-}
-
-function* generateRanges(node) {
-	// Generate linkified ranges.
-	var walker = document.createTreeWalker(
-		node,
-		NodeFilter.SHOW_TEXT + NodeFilter.SHOW_ELEMENT,
-		nodeFilter
-	), start, end, current, range;
-
-	end = start = walker.nextNode();
-	if (!start) {
-		return;
-	}
-	range = document.createRange();
-	range.setStartBefore(start);
-	while ((current = walker.nextNode())) {
-		if (end.nextSibling == current) {
-			end = current;
-			continue;
-		}
-		range.setEndAfter(end);
-		yield range;
-
-		end = start = current;
-		range = document.createRange();
-		range.setStartBefore(start);
-	}
-	range.setEndAfter(end);
-	yield range;
-}
-
-function* mutationGen(mutations) {
-	// Generate nodes
-	var i;
-	for (i = 0; i < mutations.length; i++) {
-		if (mutations[i].addedNodes.length) {
-			yield processNode(mutations[i].target);
-		}
-	}
-}
-
-function processNode(node) {
-	if (validRoot(node)) {
-		queAdd(node);
-	}
-	if (selectors) {
-		Array.prototype.forEach.call(node.querySelectorAll(selectors), queAdd);
-	}
-}
+});
 
 GM_addStyle(".linkifyplus img { max-width: 90%; }");
 
 new MutationObserver(function(mutations){
-	createThread(mutationGen, thread.start).start(mutations);
+	que.push(mutations);
 }).observe(document.body, {
 	childList: true,
 	subtree: true
 });
 
-processNode(document.body);
-thread.start();
+que.push(document.body);
