@@ -425,41 +425,6 @@ function initConfig(options, reloadHandler) {
 	reload();
 }
 
-/*********************** Main section start *********************************/
-
-var options, selectors, que = createQue(queHandler);
-
-// Valid root node before sending to linkifyplus
-function validRoot(node, options) {
-	if (node.VALID !== undefined) {
-		return node.VALID;
-	}
-	var cache = [], isValid;
-	while (node != document.documentElement) {
-		cache.push(node);
-		if (!linkify.valid(node, options.ignoreTags, options.ignoreClasses)) {
-			isValid = false;
-			break;
-		}
-		if (!node.parentNode) {
-			return false;
-		}
-		node = node.parentNode;
-		if (node.VALID !== undefined) {
-			isValid = node.VALID;
-			break;
-		}
-	}
-	if (isValid === undefined) {
-		isValid = true;
-	}
-	var i;
-	for (i = 0; i < cache.length; i++) {
-		cache[i].VALID = isValid;
-	}
-	return isValid;
-}
-
 // Get array from string
 function getArray(s) {
 	s = s.trim();
@@ -469,7 +434,56 @@ function getArray(s) {
 	return s.split(/\s+/);
 }
 
-// Main logic
+// Valid root node before sending to linkifyplus
+function validRoot(node, options) {
+	// Cache valid state in node.VALID
+	if (node.VALID !== undefined) {
+		return node.VALID;
+	}
+
+	// Loop through ancestor
+	var cache = [], isValid;
+	while (node != document.documentElement) {
+		cache.push(node);
+
+		// It is invalid if it has invalid ancestor
+		if (!linkify.valid(node, options.ignoreTags, options.ignoreClasses)) {
+			isValid = false;
+			break;
+		}
+
+		// The node was removed from DOM tree
+		if (!node.parentNode) {
+			return false;
+		}
+
+		node = node.parentNode;
+
+		if (node.VALID !== undefined) {
+			isValid = node.VALID;
+			break;
+		}
+	}
+
+	// All ancestors are fine
+	if (isValid === undefined) {
+		isValid = true;
+	}
+
+	// Cache the result
+	var i;
+	for (i = 0; i < cache.length; i++) {
+		cache[i].VALID = isValid;
+	}
+
+	return isValid;
+}
+
+/*********************** Main section start *********************************/
+
+var options, selectors, que = createQue(queHandler);
+
+// Recieve item from que
 function queHandler(item, done) {
 	if (item instanceof Element) {
 		if (validRoot(item, options) || selectors && item.matches(selectors)) {
@@ -544,7 +558,10 @@ new MutationObserver(function(mutations){
 	if (lastRecord.addedNodes.length && mutations[mutations.length - 1].addedNodes[0].className == "linkifyplus") {
 		return;
 	}
+
+	// Put mutations into que
 	que.push(mutations);
+
 }).observe(document.body, {
 	childList: true,
 	subtree: true
