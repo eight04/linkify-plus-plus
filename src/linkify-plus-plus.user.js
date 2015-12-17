@@ -37,7 +37,11 @@ var linkify = function(){
 		tlds = TLDS.set;
 
 	function inTLDS(domain) {
-		return (match = domain.match(/\.([a-z0-9-]+)$/i)) && (match[1].toLowerCase() in tlds);
+		var match = domain.match(/\.([a-z0-9-]+)$/i);
+		if (!match) {
+			return false;
+		}
+		return match[1].toLowerCase() in tlds;
 	}
 
 	function createPos(cont, offset) {
@@ -69,6 +73,12 @@ var linkify = function(){
 			}
 		}
 
+		// If the container is empty
+		if (!cont.textContent.length) {
+			return posAdd(nextSibling(cont), 0, change)
+		}
+
+		// Otherwise it must have children
 		return posAdd(cont.childNodes[offset], 0, change);
 	}
 
@@ -237,7 +247,8 @@ var linkify = function(){
 		path = m[5] || "";
 		angular = m[6];
 
-		var rangePos = createPos(range.startContainer, range.startOffset);
+		var rangePos = createPos(range.startContainer, range.startOffset),
+			nextPos;
 
 		if (!angular && domain.indexOf("..") <= -1 && (isIP(domain) || inTLDS(domain))) {
 
@@ -270,7 +281,7 @@ var linkify = function(){
 			}
 
 			if (!protocol) {
-				if (mm = domain.match(/^(ftp|irc)/)) {
+				if ((mm = domain.match(/^(ftp|irc)/))) {
 					protocol = mm[0] + "://";
 				} else if (domain.match(/^(www|web)/)) {
 					protocol = "http://";
@@ -285,7 +296,7 @@ var linkify = function(){
 			url = protocol + (user && user + "@") + domain + port + path;
 
 			// Create range to replace
-			var urlPos = rangePos.add(m.index);
+			var urlPos = rangePos.add(m.index),
 				urlEndPos = urlPos.add(face.length);
 
 			var urlRange = document.createRange();
@@ -389,9 +400,15 @@ function createQue(handler) {
 		setTimeout(next);
 	}
 
+	function isRunning() {
+		return running;
+	}
+
 	return {
 		unshift: unshift,
-		push: push
+		push: push,
+		isRunning: isRunning,
+		que: que
 	};
 }
 
@@ -454,7 +471,6 @@ function getArray(s) {
 
 // Main logic
 function queHandler(item, done) {
-	console.log(item);
 	var target;
 
 	if (item instanceof Element) {
@@ -462,8 +478,6 @@ function queHandler(item, done) {
 	} else if (item instanceof MutationRecord && item.addedNodes.length) {
 		target = item.target;
 	}
-
-	console.log(target);
 
 	if (validRoot(target, options)) {
 		linkify.linkify(target, {
@@ -532,5 +546,3 @@ new MutationObserver(function(mutations){
 });
 
 que.push(document.body);
-
-console.log("LPP loaded");
