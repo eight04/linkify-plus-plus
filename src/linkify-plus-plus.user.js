@@ -408,8 +408,12 @@ function initConfig(options, reloadHandler) {
 	reload();
 }
 
+/*********************** Main section start *********************************/
+
+var options, selectors, que = createQue(queHandler);
+
 // Valid root node before sending to linkifyplus
-function validRoot(node) {
+function validRoot(node, options) {
 	if (node.VALID !== undefined) {
 		return node.VALID;
 	}
@@ -450,6 +454,7 @@ function getArray(s) {
 
 // Main logic
 function queHandler(item, done) {
+	console.log(item);
 	var target;
 
 	if (item instanceof Element) {
@@ -458,7 +463,9 @@ function queHandler(item, done) {
 		target = item.target;
 	}
 
-	if (validRoot(target)) {
+	console.log(target);
+
+	if (validRoot(target, options)) {
 		linkify.linkify(target, {
 			image: options.image,
 			unicode: options.unicode,
@@ -477,8 +484,6 @@ function queHandler(item, done) {
 }
 
 // Program init
-var options, selectors, que = createQue(queHandler);
-
 initConfig({
 	image: {
 		label: "Embed images",
@@ -527,3 +532,5 @@ new MutationObserver(function(mutations){
 });
 
 que.push(document.body);
+
+console.log("LPP loaded");

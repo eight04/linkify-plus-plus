@@ -1,4 +1,5 @@
 {
+	"extends": "eslint:recommended",
 	"env": {
 		"browser": true,
 		"es6": true
@@ -9,15 +10,11 @@
 		"GM_addStyle": false,
 		"GM_registerMenuCommand": false,
 		"GM_info": false,
-		"TLDS": false,
-		"benchmark": false
+		"TLDS": false
 	},
 	"rules": {
-		"no-trailing-spaces": 0,
 		"eqeqeq": 0,
-		"no-cond-assign": 0,
 		"camelcase": 0,
-		"no-multi-str": 0,
 		"new-cap": 0,
 		"no-constant-condition": 0,
 		"no-mixed-spaces-and-tabs": 0,
