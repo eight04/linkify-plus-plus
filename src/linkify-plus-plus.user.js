@@ -467,6 +467,8 @@ function queHandler(item, done) {
 			newTab: options.newTab,
 			done: done
 		});
+	} else {
+		done();
 	}
 
 	if (selectors) {
