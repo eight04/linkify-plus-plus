@@ -28,6 +28,7 @@ Todos
 	- `Array.unshift` has poor performance.
 	- We always put no-need mutations into que. This make que become so large on firefox.
 	- What if duplicate item put into que? Since we doesn't loop through mutation records, it is impossible to identify them before adding into que.
+	- Convert range to string is a heavy work and we do this every time calling `linkifyRange`.
 
 Changelog
 ---------
