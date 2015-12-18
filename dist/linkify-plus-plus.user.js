@@ -221,7 +221,7 @@ var linkify = function(){
 		};
 	}
 
-	function linkifyRange(range, newTab, image, unicode, re) {
+	function linkifyRange(range, newTab, image, re) {
 		var m, mm, txt, lastPos,
 			face, protocol, user, domain, port, path, angular,
 			url;
