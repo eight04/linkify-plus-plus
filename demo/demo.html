@@ -4,20 +4,8 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="cache-control" content="no-cache">
 	<title>Linkify Plus Plus</title>
+	<script src="benchmark.js"></script>
 	<script>
-		var benchmark = function() {
-			var time = Date.now();
-			return function (message, start) {
-				var newTime = Date.now();
-				if (start) {
-					console.log(message);
-				} else {
-					console.log("+" + (newTime - time) + " " + message);
-				}
-				time = newTime;
-			};
-		}();
-
 		function dup() {
 			var node = document.createElement("p");
 			node.className = "pre-line";

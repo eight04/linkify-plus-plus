@@ -4,20 +4,8 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="cache-control" content="no-cache">
 	<title>Linkify Plus Plus</title>
+	<script src="benchmark.js"></script>
 	<script>
-		var sum = {};
-		var benchmark = function() {
-			var ts = {};
-			return function (tag) {
-				if (ts[tag]) {
-					sum[tag] = (sum[tag] || 0) + Date.now() - ts[tag];
-					ts[tag] = null;
-				} else {
-					ts[tag] = Date.now();
-				}
-			};
-		}();
-
 		function dup() {
 			var node = document.createElement("p");
 			node.className = "pre-line";
