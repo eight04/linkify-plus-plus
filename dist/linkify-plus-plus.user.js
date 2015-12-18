@@ -331,9 +331,13 @@ var linkify = function(){
 		var filter = createFilter(options.ignoreTags, options.ignoreClasses),
 			ranges = generateRanges(root, filter),
 			range,
-			ts = Date.now();
+			ts, te, maxRunTime, timeout;
 
-		requestAnimationFrame(nextRange);
+		ts = te = Date.now();
+		maxRunTime = options.maxRunTime || 100;
+		timeout = options.timeout || 30000;
+
+		nextRange();
 
 		function nextRange() {
 
@@ -343,17 +347,29 @@ var linkify = function(){
 				}
 
 				if (!range) {
-					if (options.done) {
-						requestAnimationFrame(options.done);
-					}
-					console.log("Linkify finished in " + (Date.now() - ts) + "ms");
-					return;
+					break;
 				}
 
 				range = linkifyRange(range, options.newTab, options.image);
-			} while (Date.now() - ts < 30000);
 
-			console.log("Linkify timeout in 30s");
+				// Over script max run time
+				if (Date.now() - te > maxRunTime) {
+					te = Date.now();
+					requestAnimationFrame(nextRange);
+					return;
+				}
+
+			} while (Date.now() - ts < timeout);
+
+			if (!range) {
+				console.log("Linkify finished in " + (Date.now() - ts) + "ms");
+			} else {
+				console.log("Linkify timeout in " + timeout + "ms");
+			}
+
+			if (options.done) {
+				options.done();
+			}
 		}
 
 	}
