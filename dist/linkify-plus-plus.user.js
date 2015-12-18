@@ -221,24 +221,24 @@ var linkify = function(){
 		};
 	}
 
-	function linkifyRange(range, newTab, image, unicode) {
-		var re = unicode ? urlUnicodeRE : urlRE,
-			m, mm, txt, lastPos,
+	function linkifyRange(range, newTab, image, unicode, re) {
+		var m, mm, txt, lastPos,
 			face, protocol, user, domain, port, path, angular,
 			url;
 
-		// Is range.endContainer not changed?
+		// Cache range.toString
 		if (!range.TXT) {
-			// It is a new range
 			range.TXT = range.toString();
-			re.lastIndex = 0;
 		}
+
 		txt = range.TXT;
 		lastPos = re.lastIndex;
 
 		m = re.exec(txt);
 
 		if (!m) {
+			// Remove cache
+			delete range.TXT;
 			return null;
 		}
 
@@ -332,6 +332,7 @@ var linkify = function(){
 		var filter = createFilter(options.ignoreTags, options.ignoreClasses),
 			ranges = generateRanges(root, filter),
 			range,
+			re = options.unicode ? urlUnicodeRE : urlRE,
 			maxRunTime = options.maxRunTime,
 			timeout = options.timeout,
 			ts = Date.now(), te;
@@ -351,14 +352,16 @@ var linkify = function(){
 
 			do {
 				if (!range) {
+					// Get new range and reset lastIndex
 					range = ranges.next().value;
+					re.lastIndex = 0;
 				}
 
 				if (!range) {
 					break;
 				}
 
-				range = linkifyRange(range, options.newTab, options.image, options.unicode);
+				range = linkifyRange(range, options.newTab, options.image, re);
 
 				// Over script max run time
 				if (Date.now() - te > maxRunTime) {
