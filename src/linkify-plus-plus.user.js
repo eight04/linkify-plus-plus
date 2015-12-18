@@ -32,8 +32,8 @@
 // Linkify Plus Plus core
 var linkify = function(){
 
-	var urlRE = /\b([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.\u00b7-\u2a6d6]+\.[a-z0-9-TLDS.charSet]{1,TLDS.maxLength})\b(:\d+)?([/?#]\S*)?|\{\{(.+?)\}\}/ig,
-		urlUnicodeRE =  /\b([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.]+\.[a-z0-9-]{1,TLDS.maxLength})\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#(),'\[\]]*)?|\{\{(.+?)\}\}/ig,
+	var urlUnicodeRE = /\b([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.\u00b7-\u2a6d6]+\.[a-z0-9-TLDS.charSet]{1,TLDS.maxLength})\b(:\d+)?([/?#]\S*)?|\{\{(.+?)\}\}/ig,
+		urlRE =  /\b([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.]+\.[a-z0-9-]{1,TLDS.maxLength})\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#(),'\[\]]*)?|\{\{(.+?)\}\}/ig,
 		tlds = TLDS.set;
 
 	function inTLDS(domain) {
@@ -72,8 +72,8 @@ var linkify = function(){
 					pos.offset = offset + change;
 					return;
 				}
-				offset = 0;
 				change = offset + change - cont.nodeValue.length;
+				offset = 0;
 			}
 			cont = cont.nextSibling;
 		}
@@ -227,12 +227,13 @@ var linkify = function(){
 			face, protocol, user, domain, port, path, angular,
 			url;
 
-		if (!range.endContainer.TXT) {
+		// Is range.endContainer not changed?
+		if (!range.TXT) {
 			// It is a new range
-			range.endContainer.TXT = range.toString();
+			range.TXT = range.toString();
 			re.lastIndex = 0;
 		}
-		txt = range.endContainer.TXT;
+		txt = range.TXT;
 		lastPos = re.lastIndex;
 
 		m = re.exec(txt);
@@ -331,15 +332,22 @@ var linkify = function(){
 		var filter = createFilter(options.ignoreTags, options.ignoreClasses),
 			ranges = generateRanges(root, filter),
 			range,
-			ts, te, maxRunTime, timeout;
+			maxRunTime = options.maxRunTime,
+			timeout = options.timeout,
+			ts = Date.now(), te;
 
-		ts = te = Date.now();
-		maxRunTime = options.maxRunTime || 100;
-		timeout = options.timeout || 30000;
+		if (maxRunTime === undefined) {
+			maxRunTime = 100;
+		}
+
+		if (timeout === undefined) {
+			timeout = 30000;
+		}
 
 		nextRange();
 
 		function nextRange() {
+			te = Date.now();
 
 			do {
 				if (!range) {
@@ -350,11 +358,10 @@ var linkify = function(){
 					break;
 				}
 
-				range = linkifyRange(range, options.newTab, options.image);
+				range = linkifyRange(range, options.newTab, options.image, options.unicode);
 
 				// Over script max run time
 				if (Date.now() - te > maxRunTime) {
-					te = Date.now();
 					requestAnimationFrame(nextRange);
 					return;
 				}
@@ -569,12 +576,17 @@ initConfig({
 		label: "Open link in new tab",
 		type: "checkbox",
 		default: false
+	},
+	timeout: {
+		label: "Max execution time (ms). Linkify will stop if its execution time exceeds this value.",
+		type: "number",
+		default: 30000
 	}
-}, function(config){
-	options = config;
+}, function(_options){
+	options = _options;
 	options.ignoreTags = getArray(options.ignoreTags);
 	options.ignoreClasses = getArray(options.ignoreClasses);
-	selectors = config.selectors.trim().replace(/\n/, ", ");
+	selectors = options.selectors.trim().replace(/\n/, ", ");
 });
 
 GM_addStyle(".linkifyplus img { max-width: 90%; }");
