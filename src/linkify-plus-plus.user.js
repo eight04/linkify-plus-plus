@@ -44,42 +44,39 @@ var linkify = function(){
 		return match[1].toLowerCase() in tlds;
 	}
 
+	function Pos(cont, offset) {
+		this.container = cont;
+		this.offset = offset;
+	}
+
+	Pos.prototype.add = function(change) {
+		return posAdd(this, this.container, this.offset, change);
+	};
+
 	function createPos(cont, offset) {
-		return {
-			container: cont,
-			offset: offset,
-			add: function (change) {
-				return posAdd(cont, offset, change);
-			}
-		};
+		return new Pos(cont, offset);
 	}
 
-	function nextSibling(node) {
-		while (!node.nextSibling && node.parentNode) {
-			node = node.parentNode;
+	function posAdd(pos, cont, offset, change) {
+		// If the container is #text.parentNode
+		if (cont.childNodes.length) {
+			cont = cont.childNodes[offset];
+			offset = 0;
 		}
-		return node.nextSibling;
-	}
-
-	function posAdd(cont, offset, change) {
-		// Currently we only support positive add
 
 		// If the container is #text
-		if (cont.nodeType == 3) {
-			if (offset + change <= cont.nodeValue.length) {
-				return createPos(cont, offset + change);
-			} else {
-				return posAdd(nextSibling(cont), 0, offset + change - cont.nodeValue.length)
+		while (cont) {
+			if (cont.nodeType == 3) {
+				if (offset + change <= cont.nodeValue.length) {
+					pos.cont = cont;
+					pos.offset = offset + change;
+					return;
+				}
+				offset = 0;
+				change = offset + change - cont.nodeValue.length;
 			}
+			cont = cont.nextSibling;
 		}
-
-		// If the container is empty
-		if (!cont.textContent.length) {
-			return posAdd(nextSibling(cont), 0, change)
-		}
-
-		// Otherwise it must have children
-		return posAdd(cont.childNodes[offset], 0, change);
 	}
 
 	function* generateRanges(node, filter) {
@@ -229,11 +226,13 @@ var linkify = function(){
 			face, protocol, user, domain, port, path, angular,
 			url;
 
+		benchmark("url RE");
 		if (!unicode) {
 			m = urlRE.exec(txt);
 		} else {
 			m = urlUnicodeRE.exec(txt);
 		}
+		benchmark("url RE");
 
 		if (!m) {
 			return null;
@@ -247,8 +246,8 @@ var linkify = function(){
 		path = m[5] || "";
 		angular = m[6];
 
-		var rangePos = createPos(range.startContainer, range.startOffset),
-			nextPos;
+		// A position to record where the range is working
+		var pos = createPos(range.startContainer, range.startOffset);
 
 		if (!angular && domain.indexOf("..") <= -1 && (isIP(domain) || inTLDS(domain))) {
 
@@ -295,27 +294,31 @@ var linkify = function(){
 			// Create URL
 			url = protocol + (user && user + "@") + domain + port + path;
 
-			// Create range to replace
-			var urlPos = rangePos.add(m.index),
-				urlEndPos = urlPos.add(face.length);
-
 			var urlRange = document.createRange();
-			urlRange.setStart(urlPos.container, urlPos.offset);
-			urlRange.setEnd(urlEndPos.container, urlEndPos.offset);
+			pos.add(m.index);
+			urlRange.setStart(pos.container, pos.offset);
 
+			pos.add(face.length);
+			urlRange.setEnd(pos.container, pos.offset);
+
+			benchmark("DOM insert");
 			urlRange.insertNode(createLink(url, urlRange.extractContents(), newTab, image));
+			benchmark("DOM insert");
 
-			nextPos = createPos(urlRange.endContainer, urlRange.endOffset);
+			benchmark("pos creation");
+			pos.container = urlRange.endContainer;
+			pos.offset = urlRange.endOffset;
+			benchmark("pos creation");
 
 		} else if (angular && !unsafeWindow.angular) {
 			// Next start after "{{" if there is no window.angular
-			nextPos = rangePos.add(m.index + 2);
+			pos.add(m.index + 2);
 
 		} else {
-			nextPos = rangePos.add(m.index + face.length);
+			pos.add(m.index + face.length);
 		}
 
-		range.setStart(nextPos.container, nextPos.offset);
+		range.setStart(pos.container, pos.offset);
 
 		return range;
 	}
@@ -323,26 +326,38 @@ var linkify = function(){
 	function linkify(root, options) {
 		var filter = createFilter(options.ignoreTags, options.ignoreClasses),
 			ranges = generateRanges(root, filter),
-			range;
+			range,
+			ts = Date.now();
 
 		requestAnimationFrame(nextRange);
 
 		function nextRange() {
 
-			if (!range) {
-				range = ranges.next().value;
-			}
-
-			if (!range) {
-				if (options.done) {
-					requestAnimationFrame(options.done);
+			while (Date.now() - ts < 30000) {
+				if (!range) {
+					range = ranges.next().value;
 				}
-				return;
+
+				if (!range) {
+					break;
+				}
+
+				range = linkifyRange(range, options.newTab, options.image);
 			}
 
-			range = linkifyRange(range, options.newTab, options.image);
+			if (options.done) {
+				requestAnimationFrame(options.done);
+			}
 
-			requestAnimationFrame(nextRange);
+			if (range) {
+				// Linkify timeout
+				console.log("Linkify timeout in 30s");
+			} else {
+				console.log("Linkify finished in " + (Date.now() - ts) + "ms")
+			}
+
+			// ts = Date.now();
+			// requestAnimationFrame(nextRange);
 		}
 
 	}

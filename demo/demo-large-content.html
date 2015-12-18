@@ -5,16 +5,19 @@
 	<meta http-equiv="cache-control" content="no-cache">
 	<title>Linkify Plus Plus</title>
 	<script>
+		var sum = {};
 		var benchmark = function() {
-			var time = Date.now();
-			return function (message, start) {
-				var newTime = Date.now();
-				if (start) {
-					console.log(message);
-				} else {
-					console.log("+" + (newTime - time) + " " + message);
+			var ts = {};
+			return function (tag) {
+				if (!sum[tag]) {
+					sum[tag] = 0;
 				}
-				time = newTime;
+				if (!ts[tag]) {
+					ts[tag] = Date.now();
+				} else {
+					sum[tag] += Date.now() - ts[tag];
+					ts[tag] = null;
+				}
 			};
 		}();
 
