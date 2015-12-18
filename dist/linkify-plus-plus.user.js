@@ -68,7 +68,7 @@ var linkify = function(){
 		while (cont) {
 			if (cont.nodeType == 3) {
 				if (offset + change <= cont.nodeValue.length) {
-					pos.cont = cont;
+					pos.container = cont;
 					pos.offset = offset + change;
 					return;
 				}
@@ -294,21 +294,24 @@ var linkify = function(){
 			// Create URL
 			url = protocol + (user && user + "@") + domain + port + path;
 
+			benchmark("create range");
 			var urlRange = document.createRange();
+			benchmark("create range");
+
+			benchmark("move pos & range");
 			pos.add(m.index);
 			urlRange.setStart(pos.container, pos.offset);
 
 			pos.add(face.length);
 			urlRange.setEnd(pos.container, pos.offset);
+			benchmark("move pos & range");
 
 			benchmark("DOM insert");
 			urlRange.insertNode(createLink(url, urlRange.extractContents(), newTab, image));
 			benchmark("DOM insert");
 
-			benchmark("pos creation");
 			pos.container = urlRange.endContainer;
 			pos.offset = urlRange.endOffset;
-			benchmark("pos creation");
 
 		} else if (angular && !unsafeWindow.angular) {
 			// Next start after "{{" if there is no window.angular
