@@ -32,8 +32,8 @@
 // Linkify Plus Plus core
 var linkify = function(){
 
-	var urlRE = /\b([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.\u00b7-\u2a6d6]+\.[a-z0-9-TLDS.charSet]{1,TLDS.maxLength})\b(:\d+)?([/?#]\S*)?|\{\{(.+?)\}\}/i,
-		urlUnicodeRE =  /\b([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.]+\.[a-z0-9-]{1,TLDS.maxLength})\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#(),'\[\]]*)?|\{\{(.+?)\}\}/i,
+	var urlRE = /\b([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.\u00b7-\u2a6d6]+\.[a-z0-9-TLDS.charSet]{1,TLDS.maxLength})\b(:\d+)?([/?#]\S*)?|\{\{(.+?)\}\}/ig,
+		urlUnicodeRE =  /\b([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.]+\.[a-z0-9-]{1,TLDS.maxLength})\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#(),'\[\]]*)?|\{\{(.+?)\}\}/ig,
 		tlds = TLDS.set;
 
 	function inTLDS(domain) {
@@ -222,17 +222,20 @@ var linkify = function(){
 	}
 
 	function linkifyRange(range, newTab, image, unicode) {
-		var m, mm, txt = range.toString(),
+		var re = unicode ? urlUnicodeRE : urlRE,
+			m, mm, txt, lastPos,
 			face, protocol, user, domain, port, path, angular,
 			url;
 
-		benchmark("url RE");
-		if (!unicode) {
-			m = urlRE.exec(txt);
-		} else {
-			m = urlUnicodeRE.exec(txt);
+		if (!range.endContainer.TXT) {
+			// It is a new range
+			range.endContainer.TXT = range.toString();
+			re.lastIndex = 0;
 		}
-		benchmark("url RE");
+		txt = range.endContainer.TXT;
+		lastPos = re.lastIndex;
+
+		m = re.exec(txt);
 
 		if (!m) {
 			return null;
@@ -294,31 +297,29 @@ var linkify = function(){
 			// Create URL
 			url = protocol + (user && user + "@") + domain + port + path;
 
-			benchmark("create range");
 			var urlRange = document.createRange();
-			benchmark("create range");
 
-			benchmark("move pos & range");
-			pos.add(m.index);
+			pos.add(m.index - lastPos);
 			urlRange.setStart(pos.container, pos.offset);
 
 			pos.add(face.length);
 			urlRange.setEnd(pos.container, pos.offset);
-			benchmark("move pos & range");
 
-			benchmark("DOM insert");
 			urlRange.insertNode(createLink(url, urlRange.extractContents(), newTab, image));
-			benchmark("DOM insert");
 
 			pos.container = urlRange.endContainer;
 			pos.offset = urlRange.endOffset;
 
+			// We have to set lastIndex manually if we had changed face.
+			re.lastIndex = m.index + face.length;
+
 		} else if (angular && !unsafeWindow.angular) {
 			// Next start after "{{" if there is no window.angular
-			pos.add(m.index + 2);
+			pos.add(m.index + 2 - lastPos);
+			re.lastIndex = m.index + 2;
 
 		} else {
-			pos.add(m.index + face.length);
+			pos.add(m.index + face.length - lastPos);
 		}
 
 		range.setStart(pos.container, pos.offset);
@@ -336,31 +337,27 @@ var linkify = function(){
 
 		function nextRange() {
 
-			while (Date.now() - ts < 30000) {
-				if (!range) {
-					range = ranges.next().value;
-				}
-
-				if (!range) {
-					break;
-				}
-
-				range = linkifyRange(range, options.newTab, options.image);
+			if (!range) {
+				range = ranges.next().value;
 			}
 
-			if (options.done) {
-				requestAnimationFrame(options.done);
+			if (!range) {
+				if (options.done) {
+					requestAnimationFrame(options.done);
+				}
+				console.log("Linkify finished in " + (Date.now() - ts) + "ms");
+				return;
 			}
 
-			if (range) {
-				// Linkify timeout
+			range = linkifyRange(range, options.newTab, options.image);
+
+
+			if (Date.now() - ts > 30000) {
 				console.log("Linkify timeout in 30s");
-			} else {
-				console.log("Linkify finished in " + (Date.now() - ts) + "ms")
+				return;
 			}
 
-			// ts = Date.now();
-			// requestAnimationFrame(nextRange);
+			requestAnimationFrame(nextRange);
 		}
 
 	}
