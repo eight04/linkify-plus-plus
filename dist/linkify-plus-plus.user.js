@@ -341,7 +341,7 @@ var linkify = function(){
 		}
 
 		if (timeout === undefined) {
-			timeout = 30000;
+			timeout = 10000;
 		}
 
 		nextRange();
@@ -527,6 +527,8 @@ function queHandler(item, done) {
 				ignoreTags: options.ignoreTags,
 				ignoreClasses: options.ignoreClasses,
 				newTab: options.newTab,
+				maxRunTime: options.maxRunTime,
+				timeout: options.timeout,
 				done: done
 			});
 		}
@@ -580,7 +582,12 @@ initConfig({
 	timeout: {
 		label: "Max execution time (ms). Linkify will stop if its execution time exceeds this value.",
 		type: "number",
-		default: 30000
+		default: 10000
+	},
+	maxRunTime: {
+		label: "Max script run time (ms). If the script is freezing your browser, try to decrease this value.",
+		type: "number",
+		default: 100
 	}
 }, function(_options){
 	options = _options;
