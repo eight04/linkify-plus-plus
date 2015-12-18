@@ -337,27 +337,23 @@ var linkify = function(){
 
 		function nextRange() {
 
-			if (!range) {
-				range = ranges.next().value;
-			}
-
-			if (!range) {
-				if (options.done) {
-					requestAnimationFrame(options.done);
+			do {
+				if (!range) {
+					range = ranges.next().value;
 				}
-				console.log("Linkify finished in " + (Date.now() - ts) + "ms");
-				return;
-			}
 
-			range = linkifyRange(range, options.newTab, options.image);
+				if (!range) {
+					if (options.done) {
+						requestAnimationFrame(options.done);
+					}
+					console.log("Linkify finished in " + (Date.now() - ts) + "ms");
+					return;
+				}
 
+				range = linkifyRange(range, options.newTab, options.image);
+			} while (Date.now() - ts < 30000);
 
-			if (Date.now() - ts > 30000) {
-				console.log("Linkify timeout in 30s");
-				return;
-			}
-
-			requestAnimationFrame(nextRange);
+			console.log("Linkify timeout in 30s");
 		}
 
 	}
