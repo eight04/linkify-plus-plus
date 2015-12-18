@@ -221,19 +221,12 @@ var linkify = function(){
 		};
 	}
 
-	function linkifyRange(range, newTab, image, unicode) {
-		var re = unicode ? urlUnicodeRE : urlRE,
-			m, mm, txt, lastPos,
+	function linkifyRange(range, newTab, image, re) {
+		var m, mm, txt, lastPos,
 			face, protocol, user, domain, port, path, angular,
 			url;
 
-		// Is range.endContainer not changed?
-		if (!range.TXT) {
-			// It is a new range
-			range.TXT = range.toString();
-			re.lastIndex = 0;
-		}
-		txt = range.TXT;
+		txt = range.linkify.txt;
 		lastPos = re.lastIndex;
 
 		m = re.exec(txt);
@@ -251,7 +244,10 @@ var linkify = function(){
 		angular = m[6];
 
 		// A position to record where the range is working
-		var pos = createPos(range.startContainer, range.startOffset);
+		var pos = createPos(range.startContainer, range.startOffset),
+			textRange = document.createRange();
+
+		textRange.setStart(pos.container, pos.offset);
 
 		if (!angular && domain.indexOf("..") <= -1 && (isIP(domain) || inTLDS(domain))) {
 
@@ -298,18 +294,24 @@ var linkify = function(){
 			// Create URL
 			url = protocol + (user && user + "@") + domain + port + path;
 
+			pos.add(m.index - lastPos);
+
+			textRange.setEnd(pos.container, pos.offset);
+
+			range.linkify.frag.appendChild(textRange.cloneContents());
+
 			var urlRange = document.createRange();
 
-			pos.add(m.index - lastPos);
 			urlRange.setStart(pos.container, pos.offset);
 
 			pos.add(face.length);
 			urlRange.setEnd(pos.container, pos.offset);
 
-			urlRange.insertNode(createLink(url, urlRange.extractContents(), newTab, image));
+			range.linkify.frag.appendChild(createLink(url, urlRange.cloneContents(), newTab, image));
+			// urlRange.insertNode(createLink(url, urlRange.extractContents(), newTab, image));
 
-			pos.container = urlRange.endContainer;
-			pos.offset = urlRange.endOffset;
+			// pos.container = urlRange.endContainer;
+			// pos.offset = urlRange.endOffset;
 
 			// We have to set lastIndex manually if we had changed face.
 			re.lastIndex = m.index + face.length;
@@ -317,15 +319,21 @@ var linkify = function(){
 		} else if (angular && !unsafeWindow.angular) {
 			// Next start after "{{" if there is no window.angular
 			pos.add(m.index + 2 - lastPos);
+
+			textRange.setEnd(pos.container, pos.offset);
+			range.linkify.frag.appendChild(textRange.cloneContents());
+
 			re.lastIndex = m.index + 2;
 
 		} else {
 			pos.add(m.index + face.length - lastPos);
+			textRange.setEnd(pos.container, pos.offset);
+			range.linkify.frag.appendChild(textRange.cloneContents());
 		}
 
 		range.setStart(pos.container, pos.offset);
 
-		return range;
+		return true;
 	}
 
 	function linkify(root, options) {
@@ -334,7 +342,8 @@ var linkify = function(){
 			range,
 			maxRunTime = options.maxRunTime,
 			timeout = options.timeout,
-			ts = Date.now(), te;
+			ts = Date.now(), te,
+			re = options.unicode ? urlUnicodeRE : urlRE;
 
 		if (maxRunTime === undefined) {
 			maxRunTime = 100;
@@ -351,14 +360,26 @@ var linkify = function(){
 
 			do {
 				if (!range) {
-					range = ranges.next().value;
+					if (!(range = ranges.next().value)) {
+						break;
+					}
+					// Init range.linkify
+					range.linkify = {
+						txt: range.toString(),
+						frag: document.createDocumentFragment(),
+						originalRange: range.cloneRange()
+					};
+
+					// Init re
+					re.lastIndex = 0;
 				}
 
-				if (!range) {
-					break;
+				if (!linkifyRange(range, options.newTab, options.image, re)) {
+					range.linkify.frag.appendChild(range.cloneContents());
+					range.linkify.originalRange.deleteContents();
+					range.linkify.originalRange.insertNode(range.linkify.frag);
+					range = null;
 				}
-
-				range = linkifyRange(range, options.newTab, options.image, options.unicode);
 
 				// Over script max run time
 				if (Date.now() - te > maxRunTime) {
