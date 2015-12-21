@@ -523,6 +523,10 @@ var options, selectors, que = createQue(queHandler);
 // Recieve item from que
 function queHandler(item, done) {
 	if (item instanceof Element) {
+		if (selectors) {
+			que.unshift(item.querySelectorAll(selectors));
+		}
+
 		if (validRoot(item, options) || selectors && item.matches(selectors)) {
 			linkify.linkify(item, {
 				image: options.image,
@@ -534,13 +538,8 @@ function queHandler(item, done) {
 				timeout: options.timeout,
 				done: done
 			});
+			return;
 		}
-
-		if (selectors) {
-			que.unshift(item.querySelectorAll(selectors));
-		}
-
-		return;
 	}
 
 	if (item instanceof MutationRecord && item.addedNodes.length) {
