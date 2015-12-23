@@ -518,7 +518,11 @@ function validRoot(node, options) {
 
 /*********************** Main section start *********************************/
 
-if (document.contentType === undefined || document.contentType.lastIndexOf("text", 0) == 0) {
+(function(){
+	if (document.contentType != undefined && document.contentType.lastIndexOf("text", 0) < 0) {
+		return;
+	}
+
 	var options, selectors, que = createQue(queHandler);
 
 	// Recieve item from que
@@ -617,4 +621,7 @@ if (document.contentType === undefined || document.contentType.lastIndexOf("text
 	});
 
 	que.push(document.body);
-}
+
+})();
+
+
