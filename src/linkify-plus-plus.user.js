@@ -29,12 +29,43 @@
 
 "use strict";
 
+// Regex creator
+var createRe = function(){
+	var pool = {};
+
+	return function (str, flags) {
+		if (!(str in pool)) {
+			pool[str] = new RegExp(str, flags);
+		}
+		// Reset RE
+		pool[str].lastIndex = 0;
+		return pool[str];
+	};
+}();
+
 // Linkify Plus Plus core
 var linkify = function(){
 
 	var urlUnicodeRE = /\b([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.\u00b7-\u2a6d6]+\.[a-z0-9-TLDS.charSet]{1,TLDS.maxLength})\b(:\d+)?([/?#]\S*)?|\{\{(.+?)\}\}/ig,
 		urlRE =  /\b([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.]+\.[a-z0-9-]{1,TLDS.maxLength})\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#(),'\[\]]*)?|\{\{(.+?)\}\}/ig,
-		tlds = TLDS.set;
+		tlds = TLDS.set,
+		invalidTags = {
+			A: true,
+			NOSCRIPT: true,
+			OPTION: true,
+			SCRIPT: true,
+			STYLE: true,
+			TEXTAREA: true,
+			SVG: true,
+			CANVAS: true,
+			BUTTON: true,
+			SELECT: true,
+			TEMPLATE: true,
+			METER: true,
+			PROGRESS: true,
+			MATH: true,
+			TIME: true
+		};
 
 	function inTLDS(domain) {
 		var match = domain.match(/\.([a-z0-9-]+)$/i);
@@ -122,19 +153,6 @@ var linkify = function(){
 		return true;
 	}
 
-	var createRe = function(){
-		var pool = {};
-
-		return function (str, flags) {
-			if (!(str in pool)) {
-				pool[str] = new RegExp(str, flags);
-			}
-			// Reset RE
-			pool[str].lastIndex = 0;
-			return pool[str];
-		};
-	}();
-
 	function stripSingleSymbol(str, left, right) {
 		var re = createRe("[\\" + left + "\\" + right + "]", "g"),
 			match, count = 0, end;
@@ -179,35 +197,20 @@ var linkify = function(){
 		return cont;
 	}
 
-	function valid(node, ignoreTags, ignoreClasses) {
-
-		// TODO: build cache on array?
-		var tagRE = ignoreTags && createRe("^(" + ignoreTags.join("|") + ")$", "i"),
-			classRE = ignoreClasses && createRe("(^|\\s)(" + ignoreClasses.join("|") + ")($|\\s)"),
-			className = node.className;
-
-		if (typeof className == "object") {
-			className = className.baseVal;
-		}
-		if (tagRE && tagRE.test(node.nodeName)) {
+	function valid(node, customValidator) {
+		if (customValidator && !customValidator(node)) {
 			return false;
 		}
-		if (className && classRE && classRE.test(className)) {
-			return false;
-		}
-		if (node.contentEditable == "true" || node.contentEditable == "") {
-			return false;
-		}
-		if (className && className.indexOf("linkifyplus") >= 0) {
+		if (invalidTags[node.nodeName]) {
 			return false;
 		}
 		return true;
 	}
 
-	function createFilter(ignoreTags, ignoreClasses) {
+	function createFilter(customValidator) {
 		return {
 			acceptNode: function(node) {
-				if (!valid(node, ignoreTags, ignoreClasses)) {
+				if (!valid(node, customValidator)) {
 					return NodeFilter.FILTER_REJECT;
 				}
 				if (node.nodeName == "WBR") {
@@ -329,7 +332,7 @@ var linkify = function(){
 	}
 
 	function linkify(root, options) {
-		var filter = createFilter(options.ignoreTags, options.ignoreClasses),
+		var filter = createFilter(options.validator),
 			ranges = generateRanges(root, filter),
 			range,
 			re = options.unicode ? urlUnicodeRE : urlRE,
@@ -484,7 +487,7 @@ function validRoot(node, options) {
 		cache.push(node);
 
 		// It is invalid if it has invalid ancestor
-		if (!linkify.valid(node, options.ignoreTags, options.ignoreClasses)) {
+		if (!linkify.valid(node, options.validator)) {
 			isValid = false;
 			break;
 		}
@@ -516,6 +519,42 @@ function validRoot(node, options) {
 	return isValid;
 }
 
+function createValidator(ignoreTags, ignoreClasses) {
+
+	var invalidTags,
+		invalidClasses,
+		i;
+
+	if (ignoreTags) {
+		invalidTags = {};
+		for (i = 0; i < ignoreTags.length; i++) {
+			invalidTags[ignoreTags[i]] = true;
+		}
+	}
+
+	if (ignoreClasses) {
+		invalidClasses = createRe("(^|\\s)(" + ignoreClasses.join("|") + ")($|\\s)")
+	}
+
+	return function(node) {
+		var className = node.className;
+
+		if (typeof className == "object") {
+			className = className.baseVal;
+		}
+		if (invalidTags && invalidTags[node.nodeName]) {
+			return false;
+		}
+		if (className && invalidClasses && invalidClasses.test(className)) {
+			return false;
+		}
+		if (node.contentEditable == "true" || node.contentEditable == "") {
+			return false;
+		}
+		return true;
+	}
+}
+
 /*********************** Main section start *********************************/
 
 (function(){
@@ -536,8 +575,7 @@ function validRoot(node, options) {
 				linkify.linkify(item, {
 					image: options.image,
 					unicode: options.unicode,
-					ignoreTags: options.ignoreTags,
-					ignoreClasses: options.ignoreClasses,
+					validator: options.validator,
 					newTab: options.newTab,
 					maxRunTime: options.maxRunTime,
 					timeout: options.timeout,
@@ -598,8 +636,7 @@ function validRoot(node, options) {
 		}
 	}, function(_options){
 		options = _options;
-		options.ignoreTags = getArray(options.ignoreTags);
-		options.ignoreClasses = getArray(options.ignoreClasses);
+		options.validator = createValidator(getArray(options.ignoreTags), getArray(options.ignoreClasses));
 		selectors = options.selectors.trim().replace(/\n/, ", ");
 	});
 
