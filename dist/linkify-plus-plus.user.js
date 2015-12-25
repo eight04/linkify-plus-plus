@@ -558,7 +558,7 @@ function createValidator(ignoreTags, ignoreClasses) {
 /*********************** Main section start *********************************/
 
 (function(){
-	if (document.contentType != undefined && document.contentType.lastIndexOf("text", 0) < 0) {
+	if (document.contentType != undefined && document.contentType != "text/plain" && document.contentType != "text/html") {
 		return;
 	}
 
