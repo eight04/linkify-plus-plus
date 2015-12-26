@@ -81,14 +81,9 @@ var linkify = function(){
 	}
 
 	Pos.prototype.add = function(change) {
-		return posAdd(this, this.container, this.offset, change);
-	};
+		var cont = this.container,
+			offset = this.offset;
 
-	function createPos(cont, offset) {
-		return new Pos(cont, offset);
-	}
-
-	function posAdd(pos, cont, offset, change) {
 		// If the container is #text.parentNode
 		if (cont.childNodes.length) {
 			cont = cont.childNodes[offset];
@@ -99,8 +94,8 @@ var linkify = function(){
 		while (cont) {
 			if (cont.nodeType == 3) {
 				if (offset + change <= cont.nodeValue.length) {
-					pos.container = cont;
-					pos.offset = offset + change;
+					this.container = cont;
+					this.offset = offset + change;
 					return;
 				}
 				change = offset + change - cont.nodeValue.length;
@@ -108,7 +103,7 @@ var linkify = function(){
 			}
 			cont = cont.nextSibling;
 		}
-	}
+	};
 
 	function* generateRanges(node, filter) {
 		// Generate linkified ranges.
@@ -254,7 +249,7 @@ var linkify = function(){
 		angular = m[6];
 
 		// A position to record where the range is working
-		var pos = createPos(range.startContainer, range.startOffset);
+		var pos = new Pos(range.startContainer, range.startOffset);
 
 		if (!angular && domain.indexOf("..") <= -1 && (isIP(domain) || inTLDS(domain))) {
 
