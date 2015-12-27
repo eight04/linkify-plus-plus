@@ -401,12 +401,14 @@ function createQue(handler) {
 
 	function start() {
 		running = true;
+		benchmark("Execution time");
 		requestAnimationFrame(next);
 	}
 
 	function next() {
 		if (!que.length) {
 			running = false;
+			benchmark("Execution time");
 			return;
 		}
 
