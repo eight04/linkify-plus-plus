@@ -192,20 +192,13 @@ var linkify = function(){
 		return cont;
 	}
 
-	function valid(node, customValidator) {
-		if (customValidator && !customValidator(node)) {
-			return false;
-		}
-		if (invalidTags[node.nodeName]) {
-			return false;
-		}
-		return true;
-	}
-
 	function createFilter(customValidator) {
 		return {
 			acceptNode: function(node) {
-				if (!valid(node, customValidator)) {
+				if (customValidator && !customValidator(node)) {
+					return NodeFilter.FILTER_REJECT;
+				}
+				if (invalidTags[node.nodeName]) {
 					return NodeFilter.FILTER_REJECT;
 				}
 				if (node.nodeName == "WBR") {
@@ -384,7 +377,7 @@ var linkify = function(){
 
 	return {
 		linkify: linkify,
-		valid: valid
+		SKIP_TAGS: invalidTags
 	};
 }();
 
@@ -470,7 +463,7 @@ function getArray(s) {
 }
 
 // Valid root node before sending to linkifyplus
-function validRoot(node, options) {
+function validRoot(node, validator) {
 	// Cache valid state in node.VALID
 	if (node.VALID !== undefined) {
 		return node.VALID;
@@ -482,7 +475,7 @@ function validRoot(node, options) {
 		cache.push(node);
 
 		// It is invalid if it has invalid ancestor
-		if (!linkify.valid(node, options.validator)) {
+		if (!validator(node) || linkify.SKIP_TAGS[node.nodeName]) {
 			isValid = false;
 			break;
 		}
@@ -553,6 +546,7 @@ function createValidator(ignoreTags, ignoreClasses) {
 /*********************** Main section start *********************************/
 
 (function(){
+	// Limit contentType to "text/plain" or "text/html"
 	if (document.contentType != undefined && document.contentType != "text/plain" && document.contentType != "text/html") {
 		return;
 	}
@@ -566,7 +560,7 @@ function createValidator(ignoreTags, ignoreClasses) {
 				que.unshift(item.querySelectorAll(selectors));
 			}
 
-			if (validRoot(item, options) || selectors && item.matches(selectors)) {
+			if (validRoot(item, options.validator) || selectors && item.matches(selectors)) {
 				linkify.linkify(item, {
 					image: options.image,
 					unicode: options.unicode,
