@@ -297,7 +297,9 @@ var linkify = function(){
 			pos.add(face.length);
 			urlRange.setEnd(pos.container, pos.offset);
 
+			benchmark("insert node");
 			urlRange.insertNode(createLink(url, urlRange.extractContents(), newTab, image));
+			benchmark("insert node");
 
 			pos.container = urlRange.endContainer;
 			pos.offset = urlRange.endOffset;
