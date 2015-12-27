@@ -453,15 +453,6 @@ function initConfig(options, reloadHandler) {
 	reload();
 }
 
-// Get array from string
-function getArray(s) {
-	s = s.trim();
-	if (!s) {
-		return null;
-	}
-	return s.split(/\s+/);
-}
-
 // Valid root node before sending to linkifyplus
 function validRoot(node, validator) {
 	// Cache valid state in node.VALID
@@ -507,33 +498,9 @@ function validRoot(node, validator) {
 	return isValid;
 }
 
-function createValidator(ignoreTags, ignoreClasses) {
-
-	var invalidTags,
-		invalidClasses,
-		i;
-
-	if (ignoreTags) {
-		invalidTags = {};
-		for (i = 0; i < ignoreTags.length; i++) {
-			invalidTags[ignoreTags[i]] = true;
-		}
-	}
-
-	if (ignoreClasses) {
-		invalidClasses = createRe("(^|\\s)(" + ignoreClasses.join("|") + ")($|\\s)")
-	}
-
+function createValidator(skipSelector) {
 	return function(node) {
-		var className = node.className;
-
-		if (typeof className == "object") {
-			className = className.baseVal;
-		}
-		if (invalidTags && invalidTags[node.nodeName]) {
-			return false;
-		}
-		if (className && invalidClasses && invalidClasses.test(className)) {
+		if (skipSelector && node.matches(skipSelector)) {
 			return false;
 		}
 		if (node.contentEditable == "true" || node.contentEditable == "") {
@@ -541,6 +508,16 @@ function createValidator(ignoreTags, ignoreClasses) {
 		}
 		return true;
 	}
+}
+
+function selectorTest(s, message) {
+	try {
+		document.documentElement.matches(s);
+	} catch (err) {
+		console.error("[%s] The selector is invalid", message);
+		return "";
+	}
+	return s;
 }
 
 /*********************** Main section start *********************************/
@@ -551,16 +528,16 @@ function createValidator(ignoreTags, ignoreClasses) {
 		return;
 	}
 
-	var options, selectors, que = createQue(queHandler);
+	var options, que = createQue(queHandler);
 
 	// Recieve item from que
 	function queHandler(item, done) {
 		if (item instanceof Element) {
-			if (selectors) {
-				que.unshift(item.querySelectorAll(selectors));
+			if (options.selector) {
+				que.unshift(item.querySelectorAll(options.selector));
 			}
 
-			if (validRoot(item, options.validator) || selectors && item.matches(selectors)) {
+			if (validRoot(item, options.validator) || options.selector && item.matches(options.selector)) {
 				linkify.linkify(item, {
 					image: options.image,
 					unicode: options.unicode,
@@ -593,18 +570,13 @@ function createValidator(ignoreTags, ignoreClasses) {
 			type: "checkbox",
 			default: false
 		},
-		ignoreTags: {
-			label: "Do not linkify urls in these tags",
+		skipSelector: {
+			label: "Do not linkify these elements. (CSS selector)",
 			type: "textarea",
-			default: "a noscript option script style textarea svg canvas button select template meter progress math h1 h2 h3 h4 h5 h6 time code"
+			default: ".highlight, .editbox, .brush\\:, .bdsug, .spreadsheetinfo"
 		},
-		ignoreClasses: {
-			label: "Do not linkify urls in these classes",
-			type: "textarea",
-			default: "highlight editbox brush: bdsug spreadsheetinfo"
-		},
-		selectors: {
-			label: "Always linkify these elements. One CSS selector per line.",
+		selector: {
+			label: "Always linkify these elements, override above. (CSS selector)",
 			type: "textarea",
 			default: ""
 		},
@@ -625,8 +597,9 @@ function createValidator(ignoreTags, ignoreClasses) {
 		}
 	}, function(_options){
 		options = _options;
-		options.validator = createValidator(getArray(options.ignoreTags), getArray(options.ignoreClasses));
-		selectors = options.selectors.trim().replace(/\n/, ", ");
+		options.selector = options.selector && selectorTest(options.selector, "Always linkify");
+		options.skipSelector = options.skipSelector && selectorTest(options.skipSelector, "Do not linkify");
+		options.validator = createValidator(options.skipSelector);
 	});
 
 	GM_addStyle(".linkifyplus img { max-width: 90%; }");
