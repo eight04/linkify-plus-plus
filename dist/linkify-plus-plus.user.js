@@ -586,7 +586,7 @@ function selectorTest(s, message) {
 			default: ""
 		},
 		timeout: {
-			label: "Max execution time (ms). Linkify will stop if its execution time exceeds this value.",
+			label: "Max execution time (ms).",
 			type: "number",
 			default: 10000
 		},
