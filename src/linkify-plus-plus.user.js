@@ -29,12 +29,43 @@
 
 "use strict";
 
+// Regex creator
+var createRe = function(){
+	var pool = {};
+
+	return function (str, flags) {
+		if (!(str in pool)) {
+			pool[str] = new RegExp(str, flags);
+		}
+		// Reset RE
+		pool[str].lastIndex = 0;
+		return pool[str];
+	};
+}();
+
 // Linkify Plus Plus core
 var linkify = function(){
 
 	var urlUnicodeRE = /\b([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.\u00b7-\u2a6d6]+\.[a-z0-9-TLDS.charSet]{1,TLDS.maxLength})\b(:\d+)?([/?#]\S*)?|\{\{(.+?)\}\}/ig,
 		urlRE =  /\b([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.]+\.[a-z0-9-]{1,TLDS.maxLength})\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#(),'\[\]]*)?|\{\{(.+?)\}\}/ig,
-		tlds = TLDS.set;
+		tlds = TLDS.set,
+		invalidTags = {
+			A: true,
+			NOSCRIPT: true,
+			OPTION: true,
+			SCRIPT: true,
+			STYLE: true,
+			TEXTAREA: true,
+			SVG: true,
+			CANVAS: true,
+			BUTTON: true,
+			SELECT: true,
+			TEMPLATE: true,
+			METER: true,
+			PROGRESS: true,
+			MATH: true,
+			TIME: true
+		};
 
 	function inTLDS(domain) {
 		var match = domain.match(/\.([a-z0-9-]+)$/i);
@@ -50,14 +81,9 @@ var linkify = function(){
 	}
 
 	Pos.prototype.add = function(change) {
-		return posAdd(this, this.container, this.offset, change);
-	};
+		var cont = this.container,
+			offset = this.offset;
 
-	function createPos(cont, offset) {
-		return new Pos(cont, offset);
-	}
-
-	function posAdd(pos, cont, offset, change) {
 		// If the container is #text.parentNode
 		if (cont.childNodes.length) {
 			cont = cont.childNodes[offset];
@@ -68,8 +94,8 @@ var linkify = function(){
 		while (cont) {
 			if (cont.nodeType == 3) {
 				if (offset + change <= cont.nodeValue.length) {
-					pos.container = cont;
-					pos.offset = offset + change;
+					this.container = cont;
+					this.offset = offset + change;
 					return;
 				}
 				change = offset + change - cont.nodeValue.length;
@@ -77,7 +103,7 @@ var linkify = function(){
 			}
 			cont = cont.nextSibling;
 		}
-	}
+	};
 
 	function* generateRanges(node, filter) {
 		// Generate linkified ranges.
@@ -121,19 +147,6 @@ var linkify = function(){
 		}
 		return true;
 	}
-
-	var createRe = function(){
-		var pool = {};
-
-		return function (str, flags) {
-			if (!(str in pool)) {
-				pool[str] = new RegExp(str, flags);
-			}
-			// Reset RE
-			pool[str].lastIndex = 0;
-			return pool[str];
-		};
-	}();
 
 	function stripSingleSymbol(str, left, right) {
 		var re = createRe("[\\" + left + "\\" + right + "]", "g"),
@@ -179,35 +192,13 @@ var linkify = function(){
 		return cont;
 	}
 
-	function valid(node, ignoreTags, ignoreClasses) {
-
-		// TODO: build cache on array?
-		var tagRE = ignoreTags && createRe("^(" + ignoreTags.join("|") + ")$", "i"),
-			classRE = ignoreClasses && createRe("(^|\\s)(" + ignoreClasses.join("|") + ")($|\\s)"),
-			className = node.className;
-
-		if (typeof className == "object") {
-			className = className.baseVal;
-		}
-		if (tagRE && tagRE.test(node.nodeName)) {
-			return false;
-		}
-		if (className && classRE && classRE.test(className)) {
-			return false;
-		}
-		if (node.contentEditable == "true" || node.contentEditable == "") {
-			return false;
-		}
-		if (className && className.indexOf("linkifyplus") >= 0) {
-			return false;
-		}
-		return true;
-	}
-
-	function createFilter(ignoreTags, ignoreClasses) {
+	function createFilter(customValidator) {
 		return {
 			acceptNode: function(node) {
-				if (!valid(node, ignoreTags, ignoreClasses)) {
+				if (customValidator && !customValidator(node)) {
+					return NodeFilter.FILTER_REJECT;
+				}
+				if (invalidTags[node.nodeName]) {
 					return NodeFilter.FILTER_REJECT;
 				}
 				if (node.nodeName == "WBR") {
@@ -222,16 +213,34 @@ var linkify = function(){
 	}
 
 	function linkifyRange(range, newTab, image, re) {
-		var m, mm, txt, lastPos,
+		var m, mm, txt,
 			face, protocol, user, domain, port, path, angular,
 			url;
 
-		txt = range.linkify.txt;
-		lastPos = re.lastIndex;
+		// Cache range.toString
+		if (!range.TXT) {
+			range.TXT = range.toString();
+			range.POS = 0;
+		}
+
+		txt = range.TXT;
 
 		m = re.exec(txt);
 
 		if (!m) {
+			// The range is touched
+			if (range.FRAG) {
+				range.FRAG.appendChild(range.cloneContents());
+				range.RANGE.deleteContents();
+				range.RANGE.insertNode(range.FRAG);
+
+				delete range.FRAG;
+				delete range.RANGE;
+			}
+
+			// Remove cache
+			delete range.TXT;
+			delete range.POS;
 			return null;
 		}
 
@@ -242,12 +251,6 @@ var linkify = function(){
 		port = m[4] || "";
 		path = m[5] || "";
 		angular = m[6];
-
-		// A position to record where the range is working
-		var pos = createPos(range.startContainer, range.startOffset),
-			textRange = document.createRange();
-
-		textRange.setStart(pos.container, pos.offset);
 
 		if (!angular && domain.indexOf("..") <= -1 && (isIP(domain) || inTLDS(domain))) {
 
@@ -294,11 +297,22 @@ var linkify = function(){
 			// Create URL
 			url = protocol + (user && user + "@") + domain + port + path;
 
-			pos.add(m.index - lastPos);
+			if (!range.FRAG) {
+				range.RANGE = range.cloneRange();
+				range.FRAG = document.createDocumentFragment();
+			}
+
+			// A position to record where the range is working
+			var pos = new Pos(range.startContainer, range.startOffset),
+				textRange = document.createRange();
+
+			textRange.setStart(pos.container, pos.offset);
+
+			pos.add(m.index - range.POS);
 
 			textRange.setEnd(pos.container, pos.offset);
 
-			range.linkify.frag.appendChild(textRange.cloneContents());
+			range.FRAG.appendChild(textRange.cloneContents());
 
 			var urlRange = document.createRange();
 
@@ -307,43 +321,31 @@ var linkify = function(){
 			pos.add(face.length);
 			urlRange.setEnd(pos.container, pos.offset);
 
-			range.linkify.frag.appendChild(createLink(url, urlRange.cloneContents(), newTab, image));
-			// urlRange.insertNode(createLink(url, urlRange.extractContents(), newTab, image));
-
-			// pos.container = urlRange.endContainer;
-			// pos.offset = urlRange.endOffset;
+			range.FRAG.appendChild(createLink(url, urlRange.cloneContents(), newTab, image));
 
 			// We have to set lastIndex manually if we had changed face.
 			re.lastIndex = m.index + face.length;
+			range.POS = re.lastIndex;
+
+			// The range will always start from text part
+			range.setStart(pos.container, pos.offset);
 
 		} else if (angular && !unsafeWindow.angular) {
-			// Next start after "{{" if there is no window.angular
-			pos.add(m.index + 2 - lastPos);
-
-			textRange.setEnd(pos.container, pos.offset);
-			range.linkify.frag.appendChild(textRange.cloneContents());
-
+			// Next search start after "{{" if there is no window.angular
 			re.lastIndex = m.index + 2;
-
-		} else {
-			pos.add(m.index + face.length - lastPos);
-			textRange.setEnd(pos.container, pos.offset);
-			range.linkify.frag.appendChild(textRange.cloneContents());
 		}
 
-		range.setStart(pos.container, pos.offset);
-
-		return true;
+		return range;
 	}
 
 	function linkify(root, options) {
-		var filter = createFilter(options.ignoreTags, options.ignoreClasses),
+		var filter = createFilter(options.validator),
 			ranges = generateRanges(root, filter),
 			range,
+			re = options.unicode ? urlUnicodeRE : urlRE,
 			maxRunTime = options.maxRunTime,
 			timeout = options.timeout,
-			ts = Date.now(), te,
-			re = options.unicode ? urlUnicodeRE : urlRE;
+			ts = Date.now(), te;
 
 		if (maxRunTime === undefined) {
 			maxRunTime = 100;
@@ -360,28 +362,15 @@ var linkify = function(){
 
 			do {
 				if (!range) {
-					if (!(range = ranges.next().value)) {
-						break;
-					}
-					// Init range.linkify
-					range.linkify = {
-						txt: range.toString(),
-						frag: document.createDocumentFragment(),
-						originalRange: range.cloneRange()
-					};
-
-					// Init re
+					// Get new range and reset lastIndex
+					range = ranges.next().value;
 					re.lastIndex = 0;
 				}
 
-				if (!linkifyRange(range, options.newTab, options.image, re)) {
-					range.linkify.frag.appendChild(range.cloneContents());
-					range.linkify.originalRange.deleteContents();
-					range.linkify.originalRange.insertNode(range.linkify.frag);
-					range = null;
-				}
+				range = linkifyRange(range, options.newTab, options.image, re);
 
 				// Over script max run time
+				// NOTE: Actually we should store lastIndex in range.LAST_INDEX and restore on linkifyRange(), because re object is globally used.
 				if (Date.now() - te > maxRunTime) {
 					requestAnimationFrame(nextRange);
 					return;
@@ -389,22 +378,19 @@ var linkify = function(){
 
 			} while (Date.now() - ts < timeout);
 
-			if (!range) {
-				console.log("Linkify finished in " + (Date.now() - ts) + "ms");
-			} else {
-				console.log("Linkify timeout in " + timeout + "ms");
+			if (range) {
+				console.error("Max execution time exceeded: %sms", Date.now() - ts);
 			}
 
 			if (options.done) {
 				options.done();
 			}
 		}
-
 	}
 
 	return {
 		linkify: linkify,
-		valid: valid
+		SKIP_TAGS: invalidTags
 	};
 }();
 
@@ -480,17 +466,8 @@ function initConfig(options, reloadHandler) {
 	reload();
 }
 
-// Get array from string
-function getArray(s) {
-	s = s.trim();
-	if (!s) {
-		return null;
-	}
-	return s.split(/\s+/);
-}
-
 // Valid root node before sending to linkifyplus
-function validRoot(node, options) {
+function validRoot(node, validator) {
 	// Cache valid state in node.VALID
 	if (node.VALID !== undefined) {
 		return node.VALID;
@@ -502,7 +479,7 @@ function validRoot(node, options) {
 		cache.push(node);
 
 		// It is invalid if it has invalid ancestor
-		if (!linkify.valid(node, options.ignoreTags, options.ignoreClasses)) {
+		if (!validator(node) || linkify.SKIP_TAGS[node.nodeName]) {
 			isValid = false;
 			break;
 		}
@@ -534,104 +511,127 @@ function validRoot(node, options) {
 	return isValid;
 }
 
-/*********************** Main section start *********************************/
-
-var options, selectors, que = createQue(queHandler);
-
-// Recieve item from que
-function queHandler(item, done) {
-	if (item instanceof Element) {
-		if (validRoot(item, options) || selectors && item.matches(selectors)) {
-			linkify.linkify(item, {
-				image: options.image,
-				unicode: options.unicode,
-				ignoreTags: options.ignoreTags,
-				ignoreClasses: options.ignoreClasses,
-				newTab: options.newTab,
-				maxRunTime: options.maxRunTime,
-				timeout: options.timeout,
-				done: done
-			});
+function createValidator(skipSelector) {
+	return function(node) {
+		if (skipSelector && node.matches && node.matches(skipSelector)) {
+			return false;
 		}
-
-		if (selectors) {
-			que.unshift(item.querySelectorAll(selectors));
+		if (node.contentEditable == "true" || node.contentEditable == "") {
+			return false;
 		}
-
-		return;
+		return true;
 	}
-
-	if (item instanceof MutationRecord && item.addedNodes.length) {
-		que.unshift(item.addedNodes);
-	}
-
-	done();
 }
 
-// Program init
-initConfig({
-	image: {
-		label: "Embed images",
-		type: "checkbox",
-		default: true
-	},
-	unicode: {
-		label: "Allow non-ascii character",
-		type: "checkbox",
-		default: false
-	},
-	ignoreTags: {
-		label: "Do not linkify urls in these tags",
-		type: "textarea",
-		default: "a noscript option script style textarea svg canvas button select template meter progress math h1 h2 h3 h4 h5 h6 time code"
-	},
-	ignoreClasses: {
-		label: "Do not linkify urls in these classes",
-		type: "textarea",
-		default: "highlight editbox brush: bdsug spreadsheetinfo"
-	},
-	selectors: {
-		label: "Always linkify these elements. One CSS selector per line.",
-		type: "textarea",
-		default: ""
-	},
-	newTab: {
-		label: "Open link in new tab",
-		type: "checkbox",
-		default: false
-	},
-	timeout: {
-		label: "Max execution time (ms). Linkify will stop if its execution time exceeds this value.",
-		type: "number",
-		default: 10000
-	},
-	maxRunTime: {
-		label: "Max script run time (ms). If the script is freezing your browser, try to decrease this value.",
-		type: "number",
-		default: 100
+function selectorTest(s, message) {
+	try {
+		document.documentElement.matches(s);
+	} catch (err) {
+		console.error("[%s] The selector is invalid", message);
+		return "";
 	}
-}, function(_options){
-	options = _options;
-	options.ignoreTags = getArray(options.ignoreTags);
-	options.ignoreClasses = getArray(options.ignoreClasses);
-	selectors = options.selectors.trim().replace(/\n/, ", ");
-});
+	return s;
+}
 
-GM_addStyle(".linkifyplus img { max-width: 90%; }");
+/*********************** Main section start *********************************/
 
-new MutationObserver(function(mutations){
-	// Filter out mutations generated by LPP
-	var lastRecord = mutations[mutations.length - 1];
-	if (lastRecord.addedNodes.length && mutations[mutations.length - 1].addedNodes[0].className == "linkifyplus") {
+(function(){
+	// Limit contentType to "text/plain" or "text/html"
+	if (document.contentType != undefined && document.contentType != "text/plain" && document.contentType != "text/html") {
 		return;
 	}
 
-	// Put mutations into que
-	que.push(mutations);
+	var options, que = createQue(queHandler);
 
-}).observe(document.body, {
-	childList: true,
-	subtree: true
-});
+	// Recieve item from que
+	function queHandler(item, done) {
+		if (item instanceof Element) {
+			if (options.selector) {
+				que.unshift(item.querySelectorAll(options.selector));
+			}
 
-que.push(document.body);
+			if (validRoot(item, options.validator) || options.selector && item.matches(options.selector)) {
+				linkify.linkify(item, {
+					image: options.image,
+					unicode: options.unicode,
+					validator: options.validator,
+					newTab: options.newTab,
+					maxRunTime: options.maxRunTime,
+					timeout: options.timeout,
+					done: done
+				});
+				return;
+			}
+		}
+
+		if (item instanceof MutationRecord && item.addedNodes.length) {
+			que.unshift(item.addedNodes);
+		}
+
+		done();
+	}
+
+	// Program init
+	initConfig({
+		image: {
+			label: "Embed images",
+			type: "checkbox",
+			default: true
+		},
+		unicode: {
+			label: "Allow non-ascii character",
+			type: "checkbox",
+			default: false
+		},
+		newTab: {
+			label: "Open link in new tab",
+			type: "checkbox",
+			default: false
+		},
+		skipSelector: {
+			label: "Do not linkify these elements. (CSS selector)",
+			type: "textarea",
+			default: ".highlight, .editbox, .brush\\:, .bdsug, .spreadsheetinfo"
+		},
+		selector: {
+			label: "Always linkify these elements, override above. (CSS selector)",
+			type: "textarea",
+			default: ""
+		},
+		timeout: {
+			label: "Max execution time (ms).",
+			type: "number",
+			default: 10000
+		},
+		maxRunTime: {
+			label: "Max script run time (ms). If the script is freezing your browser, try to decrease this value.",
+			type: "number",
+			default: 100
+		}
+	}, function(_options){
+		options = _options;
+		options.selector = options.selector && selectorTest(options.selector, "Always linkify");
+		options.skipSelector = options.skipSelector && selectorTest(options.skipSelector, "Do not linkify");
+		options.validator = createValidator(options.skipSelector);
+	});
+
+	GM_addStyle(".linkifyplus img { max-width: 90%; }");
+
+	new MutationObserver(function(mutations){
+		// Filter out mutations generated by LPP
+		var lastRecord = mutations[mutations.length - 1];
+		if (lastRecord.addedNodes.length && mutations[mutations.length - 1].addedNodes[0].className == "linkifyplus") {
+			return;
+		}
+
+		// Put mutations into que
+		que.push(mutations);
+
+	}).observe(document.body, {
+		childList: true,
+		subtree: true
+	});
+
+	que.push(document.body);
+
+})();

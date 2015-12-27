@@ -51,7 +51,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-curl');
 
 	// Tasks
-	grunt.registerTask("default", ["tlds", "replace"]);
+	grunt.registerTask("default", ["eslint", "tlds", "replace"]);
 	grunt.registerTask('tlds', ['curl', 'tlds-parse']);
 	grunt.registerTask('tlds-parse', "Parse top level domains.", function(){
 		// Parse raw data
