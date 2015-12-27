@@ -500,7 +500,7 @@ function validRoot(node, validator) {
 
 function createValidator(skipSelector) {
 	return function(node) {
-		if (skipSelector && node.matches(skipSelector)) {
+		if (skipSelector && node.matches && node.matches(skipSelector)) {
 			return false;
 		}
 		if (node.contentEditable == "true" || node.contentEditable == "") {
@@ -570,6 +570,11 @@ function selectorTest(s, message) {
 			type: "checkbox",
 			default: false
 		},
+		newTab: {
+			label: "Open link in new tab",
+			type: "checkbox",
+			default: false
+		},
 		skipSelector: {
 			label: "Do not linkify these elements. (CSS selector)",
 			type: "textarea",
@@ -579,11 +584,6 @@ function selectorTest(s, message) {
 			label: "Always linkify these elements, override above. (CSS selector)",
 			type: "textarea",
 			default: ""
-		},
-		newTab: {
-			label: "Open link in new tab",
-			type: "checkbox",
-			default: false
 		},
 		timeout: {
 			label: "Max execution time (ms). Linkify will stop if its execution time exceeds this value.",
