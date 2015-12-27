@@ -362,10 +362,8 @@ var linkify = function(){
 
 			} while (Date.now() - ts < timeout);
 
-			if (!range) {
-				console.log("Linkify finished in " + (Date.now() - ts) + "ms");
-			} else {
-				console.log("Linkify timeout in " + timeout + "ms");
+			if (range) {
+				console.error("Max execution time exceeded: %sms", Date.now() - ts);
 			}
 
 			if (options.done) {
