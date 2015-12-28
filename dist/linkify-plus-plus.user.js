@@ -383,7 +383,12 @@ var linkify = function(){
 			} while (Date.now() - ts < timeout);
 
 			if (range) {
-				console.error("Max execution time exceeded: %sms", Date.now() - ts);
+				console.error("Max execution time exceeded: %sms, progress %s%%", Date.now() - ts, (re.lastIndex / range.TXT.length * 100).toFixed(2));
+
+				delete range.TXT;
+				delete range.POS;
+				delete range.RANGE;
+				delete range.FRAG;
 			}
 
 			if (options.done) {
@@ -421,12 +426,10 @@ function createQue(handler) {
 	function start() {
 		running = true;
 		requestAnimationFrame(next);
-		benchmark("que");
 	}
 
 	function next() {
 		if (!que.length) {
-			benchmark("que");
 			running = false;
 			return;
 		}
@@ -541,7 +544,7 @@ function selectorTest(s, message) {
 
 /*********************** Main section start *********************************/
 
-var que = (function(){
+(function(){
 	// Limit contentType to "text/plain" or "text/html"
 	if (document.contentType != undefined && document.contentType != "text/plain" && document.contentType != "text/html") {
 		return;
@@ -647,5 +650,4 @@ var que = (function(){
 
 	que.push(document.body);
 
-	return que;
 })();
