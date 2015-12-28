@@ -213,7 +213,7 @@ var linkify = function(){
 	}
 
 	function linkifyRange(range, newTab, image, re) {
-		var m, mm, txt,
+		var m, mm,
 			face, protocol, user, domain, port, path, angular,
 			url;
 
@@ -223,9 +223,7 @@ var linkify = function(){
 			range.POS = 0;
 		}
 
-		txt = range.TXT;
-
-		m = re.exec(txt);
+		m = re.exec(range.TXT);
 
 		if (!m) {
 			// The range is touched
