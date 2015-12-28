@@ -438,7 +438,9 @@ function createQue(handler) {
 
 		// Array like object
 		if (typeof item == "object" && Number.isInteger(item.length)) {
-			que.unshift.apply(que, item);
+			if (item.length) {
+				que.unshift.apply(que, item);
+			}
 			nextDone();
 			return;
 		}
