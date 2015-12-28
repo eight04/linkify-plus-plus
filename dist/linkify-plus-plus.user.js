@@ -93,12 +93,15 @@ var linkify = function(){
 		// If the container is #text
 		while (cont) {
 			if (cont.nodeType == 3) {
-				if (offset + change <= cont.nodeValue.length) {
+				if (!cont.LEN) {
+					cont.LEN = cont.nodeValue.length;
+				}
+				if (offset + change <= cont.LEN) {
 					this.container = cont;
 					this.offset = offset + change;
 					return;
 				}
-				change = offset + change - cont.nodeValue.length;
+				change = offset + change - cont.LEN;
 				offset = 0;
 			}
 			cont = cont.nextSibling;
@@ -302,7 +305,8 @@ var linkify = function(){
 
 			// A position to record where the range is working
 			var pos = new Pos(range.startContainer, range.startOffset),
-				textRange = document.createRange();
+				textRange = document.createRange(),
+				urlRange = document.createRange();
 
 			textRange.setStart(pos.container, pos.offset);
 
@@ -310,15 +314,13 @@ var linkify = function(){
 
 			textRange.setEnd(pos.container, pos.offset);
 
-			range.FRAG.appendChild(textRange.cloneContents());
-
-			var urlRange = document.createRange();
-
 			urlRange.setStart(pos.container, pos.offset);
 
 			pos.add(face.length);
 			urlRange.setEnd(pos.container, pos.offset);
 
+			// Performance bottleneck!
+			range.FRAG.appendChild(textRange.cloneContents());
 			range.FRAG.appendChild(createLink(url, urlRange.cloneContents(), newTab, image));
 
 			// We have to set lastIndex manually if we had changed face.
