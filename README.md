@@ -25,7 +25,8 @@ Todos
 -----
 * If there is a large text, linkify become slow on `range.cloneContents()`.
 	- Should we try to parse HTML source?
-	- Is extractContents() will be faster?
+	- Will extractContents() be faster?
+	- Clone original range than use surroundContents()?
 
 Changelog
 ---------
