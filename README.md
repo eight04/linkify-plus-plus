@@ -23,13 +23,7 @@ Testcase
 
 Todos
 -----
-* Ignore document by checking `document.contentType`?
-* There are some performance problems
-	- `Array.unshift` has poor performance.
-	- We always put no-need mutations into que. This make que become so large on firefox.
-	- What if duplicate item put into que? Since we doesn't loop through mutation records, it is impossible to identify them before adding into que.
-	- Convert range to string is a heavy work and we do this every time calling `linkifyRange`.
-* `urlRange.insertNode(createLink(url, urlRange.extractContents(), newTab, image));` slow down whole process in Chrome. Use fragment instead?
+* If there is a large text, linkify become slow on `range.cloneContents()`. Should we try to parse HTML source?
 
 Changelog
 ---------
