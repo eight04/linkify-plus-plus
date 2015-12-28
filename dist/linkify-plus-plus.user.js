@@ -215,6 +215,13 @@ var linkify = function(){
 		};
 	}
 
+	function cloneContents(range) {
+		if (range.startContainer == range.endContainer) {
+			return document.createTextNode(range.toString());
+		}
+		return range.cloneContents();
+	}
+
 	function linkifyRange(range, newTab, image, re) {
 		var m, mm,
 			face, protocol, user, domain, port, path, angular,
@@ -320,8 +327,8 @@ var linkify = function(){
 			urlRange.setEnd(pos.container, pos.offset);
 
 			// Performance bottleneck!
-			range.FRAG.appendChild(textRange.cloneContents());
-			range.FRAG.appendChild(createLink(url, urlRange.cloneContents(), newTab, image));
+			range.FRAG.appendChild(cloneContents(textRange));
+			range.FRAG.appendChild(createLink(url, cloneContents(urlRange), newTab, image));
 
 			// We have to set lastIndex manually if we had changed face.
 			re.lastIndex = m.index + face.length;
