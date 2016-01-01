@@ -563,6 +563,11 @@ function selectorTest(s, message) {
 
 	// Recieve item from que
 	function queHandler(item, done) {
+		if (item instanceof MutationRecord && item.addedNodes.length) {
+			// Use target instead of addedNodes. Using addedNodes will break textNode into different range.
+			item = item.target;
+		}
+
 		if (item instanceof Element) {
 			if (options.selector) {
 				que.unshift(item.querySelectorAll(options.selector));
@@ -580,10 +585,6 @@ function selectorTest(s, message) {
 				});
 				return;
 			}
-		}
-
-		if (item instanceof MutationRecord && item.addedNodes.length) {
-			que.unshift(item.addedNodes);
 		}
 
 		done();
