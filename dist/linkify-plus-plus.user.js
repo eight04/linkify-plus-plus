@@ -72,7 +72,7 @@ var linkify = function(){
 		if (!match) {
 			return false;
 		}
-		return match[1].toLowerCase() in tlds;
+		return tlds[match[1].toLowerCase()];
 	}
 
 	function Pos(cont, offset) {
@@ -131,7 +131,7 @@ var linkify = function(){
 			yield range;
 
 			end = start = current;
-			range = document.createRange();
+			// range = document.createRange();
 			range.setStartBefore(start);
 		}
 		range.setEndAfter(end);
@@ -222,34 +222,29 @@ var linkify = function(){
 		return range.cloneContents();
 	}
 
-	function linkifyRange(range, newTab, image, re) {
+	function linkifySearch(search, newTab, image, re) {
 		var m, mm,
 			face, protocol, user, domain, port, path, angular,
-			url;
+			url, range;
 
-		// Cache range.toString
-		if (!range.TXT) {
-			range.TXT = range.toString();
-			range.POS = 0;
-		}
-
-		m = re.exec(range.TXT);
+		m = re.exec(search.text);
 
 		if (!m) {
-			// The range is touched
-			if (range.FRAG) {
-				range.FRAG.appendChild(range.cloneContents());
-				range.RANGE.deleteContents();
-				range.RANGE.insertNode(range.FRAG);
+			if (search.frag) {
+				// if there is something to replace
 
-				delete range.FRAG;
-				delete range.RANGE;
+				// insert the text part
+				range = document.createRange();
+				range.setStart(search.pos.container, search.pos.offset);
+				range.setEnd(search.range.endContainer, search.range.endOffset);
+				search.frag.appendChild(cloneContents(range));
+
+				// replace range
+				search.range.deleteContents();
+				search.range.insertNode(search.frag);
 			}
-
-			// Remove cache
-			delete range.TXT;
-			delete range.POS;
-			return null;
+			search.end = true;
+			return;
 		}
 
 		face = m[0];
@@ -305,50 +300,56 @@ var linkify = function(){
 			// Create URL
 			url = protocol + (user && user + "@") + domain + port + path;
 
-			if (!range.FRAG) {
-				range.RANGE = range.cloneRange();
-				range.FRAG = document.createDocumentFragment();
+			if (!search.frag) {
+				search.frag = document.createDocumentFragment();
 			}
 
 			// A position to record where the range is working
-			var pos = new Pos(range.startContainer, range.startOffset),
-				textRange = document.createRange(),
-				urlRange = document.createRange();
+			range = document.createRange();
 
-			textRange.setStart(pos.container, pos.offset);
+			// the text part before search pos
+			range.setStart(search.pos.container, search.pos.offset);
+			search.pos.add(m.index - search.textIndex);
+			range.setEnd(search.pos.container, search.pos.offset);
 
-			pos.add(m.index - range.POS);
+			search.frag.appendChild(cloneContents(range));
 
-			textRange.setEnd(pos.container, pos.offset);
+			// the url part
+			range.setStart(search.pos.container, search.pos.offset);
+			search.pos.add(face.length);
+			range.setEnd(search.pos.container, search.pos.offset);
 
-			urlRange.setStart(pos.container, pos.offset);
-
-			pos.add(face.length);
-			urlRange.setEnd(pos.container, pos.offset);
-
-			// Performance bottleneck!
-			range.FRAG.appendChild(cloneContents(textRange));
-			range.FRAG.appendChild(createLink(url, cloneContents(urlRange), newTab, image));
+			search.frag.appendChild(createLink(url, cloneContents(range), newTab, image));
 
 			// We have to set lastIndex manually if we had changed face.
 			re.lastIndex = m.index + face.length;
-			range.POS = re.lastIndex;
-
-			// The range will always start from text part
-			range.setStart(pos.container, pos.offset);
+			search.textIndex = re.lastIndex;
 
 		} else if (angular && !unsafeWindow.angular) {
 			// Next search start after "{{" if there is no window.angular
 			re.lastIndex = m.index + 2;
 		}
 
-		return range;
+		return true;
+	}
+
+	function createSearch(range) {
+		return {
+			range: range.cloneRange(),
+			originalRange: range.cloneRange(),
+			text: range.toString(),
+			pos: new Pos(range.startContainer, range.startOffset),
+			textIndex: 0,
+			lastIndex: 0,
+			frag: null,
+			end: false
+		};
 	}
 
 	function linkify(root, options) {
 		var filter = createFilter(options.validator),
 			ranges = generateRanges(root, filter),
-			range,
+			search,
 			re = options.unicode ? urlUnicodeRE : urlRE,
 			maxRunTime = options.maxRunTime,
 			timeout = options.timeout,
@@ -362,40 +363,45 @@ var linkify = function(){
 			timeout = 10000;
 		}
 
-		nextRange();
+		nextSearch();
 
-		function nextRange() {
+		function nextSearch() {
 			te = Date.now();
 
+			if (search) {
+				re.lastIndex = search.lastIndex;
+			}
+
 			do {
-				if (!range) {
+				if (!search) {
 					// Get new range and reset lastIndex
-					range = ranges.next().value;
+					var range = ranges.next().value;
+					if (!range) {
+						break;
+					}
+					search = createSearch(range);
 					re.lastIndex = 0;
 				}
 
-				if (!range) {
-					break;
+				linkifySearch(search, options.newTab, options.image, re);
+
+				if (search.end) {
+					search = null;
 				}
 
-				range = linkifyRange(range, options.newTab, options.image, re);
-
 				// Over script max run time
-				// NOTE: Actually we should store lastIndex in range.LAST_INDEX and restore on linkifyRange(), because re object is globally used.
 				if (Date.now() - te > maxRunTime) {
-					requestAnimationFrame(nextRange);
+					if (search) {
+						search.lastIndex = re.lastIndex;
+					}
+					requestAnimationFrame(nextSearch);
 					return;
 				}
 
 			} while (Date.now() - ts < timeout);
 
-			if (range) {
-				console.error("Max execution time exceeded: %sms, progress %s%%", Date.now() - ts, (re.lastIndex / range.TXT.length * 100).toFixed(2));
-
-				delete range.TXT;
-				delete range.POS;
-				delete range.RANGE;
-				delete range.FRAG;
+			if (search) {
+				console.error("Max execution time exceeded: %sms, progress %s%%", Date.now() - ts, (search.lastIndex / search.text.length * 100).toFixed(2));
 			}
 
 			if (options.done) {
