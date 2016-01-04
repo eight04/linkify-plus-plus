@@ -20,6 +20,7 @@ Install
 Testcase
 --------
 <https://rawgit.com/eight04/linkify-plus-plus/master/demo/demo.html>
+<https://rawgit.com/eight04/linkify-plus-plus/master/demo/demo-large-content.html>
 
 Todos
 -----
@@ -30,6 +31,12 @@ Todos
 
 Changelog
 ---------
+* Version 7.0.0 (Jan 5, 2016):
+	- Completely rewrited. The linkification could be stopped during each links.
+	- Fix performance issue on big text. [Try it yourself](https://rawgit.com/eight04/linkify-plus-plus/master/demo/demo-large-content.html).
+	- Add `Max execution time` option.
+	- Replace `ignoreClasses`, `ignoreTags` with CSS selector.
+	- Limit document.contentType to `text/html` or `text/plain`.
 * Version 6.2.1 (Oct 7, 2015):
 	- Update excluding list, TLDs.
 * Version 6.2.0 (Sep 5, 2015):
