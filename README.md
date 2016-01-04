@@ -19,12 +19,12 @@ Install
 
 Testcase
 --------
-<https://rawgit.com/eight04/linkify-plus-plus/master/demo/demo.html>
-<https://rawgit.com/eight04/linkify-plus-plus/master/demo/demo-large-content.html>
+* <https://rawgit.com/eight04/linkify-plus-plus/master/demo/demo.html>
+* <https://rawgit.com/eight04/linkify-plus-plus/master/demo/demo-large-content.html>
 
 Todos
 -----
-* If there is a large text, linkify become slow on `range.cloneContents()`.
+* `range.cloneContents()` is slow on large text.
 	- Should we try to parse HTML source?
 	- Is extractContents() faster?
 	- Clone original range than use surroundContents()?
