@@ -12,6 +12,12 @@
 			node.textContent = document.querySelector(".testcase").textContent;
 			document.querySelector(".main").appendChild(node);
 		}
+		function interval() {
+			var p = document.createElement("p");
+			p.className = "leaker";
+			document.body.appendChild(p);
+			setTimeout(interval, 1000);
+		}
 	</script>
 	<script src="https://code.angularjs.org/1.2.28/angular.js"></script>
 	<script src="https://rawgit.com/eight04/GM_simulator/master/simulator.js"></script>
@@ -6707,6 +6713,7 @@ h.T=function(){sp();this.o.dispose();this.L&#x26;&#x26;this.L.dispose();n9(this)
 
 		<p>
 			<button class="btn-default" onclick="dup()">Dynamic inserted content</button>
+			<button class="btn-default" onclick="interval()">Leak test</button>
 		</p>
 	</div>
 </body>
