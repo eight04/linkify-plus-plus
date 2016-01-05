@@ -32,7 +32,7 @@ Todos
 Changelog
 ---------
 * Version 7.0.0 (Jan 5, 2016):
-	- Completely rewrited. The linkification could be stopped during each links.
+	- Completely rewrite. The linkification could be stopped during each links.
 	- Fix performance issue on big text. [Try it yourself](https://rawgit.com/eight04/linkify-plus-plus/master/demo/demo-large-content.html).
 	- Add `Max execution time` option.
 	- Replace `ignoreClasses`, `ignoreTags` with CSS selector.
