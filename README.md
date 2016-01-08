@@ -28,6 +28,7 @@ Todos
 	- Should we try to parse HTML source?
 	- Is extractContents() faster?
 	- Clone original range than use surroundContents()?
+* We should check item.IN_QUE before put into que.
 
 Changelog
 ---------
