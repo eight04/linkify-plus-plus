@@ -447,18 +447,7 @@ function createQue(handler) {
 			return;
 		}
 
-		var item = que.shift();
-
-		// Array like object
-		if (typeof item == "object" && Number.isInteger(item.length)) {
-			if (item.length) {
-				que.unshift.apply(que, item);
-			}
-			nextDone();
-			return;
-		}
-
-		handler(item, nextDone);
+		handler(que.shift(), nextDone);
 	}
 
 	function nextDone() {
@@ -557,6 +546,24 @@ function selectorTest(s, message) {
 	return s;
 }
 
+function each(list, handler, done) {
+	var i = 0;
+
+	function next() {
+		if (i >= list.length) {
+			if (done) {
+				done();
+			}
+			return;
+		}
+
+		handler(list[i++]);
+		requestAnimationFrame(next);
+	}
+
+	next();
+}
+
 /*********************** Main section start *********************************/
 
 (function(){
@@ -569,31 +576,39 @@ function selectorTest(s, message) {
 
 	// Recieve item from que
 	function queHandler(item, done) {
-		if (item instanceof MutationRecord && item.addedNodes.length) {
-			// Use target instead of addedNodes. Using addedNodes will break textNode into different range.
-			item = item.target;
+		if (options.selector) {
+			each(item.querySelectorAll(options.selector), pushRoot);
 		}
 
-		if (item instanceof Element) {
-			if (options.selector) {
-				que.unshift(item.querySelectorAll(options.selector));
-			}
+		item.IN_QUE = false;
 
-			if (validRoot(item, options.validator) || options.selector && item.matches(options.selector)) {
-				linkify.linkify(item, {
-					image: options.image,
-					unicode: options.unicode,
-					validator: options.validator,
-					newTab: options.newTab,
-					maxRunTime: options.maxRunTime,
-					timeout: options.timeout,
-					done: done
-				});
-				return;
-			}
+		if (validRoot(item, options.validator) || options.selector && item.matches(options.selector)) {
+			linkify.linkify(item, {
+				image: options.image,
+				unicode: options.unicode,
+				validator: options.validator,
+				newTab: options.newTab,
+				maxRunTime: options.maxRunTime,
+				timeout: options.timeout,
+				done: done
+			});
+			return;
 		}
 
 		done();
+	}
+
+	function pushRoot(root) {
+		if (!root.IN_QUE) {
+			root.IN_QUE = true;
+			que.push(root);
+		}
+	}
+
+	function pushRecord(record){
+		if (record.addedNodes.length) {
+			pushRoot(record.target);
+		}
 	}
 
 	// Program init
@@ -657,7 +672,7 @@ function selectorTest(s, message) {
 		}
 
 		// Put mutations into que
-		que.push(mutations);
+		each(mutations, pushRecord);
 
 	}).observe(document.body, {
 		childList: true,
