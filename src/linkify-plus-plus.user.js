@@ -29,6 +29,7 @@
 
 "use strict";
 
+var MAX_RUN_TIME = 100;
 // Regex creator
 var createRe = function(){
 	var pool = {};
@@ -547,21 +548,29 @@ function selectorTest(s, message) {
 }
 
 function each(list, handler, done) {
-	var i = 0;
+	var i = 0, maxRunTime = +MAX_RUN_TIME;
 
+	requestAnimationFrame(next);
 	function next() {
-		if (i >= list.length) {
-			if (done) {
-				done();
+		var te = Date.now();
+		do {
+			if (i >= list.length) {
+				if (done) {
+					done();
+				}
+				return;
 			}
-			return;
-		}
 
-		handler(list[i++]);
+
+
+			handler(list[i++]);
+		} while (Date.now() - te < maxRunTime);
 		requestAnimationFrame(next);
 	}
+}
 
-	next();
+function isArray(item) {
+	return typeof item == "object" && Number.isInteger(item.length);
 }
 
 /*********************** Main section start *********************************/
@@ -574,28 +583,61 @@ function each(list, handler, done) {
 
 	var options, que = createQue(queHandler);
 
+	function handleArray(item, done) {
+		if (item[0] instanceof MutationRecord) {
+			each(item, pushRecord, done);
+		} else if (item[0] instanceof Element) {
+			each(item, pushRoot, done);
+		} else {
+			console.error("Unknown array", item);
+			done();
+		}
+	}
+
+	function handleElement(item, done) {
+		if (options.selector) {
+			each(item.querySelectorAll(options.selector), pushRoot, linkifyRoot);
+		} else {
+			linkifyRoot();
+		}
+
+		function linkifyRoot() {
+			item.IN_QUE = false;
+
+			if (
+				validRoot(item, options.validator) ||
+				options.selector &&
+				item.matches(options.selector)
+			) {
+				linkify.linkify(item, {
+					image: options.image,
+					unicode: options.unicode,
+					validator: options.validator,
+					newTab: options.newTab,
+					maxRunTime: options.maxRunTime,
+					timeout: options.timeout,
+					done: done
+				});
+
+			} else {
+				done();
+			}
+		}
+	}
+
 	// Recieve item from que
 	function queHandler(item, done) {
-		if (options.selector) {
-			each(item.querySelectorAll(options.selector), pushRoot);
+		if (isArray(item)) {
+			if (item.length) {
+				handleArray(item, done);
+			} else {
+				done();
+			}
 		}
 
-		item.IN_QUE = false;
-
-		if (validRoot(item, options.validator) || options.selector && item.matches(options.selector)) {
-			linkify.linkify(item, {
-				image: options.image,
-				unicode: options.unicode,
-				validator: options.validator,
-				newTab: options.newTab,
-				maxRunTime: options.maxRunTime,
-				timeout: options.timeout,
-				done: done
-			});
-			return;
+		if (item instanceof Element) {
+			handleElement(item, done);
 		}
-
-		done();
 	}
 
 	function pushRoot(root) {
@@ -653,6 +695,7 @@ function each(list, handler, done) {
 		options.selector = options.selector && selectorTest(options.selector, "Always linkify");
 		options.skipSelector = options.skipSelector && selectorTest(options.skipSelector, "Do not linkify");
 		options.validator = createValidator(options.skipSelector);
+		MAX_RUN_TIME = options.maxRunTime;
 	});
 
 	GM_addStyle(".linkifyplus img { max-width: 90%; }");
@@ -672,13 +715,13 @@ function each(list, handler, done) {
 		}
 
 		// Put mutations into que
-		each(mutations, pushRecord);
+		que.unshift(mutations);
 
 	}).observe(document.body, {
 		childList: true,
 		subtree: true
 	});
 
-	que.push(document.body);
+	pushRoot(document.body);
 
 })();
