@@ -32,6 +32,8 @@ Todos
 
 Changelog
 ---------
+* Version 7.1.0 (jan 9, 2016):
+	- Fix performance issue with mutations.
 * Version 7.0.0 (Jan 5, 2016):
 	- Completely rewrite. The linkification could be stopped during each links.
 	- Fix performance issue on big text. [Try it yourself](https://rawgit.com/eight04/linkify-plus-plus/master/demo/demo-large-content.html).

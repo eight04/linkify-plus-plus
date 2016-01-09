@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     7.0.0
+// @version     7.1.0
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
@@ -30,6 +30,7 @@
 "use strict";
 
 var MAX_RUN_TIME = 100;
+
 // Regex creator
 var createRe = function(){
 	var pool = {};
