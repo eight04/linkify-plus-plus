@@ -32,6 +32,9 @@ Todos
 
 Changelog
 ---------
+* Version 7.2.0 (Feb 15, 2016):
+	- Don't use mutations if the size is too large.
+	- Update TLDs.
 * Version 7.1.0 (Jan 9, 2016):
 	- Fix performance issue with mutations.
 * Version 7.0.0 (Jan 5, 2016):
