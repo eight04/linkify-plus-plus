@@ -715,8 +715,13 @@ function isArray(item) {
 			}
 		}
 
-		// Put mutations into que
-		que.unshift(mutations);
+		if (mutations.length > 100) {
+			// Do not use mutations when too big
+			pushRoot(document.body);
+		} else {
+			// Put mutations into que
+			que.unshift(mutations);
+		}
 
 	}).observe(document.body, {
 		childList: true,
