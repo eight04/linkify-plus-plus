@@ -29,6 +29,7 @@ Todos
 	- Is extractContents() faster?
 	- Clone original range than use surroundContents()?
 * Wrong linkification with "_www.example.com".
+* Support more protocols: <https://greasyfork.org/forum/discussion/8519/>
 
 Changelog
 ---------
