@@ -7,6 +7,7 @@ Features
 * Detect text url and convert them into links.
 * Support dynamic content.
 * Support unicode characters.
+* Support custom rules.
 * Custom whitelist, blacklist.
 * Embed images.
 
@@ -22,17 +23,48 @@ Testcase
 * <https://rawgit.com/eight04/linkify-plus-plus/master/demo/demo.html>
 * <https://rawgit.com/eight04/linkify-plus-plus/master/demo/demo-large-content.html>
 
+Configure
+---------
+### Embed images
+If the url ends with `jpg|png|gif|jpeg`, create an image object and insert into link.
+
+### Allow non-ascii character
+Let url match unicode characters. (e.g. `http://www.bücher.ch`)
+
+### Open link in new tab
+Add `target="_blank"` to linkified links.
+
+### Do not linkify these elements. (CSS selector)
+If an element match the selector, LPP will skip the element.
+
+### Always linkify these elements, override above. (CSS selector)
+If an element match the selector, LPP will always linkify them, even the parent node is skipped.
+
+### Max execution time (ms)
+The script will terminate if it processing too long.
+
+### Max script run time (ms)
+Split process into small chunks to prevent hanging the browser.
+
+### Custom rules
+A list of regex pattern that will be likified, which is aimed to linkify non-http links. For example:
+```
+magnet:\?xt=\S+
+evernote:///\S+
+```
+
 Todos
 -----
 * `range.cloneContents()` is slow on large text.
 	- Should we try to parse HTML source?
 	- Is extractContents() faster?
 	- Clone original range than use surroundContents()?
-* Wrong linkification with "_www.example.com".
-* Support more protocols: <https://greasyfork.org/forum/discussion/8519/>
 
 Changelog
 ---------
+* Version 7.3.0 (Apr 2, 2016):
+	- Support custom rules.
+	- Fix leading `_` bug.
 * Version 7.2.0 (Feb 15, 2016):
 	- Don't use mutations if the size is too large.
 	- Update TLDs.
