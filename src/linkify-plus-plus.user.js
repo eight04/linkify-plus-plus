@@ -226,7 +226,7 @@ var linkify = function(){
 
 	function linkifySearch(search, newTab, image, re) {
 		var m, mm,
-			face, protocol, user, domain, port, path, angular,
+			face, protocol, user, domain, port, path, angular, custom,
 			url, range;
 
 		m = re.exec(search.text);
@@ -256,62 +256,68 @@ var linkify = function(){
 		port = m[4] || "";
 		path = m[5] || "";
 		angular = m[6];
-
-		if (!angular && domain.indexOf("..") <= -1 && (isIP(domain) || inTLDS(domain))) {
-
-			// Remove leading "_"
-			if (face[0] == "_") {
-				face = face.substr(1);
-				m.index++;
-			}
+		custom = m[7];
+		
+		if (!angular && domain.indexOf("..") <= -1 && (isIP(domain) || inTLDS(domain)) || custom) {
 			
-			if (path) {
-				// Remove trailing ".,?"
-				face = face.replace(/[.,?]*$/, '');
-				path = path.replace(/[.,?]*$/, '');
+			if (custom) {
+				url = custom;
+				
+			} else {
+				// Remove leading "_"
+				if (face[0] == "_") {
+					face = face.substr(1);
+					m.index++;
+				}
+				
+				if (path) {
+					// Remove trailing ".,?"
+					face = face.replace(/[.,?]*$/, '');
+					path = path.replace(/[.,?]*$/, '');
 
-				// Strip parens "()"
-				face = stripSingleSymbol(face, "(", ")");
-				path = stripSingleSymbol(path, "(", ")");
+					// Strip parens "()"
+					face = stripSingleSymbol(face, "(", ")");
+					path = stripSingleSymbol(path, "(", ")");
 
-				// Strip bracket "[]"
-				face = stripSingleSymbol(face, "[", "]");
-				path = stripSingleSymbol(path, "[", "]");
+					// Strip bracket "[]"
+					face = stripSingleSymbol(face, "[", "]");
+					path = stripSingleSymbol(path, "[", "]");
 
-				// Strip BBCode
-				face = face.replace(/\[\/?(b|i|u|url|img|quote|code|size|color)\].*/i, "");
-				path = path.replace(/\[\/?(b|i|u|url|img|quote|code|size|color)\].*/i, "");
-			}
+					// Strip BBCode
+					face = face.replace(/\[\/?(b|i|u|url|img|quote|code|size|color)\].*/i, "");
+					path = path.replace(/\[\/?(b|i|u|url|img|quote|code|size|color)\].*/i, "");
+				}
 
-			// Guess protocol
-			if (!protocol && user && (mm = user.match(/^mailto:(.+)/))) {
-				protocol = "mailto:";
-				user = mm[1];
-			}
-
-			if (protocol && protocol.match(/^(hxxp|h\*\*p|ttp)/)) {
-				protocol = "http://";
-			}
-
-			if (!protocol) {
-				if ((mm = domain.match(/^(ftp|irc)/))) {
-					protocol = mm[0] + "://";
-				} else if (domain.match(/^(www|web)/)) {
-					protocol = "http://";
-				} else if (user && user.indexOf(":") < 0 && !path) {
+				// Guess protocol
+				if (!protocol && user && (mm = user.match(/^mailto:(.+)/))) {
 					protocol = "mailto:";
-				} else {
+					user = mm[1];
+				}
+
+				if (protocol && protocol.match(/^(hxxp|h\*\*p|ttp)/)) {
 					protocol = "http://";
 				}
-			}
 
-			// Create URL
-			url = protocol + (user && user + "@") + domain + port + path;
+				if (!protocol) {
+					if ((mm = domain.match(/^(ftp|irc)/))) {
+						protocol = mm[0] + "://";
+					} else if (domain.match(/^(www|web)/)) {
+						protocol = "http://";
+					} else if (user && user.indexOf(":") < 0 && !path) {
+						protocol = "mailto:";
+					} else {
+						protocol = "http://";
+					}
+				}
+
+				// Create URL
+				url = protocol + (user && user + "@") + domain + port + path;
+			}
 
 			if (!search.frag) {
 				search.frag = document.createDocumentFragment();
 			}
-
+			
 			// A position to record where the range is working
 			range = document.createRange();
 
@@ -353,12 +359,27 @@ var linkify = function(){
 			end: false
 		};
 	}
+	
+	// function reEscape(text) {
+		// return text.replace(/[-\[\]\/{}()*+?.\\^$|]/g, "\\$&");
+	// }
+	
+	function buildRe(unicode, customRules) {
+		var re = unicode ? urlUnicodeRE : urlRE;
+		if (!customRules || !customRules.length) {
+			return re;
+		}
+		var source = re.toSource();
+			
+		re = createRe(source.substring(1, source.length - 1) + "|(" + customRules.join("|") + ")", "ig");
+		return re;
+	}
 
 	function linkify(root, options) {
 		var filter = createFilter(options.validator),
 			ranges = generateRanges(root, filter),
 			search,
-			re = options.unicode ? urlUnicodeRE : urlRE,
+			re = buildRe(options.unicode, options.customRules),
 			maxRunTime = options.maxRunTime,
 			timeout = options.timeout,
 			ts = Date.now(), te;
@@ -541,7 +562,7 @@ function createValidator(skipSelector) {
 			return false;
 		}
 		return true;
-	}
+	};
 }
 
 function selectorTest(s, message) {
@@ -623,6 +644,7 @@ function isArray(item) {
 					newTab: options.newTab,
 					maxRunTime: options.maxRunTime,
 					timeout: options.timeout,
+					customRules: options.customRules,
 					done: done
 				});
 
@@ -658,6 +680,14 @@ function isArray(item) {
 		if (record.addedNodes.length) {
 			pushRoot(record.target);
 		}
+	}
+	
+	function createList(text) {
+		text = text.trim();
+		if (!text) {
+			return null;
+		}
+		return text.split("\n");
 	}
 
 	// Program init
@@ -696,12 +726,18 @@ function isArray(item) {
 			label: "Max script run time (ms). If the script is freezing your browser, try to decrease this value.",
 			type: "number",
 			default: 100
+		},
+		customRules: {
+			label: "Custom rules. One pattern per line. (RegExp)",
+			type: "textarea",
+			default: ""
 		}
 	}, function(_options){
 		options = _options;
 		options.selector = options.selector && selectorTest(options.selector, "Always linkify");
 		options.skipSelector = options.skipSelector && selectorTest(options.skipSelector, "Do not linkify");
 		options.validator = createValidator(options.skipSelector);
+		options.customRules = options.customRules && createList(options.customRules);
 		MAX_RUN_TIME = options.maxRunTime;
 	});
 
