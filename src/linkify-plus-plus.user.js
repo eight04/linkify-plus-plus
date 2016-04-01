@@ -48,8 +48,8 @@ var createRe = function(){
 // Linkify Plus Plus core
 var linkify = function(){
 
-	var urlUnicodeRE = /\b([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.\u00b7-\u2a6d6]+\.[a-z0-9-TLDS.charSet]{1,TLDS.maxLength})\b(:\d+)?([/?#]\S*)?|\{\{(.+?)\}\}/ig,
-		urlRE =  /\b([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.]+\.[a-z0-9-]{1,TLDS.maxLength})\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#(),'\[\]]*)?|\{\{(.+?)\}\}/ig,
+	var urlUnicodeRE = /(?:\b|_)([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.\u00b7-\u2a6d6]+\.[a-z0-9-TLDS.charSet]{1,TLDS.maxLength})\b(:\d+)?([/?#]\S*)?|\{\{(.+?)\}\}/ig,
+		urlRE =  /(?:\b|_)([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.]+\.[a-z0-9-]{1,TLDS.maxLength})\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#(),'\[\]]*)?|\{\{(.+?)\}\}/ig,
 		tlds = TLDS.set,
 		invalidTags = {
 			A: true,
@@ -259,6 +259,12 @@ var linkify = function(){
 
 		if (!angular && domain.indexOf("..") <= -1 && (isIP(domain) || inTLDS(domain))) {
 
+			// Remove leading "_"
+			if (face[0] == "_") {
+				face = face.substr(1);
+				m.index++;
+			}
+			
 			if (path) {
 				// Remove trailing ".,?"
 				face = face.replace(/[.,?]*$/, '');
