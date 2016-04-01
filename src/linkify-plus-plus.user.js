@@ -369,9 +369,7 @@ var linkify = function(){
 		if (!customRules || !customRules.length) {
 			return re;
 		}
-		var source = re.toSource();
-			
-		re = createRe(source.substring(1, source.length - 1) + "|(" + customRules.join("|") + ")", "ig");
+		re = createRe(re.source + "|(" + customRules.join("|") + ")", "ig");
 		return re;
 	}
 
