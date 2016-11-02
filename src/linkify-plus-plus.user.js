@@ -4,6 +4,7 @@
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     http*
+// @include     file*
 // @exclude     http://www.google.*/search*
 // @exclude     https://www.google.*/search*
 // @exclude     http://www.google.*/webhp*
