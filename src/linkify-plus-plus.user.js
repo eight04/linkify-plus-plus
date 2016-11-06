@@ -4,11 +4,12 @@
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     *
-// @exclude     http*://www.google.*/search*
-// @exclude     http*://www.google.*/webhp*
-// @exclude     http*://music.google.*/*
-// @exclude     http*://mail.google.*/*
-// @exclude     http*://docs.google.*/*
+// @exclude     https://www.google.*/search*
+// @exclude     https://www.google.*/webhp*
+// @exclude     https://music.google.com/*
+// @exclude     https://mail.google.com/*
+// @exclude     https://docs.google.com/*
+// @exclude     https://encrypted.google.com/*
 // @exclude     http://mxr.mozilla.org/*
 // @exclude		http://w3c*.github.io/*
 // @require     https://greasyfork.org/scripts/7212-gm-config-eight-s-version/code/GM_config%20(eight's%20version).js?version=57385
