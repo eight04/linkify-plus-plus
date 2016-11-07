@@ -4,7 +4,8 @@
   "devDependencies": {
     "download-cli": "^1.0.1",
     "npm-build-tools": "^2.2.5",
-    "sync-version": "^0.2.0"
+    "sync-version": "^0.2.0",
+    "watch-run": "^1.2.4"
   },
   "scripts": {
     "tld-download": "download http://data.iana.org/TLD/tlds-alpha-by-domain.txt > tlds.txt",
@@ -12,6 +13,7 @@
     "test": "eslint --ignore-pattern dist **/*.js",
     "preversion": "npm test",
     "version": "sync-version src/linkify-plus-plus.user.js && npm run build && git add .",
-    "postversion": "git push --follow-tags"
+    "postversion": "git push --follow-tags",
+    "watch": "watch-run -p src/*.js npm run build"
   }
 }
