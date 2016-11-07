@@ -1,3 +1,5 @@
+/* eslint-env node */
+
 var fs = require("fs"),
 	punycode = require("punycode");
 
@@ -9,7 +11,7 @@ var tlds = fs.readFileSync("tlds.txt", "utf8")
 tlds = tlds.concat(
 	tlds.filter(tld => tld.startsWith("xn--"))
 		.map(tld => punycode.decode(tld.substr(4)))
-)
+);
 
 var repl = {};
 

@@ -2,28 +2,14 @@
 	"extends": "eslint:recommended",
 	"env": {
 		"browser": true,
-		"es6": true
+		"es6": true,
+		"greasemonkey": true
 	},
 	"globals": {
-		"unsafeWindow": false,
 		"GM_config": false,
-		"GM_addStyle": false,
-		"GM_registerMenuCommand": false,
-		"GM_info": false,
 		"TLDS": false
 	},
 	"rules": {
-		"eqeqeq": 0,
-		"camelcase": 0,
-		"new-cap": 0,
-		"no-constant-condition": 0,
-		"no-mixed-spaces-and-tabs": 0,
-		"quotes": 0,
-		"no-use-before-define": [2, "nofunc"],
-		"no-shadow": 0,
-		"new-parens": 0,
-		"global-strict": 0,
-		"no-console": 0,
-		"semi": [2, "always"]
+		"no-console": "off"
 	}
 }

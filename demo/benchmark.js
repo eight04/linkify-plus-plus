@@ -1,3 +1,4 @@
+/* exported sum benchmark */
 var sum = {};
 var benchmark = function() {
 	var ts = {};
