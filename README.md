@@ -62,6 +62,9 @@ Todos
 
 Changelog
 ---------
+* Version 7.3.1 (Nov 8, 2016):
+	- Update include/exclude rules.
+	- Update TLD list.
 * Version 7.3.0 (Apr 2, 2016):
 	- Support custom rules.
 	- Fix leading `_` bug.
