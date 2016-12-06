@@ -54,7 +54,7 @@ var linkify = function(){
 			PATH: "([/?#][\\w-.~!$&*+;=:@%/?#(),'\\[\\]]*)?",
 			MOUSTACHE: "\\{\\{(.+?)\\}\\}"
 		},
-		TOKENS = ["face", "prefix", "protocol", "user", "domain", "port", "path", "custom", "suffix", "angular"],
+		TOKENS = ["face", "angular", "prefix", "protocol", "user", "domain", "port", "path", "custom", "suffix"],
 		tlds = TLDS.tldSet,
 		invalidTags = {
 			A: true,
@@ -104,13 +104,12 @@ var linkify = function(){
 			re.INVALID_SUFFIX = "[^\\s" + reCharsetEscape(o.boundaryRight) + "]";
 		} else {
 			re.PREFIX = "(^|\\b|_)";
-			// for some reason, \b$ doesn't match "xxx)"
 			re.SUFFIX = "()";
 		}
 		
 		var pattern = re.PROTOCOL + re.USER + re.DOMAIN + re.PORT + re.PATH;
 		pattern = re.PREFIX + "(?:" + pattern + "|" + re.CUSTOM + ")" + re.SUFFIX;
-		pattern = pattern + "|" + re.MOUSTACHE;
+		pattern = re.MOUSTACHE + "|" + pattern;
 		
 		return {
 			url: createRe(pattern, "igm"),
@@ -208,7 +207,7 @@ var linkify = function(){
 		if (s == m.path) return;
 		
 		m.end -= m.path.length - s.length;
-		m.suffix = m.path.substr(m.path.length - s.length) + m.suffix;
+		m.suffix = m.path.substr(s.length) + m.suffix;
 		m.path = s;
 	}
 	
@@ -336,6 +335,10 @@ var linkify = function(){
 	function isDomain(d) {
 		return /^[^.-]/.test(d) && d.indexOf("..") < 0;
 	}
+	
+	function inMoustache(m) {
+		return m.angular || m.prefix.includes("{{") && m.suffix.includes("}}");
+	}
 
 	function linkifySearch(search, options, re) {
 		var m, mm,
@@ -363,16 +366,7 @@ var linkify = function(){
 		
 		buildUrlMatch(m);
 		
-		if (m.angular) {
-			if (unsafeWindow.angular || unsafeWindow.Vue) {
-				// ignore urls surrounded by {{}}
-				return;
-			} else {
-				// Next search start after "{{" if there is no window.angular
-				re.url.lastIndex = m.index + 2;
-			}
-		}
-		
+		// Redistribute suffix
 		if (m.path) {
 			// Remove trailing ".,?"
 			pathStrip(m, /(^|[^-_])[.,?]+$/, "$1");
@@ -388,13 +382,24 @@ var linkify = function(){
 			
 			// Strip BBCode
 			pathStrip(m, /\[\/?(b|i|u|url|img|quote|code|size|color)\].*/i, "");
+		}
 			
-			// check suffix
-			if (options.standalone && re.invalidSuffix.test(m.suffix)) {
-				if (/\s$/.test(m.suffix)) {
-					re.url.lastIndex--;
-				}
+		// check suffix
+		if (options.standalone && re.invalidSuffix.test(m.suffix)) {
+			if (/\s$/.test(m.suffix)) {
+				re.url.lastIndex--;
+			}
+			return;
+		}
+		
+		// Moustache check
+		if (inMoustache(m)) {
+			if (unsafeWindow.angular || unsafeWindow.Vue) {
+				// ignore urls surrounded by {{}}
 				return;
+			} else {
+				// Next search start after "{{" if there is no window.angular
+				re.url.lastIndex = m.index + 2;
 			}
 		}
 		
