@@ -44,8 +44,8 @@ var createRe = function(){
 // Linkify Plus Plus core
 var linkify = function(){
 
-	var urlUnicodeRE = /(?:\b|_)([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.\u00b7-\u2a6d6]+\.[a-z0-9-TLDS.charSet]{1,TLDS.maxLength})\b(:\d+)?([/?#]\S*)?|\{\{(.+?)\}\}/ig,
-		urlRE =  /(?:\b|_)([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.]+\.[a-z0-9-]{1,TLDS.maxLength})\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#(),'\[\]]*)?|\{\{(.+?)\}\}/ig,
+	var urlUnicodeRE = /(?:\b|_)([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.\u00b7-\u2a6d6{STRIP_OUT}]+\.[a-z0-9-TLDS.charSet]{1,TLDS.maxLength})\b(:\d+)?([/?#]\S*)?|\{\{(.+?)\}\}/ig,
+		urlRE =  /(?:\b|_)([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.{STRIP_OUT}]+\.[a-z0-9-]{1,TLDS.maxLength})\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#(),'\[\]]*)?|\{\{(.+?)\}\}/ig,
 		tlds = TLDS.tldSet,
 		invalidTags = {
 			A: true,
@@ -389,12 +389,13 @@ var linkify = function(){
 		// return text.replace(/[-\[\]\/{}()*+?.\\^$|]/g, "\\$&");
 	// }
 	
-	function buildRe(unicode, customRules) {
-		var re = unicode ? urlUnicodeRE : urlRE;
-		if (!customRules || !customRules.length) {
-			return re;
+	function buildRe(o) {
+		var re = o.unicode ? urlUnicodeRE : urlRE;
+		re = re.source.replace(/\{STRIP_OUT\}/g, o.invalidBoundary || "");
+		if (o.customRules && o.customRules.length) {
+			re += "|(" + o.customRules.join("|") + ")";
 		}
-		re = createRe(re.source + "|(" + customRules.join("|") + ")", "ig");
+		re = createRe(re, "ig");
 		return re;
 	}
 
@@ -402,7 +403,7 @@ var linkify = function(){
 		var filter = createFilter(options.validator),
 			ranges = generateRanges(root, filter),
 			search,
-			re = buildRe(options.unicode, options.customRules),
+			re = buildRe(options),
 			maxRunTime = options.maxRunTime,
 			timeout = options.timeout,
 			ts = Date.now(), te;
@@ -727,6 +728,11 @@ function isArray(item) {
 			label: "Open link in new tab",
 			type: "checkbox",
 			default: false
+		},
+		invalidBoundary: {
+			label: "URL must not preceeded by these characters",
+			type: "text",
+			default: ""
 		},
 		skipSelector: {
 			label: "Do not linkify these elements. (CSS selector)",
