@@ -47,7 +47,7 @@ var linkify = function(){
 	var RE = {
 			PROTOCOL: "([-a-z*]+://)?",
 			USER: "(?:([\\w:.+-]+)@)?",
-			DOMAIN_UNI: "([a-z0-9-.\\u00b7-\\u2a6d6]+\\.[a-z0-9-TLDS.charSet]{1,TLDS.maxLength})",
+			DOMAIN_UNI: "([a-z0-9-.\\u00A0-\\uFFFF]+\\.[a-z0-9-TLDS.charSet]{1,TLDS.maxLength})",
 			DOMAIN: "([a-z0-9-.]+\\.[a-z0-9-]{1,TLDS.maxLength})",
 			PORT: "(:\\d+\\b)?",
 			PATH_UNI: "([/?#]\\S*)?",
@@ -103,9 +103,9 @@ var linkify = function(){
 			}
 			re.INVALID_SUFFIX = "[^\\s" + reCharsetEscape(o.boundaryRight) + "]";
 		} else {
-			re.PREFIX = "(\\b|_)";
+			re.PREFIX = "(^|\\b|_)";
 			// for some reason, \b$ doesn't match "xxx)"
-			re.SUFFIX = "($|\\b|_)";
+			re.SUFFIX = "()";
 		}
 		
 		var pattern = re.PROTOCOL + re.USER + re.DOMAIN + re.PORT + re.PATH;
@@ -119,7 +119,7 @@ var linkify = function(){
 	}
 
 	function inTLDS(domain) {
-		var match = domain.match(/\.([a-z0-9-]+)$/i);
+		var match = domain.match(/\.([^.]+)$/);
 		if (!match) {
 			return false;
 		}
@@ -334,7 +334,7 @@ var linkify = function(){
 	}
 	
 	function isDomain(d) {
-		return /^[a-z]/i.test(d) && d.indexOf("..") < 0;
+		return /^[^.-]/.test(d) && d.indexOf("..") < 0;
 	}
 
 	function linkifySearch(search, options, re) {
@@ -342,7 +342,7 @@ var linkify = function(){
 			url, range;
 
 		m = re.url.exec(search.text);
-
+		
 		if (!m) {
 			if (search.frag) {
 				// if there is something to replace
@@ -379,10 +379,12 @@ var linkify = function(){
 
 			// Strip trailing '
 			pathStripQuote(m, "'");
+			pathStripQuote(m, '"');
 			
 			// Strip parens "()"
 			pathStripBrace(m, "(", ")");
 			pathStripBrace(m, "[", "]");
+			pathStripBrace(m, "{", "}");
 			
 			// Strip BBCode
 			pathStrip(m, /\[\/?(b|i|u|url|img|quote|code|size|color)\].*/i, "");
