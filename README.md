@@ -71,6 +71,8 @@ Todos
 
 Changelog
 ---------
+* Version 7.4.1 (Dec 7, 2016):
+	- Fix: empty custom rule bug.
 * Version 7.4.0 (Dec 7, 2016):
 	- Refactor. Add standalone and boundary options.
 	- Add 4 digit IP option.
