@@ -6,8 +6,7 @@
     "npm-build-tools": "^2.2.5",
     "replaceinfiles": "^1.1.4",
     "request": "^2.79.0",
-    "sync-version": "^0.2.0",
-    "watch-run": "^1.2.4"
+    "sync-version": "^0.2.0"
   },
   "scripts": {
     "build-tlds": "node build-tlds.js > tlds.json",
@@ -16,6 +15,6 @@
     "preversion": "npm test",
     "version": "sync-version src/linkify-plus-plus.user.js && npm run build && git add .",
     "postversion": "git push --follow-tags",
-    "watch": "watch-run -p src/*.js npm run build"
+    "watch": "n-run -w src/*.js \"npm run build\""
   }
 }
