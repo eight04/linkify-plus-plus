@@ -44,8 +44,17 @@ var createRe = function(){
 // Linkify Plus Plus core
 var linkify = function(){
 
-	var urlUnicodeRE = /(?:\b|_)([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.\u00b7-\u2a6d6{STRIP_OUT}]+\.[a-z0-9-TLDS.charSet]{1,TLDS.maxLength})\b(:\d+)?([/?#]\S*)?|\{\{(.+?)\}\}/ig,
-		urlRE =  /(?:\b|_)([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.{STRIP_OUT}]+\.[a-z0-9-]{1,TLDS.maxLength})\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#(),'\[\]]*)?|\{\{(.+?)\}\}/ig,
+	var RE = {
+			PROTOCOL: "([-a-z*]+://)?",
+			USER: "(?:([\\w:.+-]+)@)?",
+			DOMAIN_UNI: "([a-z0-9-.\\u00b7-\\u2a6d6]+\\.[a-z0-9-TLDS.charSet]{1,TLDS.maxLength})",
+			DOMAIN: "([a-z0-9-.]+\\.[a-z0-9-]{1,TLDS.maxLength})",
+			PORT: "(:\\d+\\b)?",
+			PATH_UNI: "([/?#]\\S*)?",
+			PATH: "([/?#][\\w-.~!$&*+;=:@%/?#(),'\\[\\]]*)?",
+			MOUSTACHE: "\\{\\{(.+?)\\}\\}"
+		},
+		TOKENS = ["face", "prefix", "protocol", "user", "domain", "port", "path", "custom", "suffix", "angular"],
 		tlds = TLDS.tldSet,
 		invalidTags = {
 			A: true,
@@ -64,6 +73,50 @@ var linkify = function(){
 			MATH: true,
 			TIME: true
 		};
+
+	function reCharsetEscape(text) {
+		return text.replace(/[\[\]\\^-]/g, "\\$&");
+	}
+	
+	function buildRe(o) {
+		var re = Object.assign({}, RE);
+		
+		if (o.unicode) {
+			re.DOMAIN = re.DOMAIN_UNI;
+			re.PATH = re.PATH_UNI;
+		}
+		
+		if (o.customRules && o.customRules.length) {
+			re.CUSTOM = "(" + o.customRules.join("|") + ")";
+		}
+		
+		if (o.standalone) {
+			if (o.boundaryLeft) {
+				re.PREFIX = "((?:^|\\s)[" + reCharsetEscape(o.boundaryLeft) + "]*?)";
+			} else {
+				re.PREFIX = "(^|\\s)";
+			}
+			if (o.boundaryRight) {
+				re.SUFFIX = "([" + reCharsetEscape(o.boundaryRight) + "]*(?:$|\\s))";
+			} else {
+				re.SUFFIX = "($|\\s)";
+			}
+			re.INVALID_SUFFIX = "[^\\s" + reCharsetEscape(o.boundaryRight) + "]";
+		} else {
+			re.PREFIX = "(\\b|_)";
+			// for some reason, \b$ doesn't match "xxx)"
+			re.SUFFIX = "($|\\b|_)";
+		}
+		
+		var pattern = re.PROTOCOL + re.USER + re.DOMAIN + re.PORT + re.PATH;
+		pattern = re.PREFIX + "(?:" + pattern + "|" + re.CUSTOM + ")" + re.SUFFIX;
+		pattern = pattern + "|" + re.MOUSTACHE;
+		
+		return {
+			url: createRe(pattern, "igm"),
+			invalidSuffix: re.INVALID_SUFFIX && createRe(re.INVALID_SUFFIX)
+		};
+	}
 
 	function inTLDS(domain) {
 		var match = domain.match(/\.([a-z0-9-]+)$/i);
@@ -148,9 +201,42 @@ var linkify = function(){
 		}
 		return true;
 	}
+	
+	function pathStrip(m, re, repl) {
+		var s = m.path.replace(re, repl);
 
-	function stripSingleSymbol(str, left, right) {
-		var re = createRe("[\\" + left + "\\" + right + "]", "g"),
+		if (s == m.path) return;
+		
+		m.end -= m.path.length - s.length;
+		m.suffix = m.path.substr(m.path.length - s.length) + m.suffix;
+		m.path = s;
+	}
+	
+	function pathStripQuote(m, c) {
+		var i = 0, s = m.path, end, pos = 0;
+		
+		if (!s.endsWith(c)) return;
+		
+		while ((pos = s.indexOf(c, pos)) >= 0) {
+			if (i % 2) {
+				end = null;
+			} else {
+				end = pos;
+			}
+			pos++;
+			i++;
+		}
+		
+		if (!end) return;
+		
+		m.end -= s.length - end;
+		m.path = s.substr(0, end);
+		m.suffix = s.substr(end) + m.suffix;
+	}
+
+	function pathStripBrace(m, left, right) {
+		var str = m.path,
+			re = createRe("[\\" + left + "\\" + right + "]", "g"),
 			match, count = 0, end;
 
 		// Match loop
@@ -169,10 +255,12 @@ var linkify = function(){
 		}
 
 		if (!match && count % 2 == 0) {
-			return str;
+			return;
 		}
-
-		return str.substr(0, end);
+		
+		m.end -= m.path.length - end;
+		m.path = str.substr(0, end);
+		m.suffix = str.substr(end) + m.suffix;
 	}
 
 	function createLink(url, child, o) {
@@ -221,14 +309,12 @@ var linkify = function(){
 	}
 	
 	function buildUrlMatch(m) {
-		m.face = m[0];
-		m.protocol = m[1] || "";
-		m.user = m[2] || "";
-		m.domain = m[3] || "";
-		m.port = m[4] || "";
-		m.path = m[5] || "";
-		m.angular = m[6];
-		m.custom = m[7];		
+		var i;
+		for (i = 0; i < TOKENS.length; i++) {
+			m[TOKENS[i]] = m[i] || "";
+		}
+		m.start = m.prefix.length;
+		m.end = m.face.length - m.suffix.length;
 	}
 	
 	function validMatch(m, o) {
@@ -255,7 +341,7 @@ var linkify = function(){
 		var m, mm,
 			url, range;
 
-		m = re.exec(search.text);
+		m = re.url.exec(search.text);
 
 		if (!m) {
 			if (search.frag) {
@@ -283,12 +369,34 @@ var linkify = function(){
 				return;
 			} else {
 				// Next search start after "{{" if there is no window.angular
-				re.lastIndex = m.index + 2;
+				re.url.lastIndex = m.index + 2;
+			}
+		}
+		
+		if (m.path) {
+			// Remove trailing ".,?"
+			pathStrip(m, /(^|[^-_])[.,?]+$/, "$1");
+
+			// Strip trailing '
+			pathStripQuote(m, "'");
+			
+			// Strip parens "()"
+			pathStripBrace(m, "(", ")");
+			pathStripBrace(m, "[", "]");
+			
+			// Strip BBCode
+			pathStrip(m, /\[\/?(b|i|u|url|img|quote|code|size|color)\].*/i, "");
+			
+			// check suffix
+			if (options.standalone && re.invalidSuffix.test(m.suffix)) {
+				if (/\s$/.test(m.suffix)) {
+					re.url.lastIndex--;
+				}
+				return;
 			}
 		}
 		
 		if (!validMatch(m, options)) {
-			console.log(m.face, options.ip, m.domain);
 			return;
 		}
 		
@@ -296,30 +404,6 @@ var linkify = function(){
 			url = m.custom;
 			
 		} else {
-			// Remove leading "_"
-			if (m.face[0] == "_") {
-				m.face = m.face.substr(1);
-				m.index++;
-			}
-			
-			if (m.path) {
-				// Remove trailing ".,?"
-				m.face = m.face.replace(/[.,?]*$/, '');
-				m.path = m.path.replace(/[.,?]*$/, '');
-
-				// Strip parens "()"
-				m.face = stripSingleSymbol(m.face, "(", ")");
-				m.path = stripSingleSymbol(m.path, "(", ")");
-
-				// Strip bracket "[]"
-				m.face = stripSingleSymbol(m.face, "[", "]");
-				m.path = stripSingleSymbol(m.path, "[", "]");
-
-				// Strip BBCode
-				m.face = m.face.replace(/\[\/?(b|i|u|url|img|quote|code|size|color)\].*/i, "");
-				m.path = m.path.replace(/\[\/?(b|i|u|url|img|quote|code|size|color)\].*/i, "");
-			}
-
 			// Guess protocol
 			if (!m.protocol && m.user && (mm = m.user.match(/^mailto:(.+)/))) {
 				m.protocol = "mailto:";
@@ -355,21 +439,23 @@ var linkify = function(){
 
 		// the text part before search pos
 		range.setStart(search.pos.container, search.pos.offset);
-		search.pos.add(m.index - search.textIndex);
+		search.pos.add(m.index + m.start - search.textIndex);
 		range.setEnd(search.pos.container, search.pos.offset);
 
 		search.frag.appendChild(cloneContents(range));
 
 		// the url part
 		range.setStart(search.pos.container, search.pos.offset);
-		search.pos.add(m.face.length);
+		search.pos.add(m.end - m.start);
 		range.setEnd(search.pos.container, search.pos.offset);
 
 		search.frag.appendChild(createLink(url, cloneContents(range), options));
 
 		// We have to set lastIndex manually if we had changed face.
-		re.lastIndex = m.index + m.face.length;
-		search.textIndex = re.lastIndex;
+		if (/\s$/.test(m.suffix)) {
+			re.url.lastIndex--;
+		}
+		search.textIndex = m.index + m.end;
 	}
 
 	function createSearch(range) {
@@ -385,20 +471,6 @@ var linkify = function(){
 		};
 	}
 	
-	// function reEscape(text) {
-		// return text.replace(/[-\[\]\/{}()*+?.\\^$|]/g, "\\$&");
-	// }
-	
-	function buildRe(o) {
-		var re = o.unicode ? urlUnicodeRE : urlRE;
-		re = re.source.replace(/\{STRIP_OUT\}/g, o.invalidBoundary || "");
-		if (o.customRules && o.customRules.length) {
-			re += "|(" + o.customRules.join("|") + ")";
-		}
-		re = createRe(re, "ig");
-		return re;
-	}
-
 	function linkify(root, options) {
 		var filter = createFilter(options.validator),
 			ranges = generateRanges(root, filter),
@@ -407,7 +479,7 @@ var linkify = function(){
 			maxRunTime = options.maxRunTime,
 			timeout = options.timeout,
 			ts = Date.now(), te;
-
+			
 		if (maxRunTime === undefined) {
 			maxRunTime = 100;
 		}
@@ -422,7 +494,7 @@ var linkify = function(){
 			te = Date.now();
 
 			if (search) {
-				re.lastIndex = search.lastIndex;
+				re.url.lastIndex = search.lastIndex;
 			}
 
 			do {
@@ -433,7 +505,7 @@ var linkify = function(){
 						break;
 					}
 					search = createSearch(range);
-					re.lastIndex = 0;
+					re.url.lastIndex = 0;
 				}
 
 				linkifySearch(search, options, re);
@@ -445,7 +517,7 @@ var linkify = function(){
 				// Over script max run time
 				if (Date.now() - te > maxRunTime) {
 					if (search) {
-						search.lastIndex = re.lastIndex;
+						search.lastIndex = re.url.lastIndex;
 					}
 					requestAnimationFrame(nextSearch);
 					return;
@@ -729,10 +801,20 @@ function isArray(item) {
 			type: "checkbox",
 			default: false
 		},
-		invalidBoundary: {
-			label: "URL must not preceeded by these characters",
+		standalone: {
+			label: "URL must be surrounded by whitespace",
+			type: "checkbox",
+			default: false
+		},
+		boundaryLeft: {
+			label: "Boundary characters between whitespace and URL (left)",
 			type: "text",
-			default: ""
+			default: "{[(\"'"
+		},
+		boundaryRight: {
+			label: "Boundary characters between whitespace and URL (right)",
+			type: "text",
+			default: "'\")]},.;?!"
 		},
 		skipSelector: {
 			label: "Do not linkify these elements. (CSS selector)",
