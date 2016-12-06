@@ -25,6 +25,9 @@ Testcase
 
 Configure
 ---------
+### Match 4 digits IP
+Always linkify IP even if the URL dosn't contains protocol and path.
+
 ### Embed images
 If the url ends with `jpg|png|gif|jpeg`, create an image object and insert into link.
 
@@ -33,6 +36,12 @@ Let url match unicode characters. (e.g. `http://www.bücher.ch`)
 
 ### Open link in new tab
 Add `target="_blank"` to linkified links.
+
+### URL must be surrounded by whitespace
+Never linkify URLs concatenated with other words.
+
+### Boundary characters between whitespace and URL
+Only works if `URL must be surrounded by whitespace` is checked.
 
 ### Do not linkify these elements. (CSS selector)
 If an element match the selector, LPP will skip the element.
@@ -62,6 +71,10 @@ Todos
 
 Changelog
 ---------
+* Version 7.4.0 (Dec 7, 2016):
+	- Refactor. Add standalone and boundary options.
+	- Add 4 digit IP option.
+	- Use TLDs count from domaintools. Remove TLDs whose count <= 2.
 * Version 7.3.1 (Nov 8, 2016):
 	- Update include/exclude rules.
 	- Update TLD list.
