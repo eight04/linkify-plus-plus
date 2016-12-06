@@ -108,7 +108,11 @@ var linkify = function(){
 		}
 		
 		var pattern = re.PROTOCOL + re.USER + re.DOMAIN + re.PORT + re.PATH;
-		pattern = re.PREFIX + "(?:" + pattern + "|" + re.CUSTOM + ")" + re.SUFFIX;
+		if (re.CUSTOM) {
+			pattern = re.PREFIX + "(?:" + pattern + "|" + re.CUSTOM + ")" + re.SUFFIX;
+		} else {
+			pattern = re.PREFIX + pattern + "()" + re.SUFFIX;
+		}
 		pattern = re.MOUSTACHE + "|" + pattern;
 		
 		return {
@@ -436,7 +440,7 @@ var linkify = function(){
 			// Create URL
 			url = m.protocol + (m.user && m.user + "@") + m.domain + m.port + m.path;
 		}
-
+		
 		if (!search.frag) {
 			search.frag = document.createDocumentFragment();
 		}
