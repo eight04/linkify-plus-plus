@@ -44,8 +44,17 @@ var createRe = function(){
 // Linkify Plus Plus core
 var linkify = function(){
 
-	var urlUnicodeRE = /(?:\b|_)([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.\u00b7-\u2a6d6]+\.[a-z0-9-セール佛山慈善集团在线한국八卦موقعবাংল公司香格里拉网站移动我爱你москвақзтлинйрбгеファッションストア삼성சிங்கபூர商标城дю新闻家電中文信国國ලංකාクラウドભારતभारत店संगठन餐厅络у港食品飞利浦台湾灣手机الجزئرنیتبدسيةكث澳門닷컴شგე构健康ไทยфみんなελ世界書籍址넷コム天主教息嘉大酒صط广东இலைநதயாհայ加坡ف]{1,22})\b(:\d+)?([/?#]\S*)?|\{\{(.+?)\}\}/ig,
-		urlRE =  /(?:\b|_)([-a-z*]+:\/\/)?(?:([\w:.+-]+)@)?([a-z0-9-.]+\.[a-z0-9-]{1,22})\b(:\d+)?([/?#][\w-.~!$&*+;=:@%/?#(),'\[\]]*)?|\{\{(.+?)\}\}/ig,
+	var RE = {
+			PROTOCOL: "([-a-z*]+://)?",
+			USER: "(?:([\\w:.+-]+)@)?",
+			DOMAIN_UNI: "([a-z0-9-.\\u00A0-\\uFFFF]+\\.[a-z0-9-セール佛山慈善集团在线한국八卦موقعবাংল公司香格里拉网站移动我爱你москвақзтлинйрбгеファッションストア삼성சிங்கபூர商标城дю新闻家電中文信国國ලංකාクラウドભારતभारत店संगठन餐厅络у港食品飞利浦台湾灣手机الجزئرنیتبدسيةكث澳門닷컴شგე构健康ไทยфみんなελ世界書籍址넷コム天主教息嘉大酒صط广东இலைநதயாհայ加坡ف]{1,22})",
+			DOMAIN: "([a-z0-9-.]+\\.[a-z0-9-]{1,22})",
+			PORT: "(:\\d+\\b)?",
+			PATH_UNI: "([/?#]\\S*)?",
+			PATH: "([/?#][\\w-.~!$&*+;=:@%/?#(),'\\[\\]]*)?",
+			MOUSTACHE: "\\{\\{(.+?)\\}\\}"
+		},
+		TOKENS = ["face", "angular", "prefix", "protocol", "user", "domain", "port", "path", "custom", "suffix"],
 		tlds = {"aarp":true,"abb":true,"abbott":true,"abc":true,"abogado":true,"ac":true,"academy":true,"accenture":true,"accountant":true,"accountants":true,"aco":true,"active":true,"actor":true,"ad":true,"adult":true,"ae":true,"aeg":true,"aero":true,"af":true,"afamilycompany":true,"afl":true,"ag":true,"agency":true,"ai":true,"aig":true,"airbus":true,"airforce":true,"al":true,"alsace":true,"am":true,"amica":true,"amsterdam":true,"ao":true,"apartments":true,"aq":true,"aquarelle":true,"ar":true,"archi":true,"army":true,"arpa":true,"art":true,"arte":true,"as":true,"asia":true,"associates":true,"at":true,"attorney":true,"au":true,"auction":true,"audi":true,"audio":true,"auto":true,"autos":true,"aw":true,"aws":true,"ax":true,"axa":true,"az":true,"azure":true,"ba":true,"baby":true,"baidu":true,"band":true,"bank":true,"bar":true,"barcelona":true,"barclaycard":true,"barclays":true,"bargains":true,"bayern":true,"bb":true,"bbva":true,"bd":true,"be":true,"beer":true,"bentley":true,"berlin":true,"best":true,"bet":true,"bf":true,"bg":true,"bh":true,"bi":true,"bible":true,"bid":true,"bike":true,"bing":true,"bingo":true,"bio":true,"biz":true,"bj":true,"black":true,"blackfriday":true,"blanco":true,"blog":true,"bloomberg":true,"blue":true,"bm":true,"bms":true,"bmw":true,"bn":true,"bnpparibas":true,"bo":true,"boats":true,"bosch":true,"boston":true,"boutique":true,"box":true,"br":true,"bradesco":true,"bridgestone":true,"broadway":true,"broker":true,"brother":true,"brussels":true,"bs":true,"bt":true,"bugatti":true,"build":true,"builders":true,"business":true,"buzz":true,"bw":true,"by":true,"bz":true,"bzh":true,"ca":true,"cab":true,"cafe":true,"cam":true,"camera":true,"camp":true,"cancerresearch":true,"canon":true,"capetown":true,"capital":true,"car":true,"cards":true,"care":true,"career":true,"careers":true,"cars":true,"casa":true,"cash":true,"casino":true,"cat":true,"catering":true,"catholic":true,"cba":true,"cc":true,"cd":true,"center":true,"ceo":true,"cern":true,"cf":true,"cfa":true,"cfd":true,"cg":true,"ch":true,"chanel":true,"chase":true,"chat":true,"cheap":true,"christmas":true,"church":true,"ci":true,"cisco":true,"citic":true,"city":true,"ck":true,"cl":true,"claims":true,"cleaning":true,"click":true,"clinic":true,"clothing":true,"cloud":true,"club":true,"clubmed":true,"cm":true,"cn":true,"co":true,"coach":true,"codes":true,"coffee":true,"college":true,"cologne":true,"com":true,"community":true,"company":true,"computer":true,"condos":true,"construction":true,"consulting":true,"contractors":true,"cooking":true,"cool":true,"coop":true,"corsica":true,"country":true,"coupons":true,"courses":true,"cr":true,"credit":true,"creditcard":true,"cricket":true,"crown":true,"crs":true,"cruise":true,"cruises":true,"csc":true,"cu":true,"cv":true,"cw":true,"cx":true,"cy":true,"cymru":true,"cz":true,"dabur":true,"dance":true,"date":true,"dating":true,"de":true,"deals":true,"degree":true,"delivery":true,"dell":true,"deloitte":true,"democrat":true,"dental":true,"dentist":true,"desi":true,"design":true,"dhl":true,"diamonds":true,"diet":true,"digital":true,"direct":true,"directory":true,"discount":true,"dj":true,"dk":true,"dm":true,"dnp":true,"do":true,"doctor":true,"dog":true,"domains":true,"download":true,"dubai":true,"duck":true,"durban":true,"dvag":true,"dz":true,"earth":true,"ec":true,"eco":true,"edeka":true,"edu":true,"education":true,"ee":true,"eg":true,"email":true,"emerck":true,"energy":true,"engineer":true,"engineering":true,"enterprises":true,"equipment":true,"er":true,"ericsson":true,"erni":true,"es":true,"estate":true,"et":true,"eu":true,"eurovision":true,"eus":true,"events":true,"everbank":true,"exchange":true,"expert":true,"exposed":true,"express":true,"extraspace":true,"fage":true,"fail":true,"fairwinds":true,"faith":true,"family":true,"fan":true,"fans":true,"farm":true,"fashion":true,"feedback":true,"ferrero":true,"fi":true,"film":true,"finance":true,"financial":true,"firmdale":true,"fish":true,"fishing":true,"fit":true,"fitness":true,"fj":true,"fk":true,"flights":true,"florist":true,"flowers":true,"fm":true,"fo":true,"foo":true,"football":true,"forex":true,"forsale":true,"forum":true,"foundation":true,"fox":true,"fr":true,"frl":true,"frogans":true,"fund":true,"furniture":true,"futbol":true,"fyi":true,"ga":true,"gal":true,"gallery":true,"game":true,"games":true,"garden":true,"gd":true,"gdn":true,"ge":true,"gent":true,"genting":true,"gf":true,"gg":true,"gh":true,"gi":true,"gift":true,"gifts":true,"gives":true,"gl":true,"glade":true,"glass":true,"global":true,"globo":true,"gm":true,"gmail":true,"gmbh":true,"gmo":true,"gn":true,"gold":true,"golf":true,"goog":true,"google":true,"gop":true,"gov":true,"gp":true,"gq":true,"gr":true,"graphics":true,"gratis":true,"green":true,"gripe":true,"group":true,"gs":true,"gt":true,"gu":true,"guardian":true,"gucci":true,"guide":true,"guitars":true,"guru":true,"gw":true,"gy":true,"hair":true,"hamburg":true,"haus":true,"healthcare":true,"help":true,"here":true,"hiphop":true,"hitachi":true,"hiv":true,"hk":true,"hm":true,"hn":true,"hockey":true,"holdings":true,"holiday":true,"homes":true,"horse":true,"host":true,"hosting":true,"hoteles":true,"hotmail":true,"house":true,"how":true,"hr":true,"ht":true,"hu":true,"ice":true,"id":true,"ie":true,"ifm":true,"il":true,"im":true,"immo":true,"immobilien":true,"in":true,"industries":true,"info":true,"ink":true,"institute":true,"insurance":true,"insure":true,"int":true,"international":true,"investments":true,"io":true,"ipiranga":true,"iq":true,"ir":true,"irish":true,"is":true,"iselect":true,"ist":true,"istanbul":true,"it":true,"itv":true,"jaguar":true,"java":true,"jcb":true,"je":true,"jetzt":true,"jewelry":true,"jll":true,"jm":true,"jmp":true,"jo":true,"jobs":true,"joburg":true,"jp":true,"jprs":true,"juegos":true,"kaufen":true,"ke":true,"kerryhotels":true,"kg":true,"kh":true,"ki":true,"kim":true,"kinder":true,"kitchen":true,"kiwi":true,"km":true,"kn":true,"koeln":true,"komatsu":true,"kp":true,"kpn":true,"kr":true,"krd":true,"kred":true,"kw":true,"ky":true,"kyoto":true,"kz":true,"la":true,"ladbrokes":true,"lamborghini":true,"lancaster":true,"land":true,"landrover":true,"lat":true,"latrobe":true,"law":true,"lawyer":true,"lb":true,"lc":true,"lease":true,"leclerc":true,"legal":true,"lego":true,"lgbt":true,"li":true,"liaison":true,"lidl":true,"life":true,"lighting":true,"limited":true,"limo":true,"linde":true,"link":true,"lipsy":true,"live":true,"lk":true,"loan":true,"loans":true,"lol":true,"london":true,"lotto":true,"love":true,"lr":true,"ls":true,"lt":true,"ltd":true,"ltda":true,"lu":true,"lundbeck":true,"lupin":true,"luxury":true,"lv":true,"ly":true,"ma":true,"maif":true,"maison":true,"makeup":true,"man":true,"management":true,"mango":true,"market":true,"marketing":true,"markets":true,"marriott":true,"mba":true,"mc":true,"md":true,"me":true,"med":true,"media":true,"melbourne":true,"memorial":true,"men":true,"menu":true,"mg":true,"mh":true,"miami":true,"microsoft":true,"mil":true,"mini":true,"mk":true,"ml":true,"mm":true,"mma":true,"mn":true,"mo":true,"mobi":true,"moda":true,"moe":true,"moi":true,"mom":true,"monash":true,"money":true,"mortgage":true,"moscow":true,"moto":true,"motorcycles":true,"movie":true,"mp":true,"mq":true,"mr":true,"ms":true,"mt":true,"mtn":true,"mtr":true,"mu":true,"museum":true,"mv":true,"mw":true,"mx":true,"my":true,"mz":true,"na":true,"nadex":true,"nagoya":true,"name":true,"navy":true,"nc":true,"ne":true,"nec":true,"net":true,"network":true,"neustar":true,"new":true,"news":true,"next":true,"nextdirect":true,"nf":true,"ng":true,"ngo":true,"ni":true,"nico":true,"nikon":true,"ninja":true,"nissay":true,"nl":true,"no":true,"nokia":true,"norton":true,"np":true,"nr":true,"nra":true,"nrw":true,"ntt":true,"nu":true,"nyc":true,"nz":true,"obi":true,"off":true,"okinawa":true,"om":true,"omega":true,"one":true,"ong":true,"onl":true,"online":true,"ooo":true,"oracle":true,"orange":true,"org":true,"organic":true,"osaka":true,"otsuka":true,"ovh":true,"pa":true,"page":true,"paris":true,"partners":true,"parts":true,"party":true,"pe":true,"pet":true,"pf":true,"pg":true,"ph":true,"pharmacy":true,"philips":true,"photo":true,"photography":true,"photos":true,"physio":true,"pics":true,"pictet":true,"pictures":true,"pink":true,"pizza":true,"pk":true,"pl":true,"place":true,"plumbing":true,"plus":true,"pm":true,"pn":true,"pnc":true,"poker":true,"porn":true,"post":true,"pr":true,"praxi":true,"press":true,"pro":true,"productions":true,"promo":true,"properties":true,"property":true,"protection":true,"ps":true,"pt":true,"pub":true,"pw":true,"py":true,"qa":true,"qpon":true,"quebec":true,"racing":true,"raid":true,"re":true,"realtor":true,"realty":true,"recipes":true,"red":true,"redstone":true,"rehab":true,"reise":true,"reisen":true,"reit":true,"ren":true,"rent":true,"rentals":true,"repair":true,"report":true,"republican":true,"rest":true,"restaurant":true,"review":true,"reviews":true,"rexroth":true,"rich":true,"ricoh":true,"rio":true,"rip":true,"rmit":true,"ro":true,"rocks":true,"rodeo":true,"rs":true,"ru":true,"ruhr":true,"run":true,"rw":true,"rwe":true,"ryukyu":true,"sa":true,"saarland":true,"sale":true,"salon":true,"samsung":true,"sandvik":true,"sandvikcoromant":true,"sanofi":true,"sap":true,"sarl":true,"saxo":true,"sb":true,"sbs":true,"sc":true,"sca":true,"scb":true,"schmidt":true,"school":true,"schule":true,"schwarz":true,"science":true,"scjohnson":true,"scot":true,"sd":true,"se":true,"seat":true,"security":true,"sener":true,"services":true,"seven":true,"sew":true,"sex":true,"sexy":true,"sfr":true,"sg":true,"sh":true,"shangrila":true,"shell":true,"shiksha":true,"shoes":true,"shop":true,"shopping":true,"show":true,"shriram":true,"si":true,"singles":true,"site":true,"sk":true,"ski":true,"skin":true,"sky":true,"skype":true,"sl":true,"sm":true,"sn":true,"sncf":true,"so":true,"soccer":true,"social":true,"software":true,"sohu":true,"solar":true,"solutions":true,"sony":true,"soy":true,"space":true,"spreadbetting":true,"sr":true,"srl":true,"st":true,"stada":true,"statoil":true,"stc":true,"storage":true,"store":true,"stream":true,"studio":true,"study":true,"style":true,"su":true,"sucks":true,"supplies":true,"supply":true,"support":true,"surf":true,"surgery":true,"suzuki":true,"sv":true,"swatch":true,"swiss":true,"sx":true,"sy":true,"sydney":true,"symantec":true,"systems":true,"sz":true,"taipei":true,"tatamotors":true,"tatar":true,"tattoo":true,"tax":true,"taxi":true,"tc":true,"td":true,"team":true,"tech":true,"technology":true,"tel":true,"tennis":true,"teva":true,"tf":true,"tg":true,"th":true,"theater":true,"theatre":true,"tickets":true,"tienda":true,"tiffany":true,"tips":true,"tires":true,"tirol":true,"tj":true,"tk":true,"tl":true,"tm":true,"tn":true,"to":true,"today":true,"tokyo":true,"tools":true,"top":true,"toray":true,"total":true,"tours":true,"town":true,"toyota":true,"toys":true,"tr":true,"trade":true,"trading":true,"training":true,"travel":true,"travelers":true,"trust":true,"tt":true,"tube":true,"tv":true,"tw":true,"tz":true,"ua":true,"ubs":true,"ug":true,"uk":true,"university":true,"uno":true,"uol":true,"us":true,"uy":true,"uz":true,"va":true,"vacations":true,"vc":true,"ve":true,"vegas":true,"ventures":true,"versicherung":true,"vet":true,"vg":true,"vi":true,"viajes":true,"video":true,"villas":true,"vin":true,"vip":true,"vision":true,"vistaprint":true,"vlaanderen":true,"vn":true,"vodka":true,"volkswagen":true,"vote":true,"voting":true,"voto":true,"voyage":true,"vu":true,"wales":true,"walter":true,"wang":true,"warman":true,"watch":true,"webcam":true,"weber":true,"website":true,"wed":true,"wedding":true,"weir":true,"wf":true,"whoswho":true,"wien":true,"wiki":true,"williamhill":true,"win":true,"windows":true,"wine":true,"wme":true,"work":true,"works":true,"world":true,"ws":true,"wtf":true,"xbox":true,"xin":true,"xn--1ck2e1b":true,"xn--1qqw23a":true,"xn--30rr7y":true,"xn--3bst00m":true,"xn--3ds443g":true,"xn--3e0b707e":true,"xn--45q11c":true,"xn--4gbrim":true,"xn--54b7fta0cc":true,"xn--55qx5d":true,"xn--5su34j936bgsg":true,"xn--5tzm5g":true,"xn--6frz82g":true,"xn--6qq986b3xl":true,"xn--80adxhks":true,"xn--80ao21a":true,"xn--80aqecdr1a":true,"xn--80asehdb":true,"xn--80aswg":true,"xn--90a3ac":true,"xn--90ae":true,"xn--90ais":true,"xn--bck1b9a5dre4c":true,"xn--c1avg":true,"xn--cck2b3b":true,"xn--cg4bki":true,"xn--clchc0ea0b2g2a9gcd":true,"xn--czr694b":true,"xn--czru2d":true,"xn--d1acj3b":true,"xn--d1alf":true,"xn--e1a4c":true,"xn--efvy88h":true,"xn--fct429k":true,"xn--fiq228c5hs":true,"xn--fiq64b":true,"xn--fiqs8s":true,"xn--fiqz9s":true,"xn--fzc2c9e2c":true,"xn--gckr3f0f":true,"xn--gecrj9c":true,"xn--h2brj9c":true,"xn--hxt814e":true,"xn--i1b6b1a6a2e":true,"xn--imr513n":true,"xn--io0a7i":true,"xn--j1amh":true,"xn--j6w193g":true,"xn--jvr189m":true,"xn--kcrx77d1x4a":true,"xn--kprw13d":true,"xn--kpry57d":true,"xn--kput3i":true,"xn--l1acc":true,"xn--lgbbat1ad8j":true,"xn--mgb9awbf":true,"xn--mgba3a4f16a":true,"xn--mgbaam7a8h":true,"xn--mgbab2bd":true,"xn--mgbayh7gpa":true,"xn--mgberp4a5d4ar":true,"xn--mgbi4ecexp":true,"xn--mgbtx2b":true,"xn--mix891f":true,"xn--mk1bu44c":true,"xn--ngbc5azd":true,"xn--node":true,"xn--nqv7f":true,"xn--nyqy26a":true,"xn--o3cw4h":true,"xn--ogbpf8fl":true,"xn--p1acf":true,"xn--p1ai":true,"xn--pgbs0dh":true,"xn--q9jyb4c":true,"xn--qxam":true,"xn--rhqv96g":true,"xn--rovu88b":true,"xn--ses554g":true,"xn--t60b56a":true,"xn--tckwe":true,"xn--tiq49xqyj":true,"xn--vuq861b":true,"xn--w4r85el8fhu5dnra":true,"xn--wgbh1c":true,"xn--wgbl6a":true,"xn--xhq521b":true,"xn--xkc2al3hye2a":true,"xn--xkc2dl3a5ee0h":true,"xn--y9a3aq":true,"xn--yfro4i67o":true,"xn--ygbi2ammx":true,"xperia":true,"xxx":true,"xyz":true,"yachts":true,"yandex":true,"ye":true,"yoga":true,"yokohama":true,"yt":true,"za":true,"zm":true,"zone":true,"zw":true,"セール":true,"佛山":true,"慈善":true,"集团":true,"在线":true,"한국":true,"八卦":true,"موقع":true,"বাংলা":true,"公司":true,"香格里拉":true,"网站":true,"移动":true,"我爱你":true,"москва":true,"қаз":true,"католик":true,"онлайн":true,"сайт":true,"срб":true,"бг":true,"бел":true,"ファッション":true,"орг":true,"ストア":true,"삼성":true,"சிங்கப்பூர்":true,"商标":true,"商城":true,"дети":true,"мкд":true,"ею":true,"新闻":true,"家電":true,"中文网":true,"中信":true,"中国":true,"中國":true,"ලංකා":true,"クラウド":true,"ભારત":true,"भारत":true,"网店":true,"संगठन":true,"餐厅":true,"网络":true,"укр":true,"香港":true,"食品":true,"飞利浦":true,"台湾":true,"台灣":true,"手机":true,"мон":true,"الجزائر":true,"عمان":true,"ایران":true,"امارات":true,"بازار":true,"الاردن":true,"السعودية":true,"كاثوليك":true,"عراق":true,"澳門":true,"닷컴":true,"شبكة":true,"გე":true,"机构":true,"健康":true,"ไทย":true,"سورية":true,"рус":true,"рф":true,"تونس":true,"みんな":true,"ελ":true,"世界":true,"書籍":true,"网址":true,"닷넷":true,"コム":true,"天主教":true,"信息":true,"嘉里大酒店":true,"مصر":true,"قطر":true,"广东":true,"இலங்கை":true,"இந்தியா":true,"հայ":true,"新加坡":true,"فلسطين":true},
 		invalidTags = {
 			A: true,
@@ -65,8 +74,51 @@ var linkify = function(){
 			TIME: true
 		};
 
+	function reCharsetEscape(text) {
+		return text.replace(/[\[\]\\^-]/g, "\\$&");
+	}
+	
+	function buildRe(o) {
+		var re = Object.assign({}, RE);
+		
+		if (o.unicode) {
+			re.DOMAIN = re.DOMAIN_UNI;
+			re.PATH = re.PATH_UNI;
+		}
+		
+		if (o.customRules && o.customRules.length) {
+			re.CUSTOM = "(" + o.customRules.join("|") + ")";
+		}
+		
+		if (o.standalone) {
+			if (o.boundaryLeft) {
+				re.PREFIX = "((?:^|\\s)[" + reCharsetEscape(o.boundaryLeft) + "]*?)";
+			} else {
+				re.PREFIX = "(^|\\s)";
+			}
+			if (o.boundaryRight) {
+				re.SUFFIX = "([" + reCharsetEscape(o.boundaryRight) + "]*(?:$|\\s))";
+			} else {
+				re.SUFFIX = "($|\\s)";
+			}
+			re.INVALID_SUFFIX = "[^\\s" + reCharsetEscape(o.boundaryRight) + "]";
+		} else {
+			re.PREFIX = "(^|\\b|_)";
+			re.SUFFIX = "()";
+		}
+		
+		var pattern = re.PROTOCOL + re.USER + re.DOMAIN + re.PORT + re.PATH;
+		pattern = re.PREFIX + "(?:" + pattern + "|" + re.CUSTOM + ")" + re.SUFFIX;
+		pattern = re.MOUSTACHE + "|" + pattern;
+		
+		return {
+			url: createRe(pattern, "igm"),
+			invalidSuffix: re.INVALID_SUFFIX && createRe(re.INVALID_SUFFIX)
+		};
+	}
+
 	function inTLDS(domain) {
-		var match = domain.match(/\.([a-z0-9-]+)$/i);
+		var match = domain.match(/\.([^.]+)$/);
 		if (!match) {
 			return false;
 		}
@@ -148,9 +200,42 @@ var linkify = function(){
 		}
 		return true;
 	}
+	
+	function pathStrip(m, re, repl) {
+		var s = m.path.replace(re, repl);
 
-	function stripSingleSymbol(str, left, right) {
-		var re = createRe("[\\" + left + "\\" + right + "]", "g"),
+		if (s == m.path) return;
+		
+		m.end -= m.path.length - s.length;
+		m.suffix = m.path.substr(s.length) + m.suffix;
+		m.path = s;
+	}
+	
+	function pathStripQuote(m, c) {
+		var i = 0, s = m.path, end, pos = 0;
+		
+		if (!s.endsWith(c)) return;
+		
+		while ((pos = s.indexOf(c, pos)) >= 0) {
+			if (i % 2) {
+				end = null;
+			} else {
+				end = pos;
+			}
+			pos++;
+			i++;
+		}
+		
+		if (!end) return;
+		
+		m.end -= s.length - end;
+		m.path = s.substr(0, end);
+		m.suffix = s.substr(end) + m.suffix;
+	}
+
+	function pathStripBrace(m, left, right) {
+		var str = m.path,
+			re = createRe("[\\" + left + "\\" + right + "]", "g"),
 			match, count = 0, end;
 
 		// Match loop
@@ -169,10 +254,12 @@ var linkify = function(){
 		}
 
 		if (!match && count % 2 == 0) {
-			return str;
+			return;
 		}
-
-		return str.substr(0, end);
+		
+		m.end -= m.path.length - end;
+		m.path = str.substr(0, end);
+		m.suffix = str.substr(end) + m.suffix;
 	}
 
 	function createLink(url, child, o) {
@@ -221,14 +308,12 @@ var linkify = function(){
 	}
 	
 	function buildUrlMatch(m) {
-		m.face = m[0];
-		m.protocol = m[1] || "";
-		m.user = m[2] || "";
-		m.domain = m[3] || "";
-		m.port = m[4] || "";
-		m.path = m[5] || "";
-		m.angular = m[6];
-		m.custom = m[7];		
+		var i;
+		for (i = 0; i < TOKENS.length; i++) {
+			m[TOKENS[i]] = m[i] || "";
+		}
+		m.start = m.prefix.length;
+		m.end = m.face.length - m.suffix.length;
 	}
 	
 	function validMatch(m, o) {
@@ -248,15 +333,19 @@ var linkify = function(){
 	}
 	
 	function isDomain(d) {
-		return /^[a-z]/i.test(d) && d.indexOf("..") < 0;
+		return /^[^.-]/.test(d) && d.indexOf("..") < 0;
+	}
+	
+	function inMoustache(m) {
+		return m.angular || m.prefix.includes("{{") && m.suffix.includes("}}");
 	}
 
 	function linkifySearch(search, options, re) {
 		var m, mm,
 			url, range;
 
-		m = re.exec(search.text);
-
+		m = re.url.exec(search.text);
+		
 		if (!m) {
 			if (search.frag) {
 				// if there is something to replace
@@ -277,18 +366,44 @@ var linkify = function(){
 		
 		buildUrlMatch(m);
 		
-		if (m.angular) {
+		// Redistribute suffix
+		if (m.path) {
+			// Remove trailing ".,?"
+			pathStrip(m, /(^|[^-_])[.,?]+$/, "$1");
+
+			// Strip trailing '
+			pathStripQuote(m, "'");
+			pathStripQuote(m, '"');
+			
+			// Strip parens "()"
+			pathStripBrace(m, "(", ")");
+			pathStripBrace(m, "[", "]");
+			pathStripBrace(m, "{", "}");
+			
+			// Strip BBCode
+			pathStrip(m, /\[\/?(b|i|u|url|img|quote|code|size|color)\].*/i, "");
+		}
+			
+		// check suffix
+		if (options.standalone && re.invalidSuffix.test(m.suffix)) {
+			if (/\s$/.test(m.suffix)) {
+				re.url.lastIndex--;
+			}
+			return;
+		}
+		
+		// Moustache check
+		if (inMoustache(m)) {
 			if (unsafeWindow.angular || unsafeWindow.Vue) {
 				// ignore urls surrounded by {{}}
 				return;
 			} else {
 				// Next search start after "{{" if there is no window.angular
-				re.lastIndex = m.index + 2;
+				re.url.lastIndex = m.index + 2;
 			}
 		}
 		
 		if (!validMatch(m, options)) {
-			console.log(m.face, options.ip, m.domain);
 			return;
 		}
 		
@@ -296,30 +411,6 @@ var linkify = function(){
 			url = m.custom;
 			
 		} else {
-			// Remove leading "_"
-			if (m.face[0] == "_") {
-				m.face = m.face.substr(1);
-				m.index++;
-			}
-			
-			if (m.path) {
-				// Remove trailing ".,?"
-				m.face = m.face.replace(/[.,?]*$/, '');
-				m.path = m.path.replace(/[.,?]*$/, '');
-
-				// Strip parens "()"
-				m.face = stripSingleSymbol(m.face, "(", ")");
-				m.path = stripSingleSymbol(m.path, "(", ")");
-
-				// Strip bracket "[]"
-				m.face = stripSingleSymbol(m.face, "[", "]");
-				m.path = stripSingleSymbol(m.path, "[", "]");
-
-				// Strip BBCode
-				m.face = m.face.replace(/\[\/?(b|i|u|url|img|quote|code|size|color)\].*/i, "");
-				m.path = m.path.replace(/\[\/?(b|i|u|url|img|quote|code|size|color)\].*/i, "");
-			}
-
 			// Guess protocol
 			if (!m.protocol && m.user && (mm = m.user.match(/^mailto:(.+)/))) {
 				m.protocol = "mailto:";
@@ -355,21 +446,23 @@ var linkify = function(){
 
 		// the text part before search pos
 		range.setStart(search.pos.container, search.pos.offset);
-		search.pos.add(m.index - search.textIndex);
+		search.pos.add(m.index + m.start - search.textIndex);
 		range.setEnd(search.pos.container, search.pos.offset);
 
 		search.frag.appendChild(cloneContents(range));
 
 		// the url part
 		range.setStart(search.pos.container, search.pos.offset);
-		search.pos.add(m.face.length);
+		search.pos.add(m.end - m.start);
 		range.setEnd(search.pos.container, search.pos.offset);
 
 		search.frag.appendChild(createLink(url, cloneContents(range), options));
 
 		// We have to set lastIndex manually if we had changed face.
-		re.lastIndex = m.index + m.face.length;
-		search.textIndex = re.lastIndex;
+		if (/\s$/.test(m.suffix)) {
+			re.url.lastIndex--;
+		}
+		search.textIndex = m.index + m.end;
 	}
 
 	function createSearch(range) {
@@ -385,28 +478,15 @@ var linkify = function(){
 		};
 	}
 	
-	// function reEscape(text) {
-		// return text.replace(/[-\[\]\/{}()*+?.\\^$|]/g, "\\$&");
-	// }
-	
-	function buildRe(unicode, customRules) {
-		var re = unicode ? urlUnicodeRE : urlRE;
-		if (!customRules || !customRules.length) {
-			return re;
-		}
-		re = createRe(re.source + "|(" + customRules.join("|") + ")", "ig");
-		return re;
-	}
-
 	function linkify(root, options) {
 		var filter = createFilter(options.validator),
 			ranges = generateRanges(root, filter),
 			search,
-			re = buildRe(options.unicode, options.customRules),
+			re = buildRe(options),
 			maxRunTime = options.maxRunTime,
 			timeout = options.timeout,
 			ts = Date.now(), te;
-
+			
 		if (maxRunTime === undefined) {
 			maxRunTime = 100;
 		}
@@ -421,7 +501,7 @@ var linkify = function(){
 			te = Date.now();
 
 			if (search) {
-				re.lastIndex = search.lastIndex;
+				re.url.lastIndex = search.lastIndex;
 			}
 
 			do {
@@ -432,7 +512,7 @@ var linkify = function(){
 						break;
 					}
 					search = createSearch(range);
-					re.lastIndex = 0;
+					re.url.lastIndex = 0;
 				}
 
 				linkifySearch(search, options, re);
@@ -444,7 +524,7 @@ var linkify = function(){
 				// Over script max run time
 				if (Date.now() - te > maxRunTime) {
 					if (search) {
-						search.lastIndex = re.lastIndex;
+						search.lastIndex = re.url.lastIndex;
 					}
 					requestAnimationFrame(nextSearch);
 					return;
@@ -727,6 +807,21 @@ function isArray(item) {
 			label: "Open link in new tab",
 			type: "checkbox",
 			default: false
+		},
+		standalone: {
+			label: "URL must be surrounded by whitespace",
+			type: "checkbox",
+			default: false
+		},
+		boundaryLeft: {
+			label: "Boundary characters between whitespace and URL (left)",
+			type: "text",
+			default: "{[(\"'"
+		},
+		boundaryRight: {
+			label: "Boundary characters between whitespace and URL (right)",
+			type: "text",
+			default: "'\")]},.;?!"
 		},
 		skipSelector: {
 			label: "Do not linkify these elements. (CSS selector)",
