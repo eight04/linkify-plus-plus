@@ -2,14 +2,16 @@
   "name": "linkify-plus-plus",
   "version": "7.3.1",
   "devDependencies": {
-    "download-cli": "^1.0.1",
+    "cheerio": "^0.22.0",
     "npm-build-tools": "^2.2.5",
+    "replaceinfiles": "^1.1.4",
+    "request": "^2.79.0",
     "sync-version": "^0.2.0",
     "watch-run": "^1.2.4"
   },
   "scripts": {
-    "tld-download": "download http://data.iana.org/TLD/tlds-alpha-by-domain.txt > tlds.txt",
-    "build": "node build.js | n-pipe dist/linkify-plus-plus.user.js",
+    "build-tlds": "node build-tlds.js > tlds.json",
+    "build": "replaceinfiles -s src/*.user.js -d dist/{base} -r tlds.json",
     "test": "eslint --ignore-pattern dist **/*.js",
     "preversion": "npm test",
     "version": "sync-version src/linkify-plus-plus.user.js && npm run build && git add .",
