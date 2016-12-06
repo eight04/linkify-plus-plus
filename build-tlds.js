@@ -28,7 +28,7 @@ Promise.all([
 		
 	$("#tld-counts tbody").children().each(function(){
 		var name = $(this).data("key"),
-			amount = $(this).find(".amount").text().replace(",", "");
+			amount = $(this).find(".amount").text().replace(/,/g, "");
 			
 		if (amount == "N/A") {
 			amount = 0;
