@@ -175,14 +175,14 @@ var linkify = function(){
 		return str.substr(0, end);
 	}
 
-	function createLink(url, child, newTab, useImage) {
+	function createLink(url, child, o) {
 		var cont = document.createElement("a");
 		cont.href = url;
 		cont.title = "Linkify Plus Plus";
-		if (newTab) {
+		if (o.newTab) {
 			cont.target = "_blank";
 		}
-		if (useImage && /^[^?#]+\.(?:jpg|png|gif|jpeg)(?:$|[?#])/i.test(url)) {
+		if (o.useImage && /^[^?#]+\.(?:jpg|png|gif|jpeg)(?:$|[?#])/i.test(url)) {
 			child = new Image;
 			child.src = url;
 			child.alt = url;
@@ -219,10 +219,40 @@ var linkify = function(){
 		}
 		return range.cloneContents();
 	}
+	
+	function buildUrlMatch(m) {
+		m.face = m[0];
+		m.protocol = m[1] || "";
+		m.user = m[2] || "";
+		m.domain = m[3] || "";
+		m.port = m[4] || "";
+		m.path = m[5] || "";
+		m.angular = m[6];
+		m.custom = m[7];		
+	}
+	
+	function validMatch(m, o) {
+		if (m.custom) {
+			return true;
+		}
+		
+		if (isIP(m.domain)) {
+			return o.ip || m.protocol || m.user || /\D/.test(m.path);
+		}
+		
+		if (isDomain(m.domain)) {
+			return inTLDS(m.domain);
+		}
+		
+		return false;
+	}
+	
+	function isDomain(d) {
+		return /^[a-z]/i.test(d) && d.indexOf("..") < 0;
+	}
 
-	function linkifySearch(search, newTab, image, re) {
+	function linkifySearch(search, options, re) {
 		var m, mm,
-			face, protocol, user, domain, port, path, angular, custom,
 			url, range;
 
 		m = re.exec(search.text);
@@ -244,103 +274,102 @@ var linkify = function(){
 			search.end = true;
 			return;
 		}
-
-		face = m[0];
-		protocol = m[1] || "";
-		user = m[2] || "";
-		domain = m[3] || "";
-		port = m[4] || "";
-		path = m[5] || "";
-		angular = m[6];
-		custom = m[7];
 		
-		if (!angular && domain.indexOf("..") <= -1 && (isIP(domain) || inTLDS(domain)) || custom) {
-			
-			if (custom) {
-				url = custom;
-				
+		buildUrlMatch(m);
+		
+		if (m.angular) {
+			if (unsafeWindow.angular || unsafeWindow.Vue) {
+				// ignore urls surrounded by {{}}
+				return;
 			} else {
-				// Remove leading "_"
-				if (face[0] == "_") {
-					face = face.substr(1);
-					m.index++;
-				}
-				
-				if (path) {
-					// Remove trailing ".,?"
-					face = face.replace(/[.,?]*$/, '');
-					path = path.replace(/[.,?]*$/, '');
-
-					// Strip parens "()"
-					face = stripSingleSymbol(face, "(", ")");
-					path = stripSingleSymbol(path, "(", ")");
-
-					// Strip bracket "[]"
-					face = stripSingleSymbol(face, "[", "]");
-					path = stripSingleSymbol(path, "[", "]");
-
-					// Strip BBCode
-					face = face.replace(/\[\/?(b|i|u|url|img|quote|code|size|color)\].*/i, "");
-					path = path.replace(/\[\/?(b|i|u|url|img|quote|code|size|color)\].*/i, "");
-				}
-
-				// Guess protocol
-				if (!protocol && user && (mm = user.match(/^mailto:(.+)/))) {
-					protocol = "mailto:";
-					user = mm[1];
-				}
-
-				if (protocol && protocol.match(/^(hxxp|h\*\*p|ttp)/)) {
-					protocol = "http://";
-				}
-
-				if (!protocol) {
-					if ((mm = domain.match(/^(ftp|irc)/))) {
-						protocol = mm[0] + "://";
-					} else if (domain.match(/^(www|web)/)) {
-						protocol = "http://";
-					} else if (user && user.indexOf(":") < 0 && !path) {
-						protocol = "mailto:";
-					} else {
-						protocol = "http://";
-					}
-				}
-
-				// Create URL
-				url = protocol + (user && user + "@") + domain + port + path;
+				// Next search start after "{{" if there is no window.angular
+				re.lastIndex = m.index + 2;
 			}
-
-			if (!search.frag) {
-				search.frag = document.createDocumentFragment();
+		}
+		
+		if (!validMatch(m, options)) {
+			console.log(m.face, options.ip, m.domain);
+			return;
+		}
+		
+		if (m.custom) {
+			url = m.custom;
+			
+		} else {
+			// Remove leading "_"
+			if (m.face[0] == "_") {
+				m.face = m.face.substr(1);
+				m.index++;
 			}
 			
-			// A position to record where the range is working
-			range = document.createRange();
+			if (m.path) {
+				// Remove trailing ".,?"
+				m.face = m.face.replace(/[.,?]*$/, '');
+				m.path = m.path.replace(/[.,?]*$/, '');
 
-			// the text part before search pos
-			range.setStart(search.pos.container, search.pos.offset);
-			search.pos.add(m.index - search.textIndex);
-			range.setEnd(search.pos.container, search.pos.offset);
+				// Strip parens "()"
+				m.face = stripSingleSymbol(m.face, "(", ")");
+				m.path = stripSingleSymbol(m.path, "(", ")");
 
-			search.frag.appendChild(cloneContents(range));
+				// Strip bracket "[]"
+				m.face = stripSingleSymbol(m.face, "[", "]");
+				m.path = stripSingleSymbol(m.path, "[", "]");
 
-			// the url part
-			range.setStart(search.pos.container, search.pos.offset);
-			search.pos.add(face.length);
-			range.setEnd(search.pos.container, search.pos.offset);
+				// Strip BBCode
+				m.face = m.face.replace(/\[\/?(b|i|u|url|img|quote|code|size|color)\].*/i, "");
+				m.path = m.path.replace(/\[\/?(b|i|u|url|img|quote|code|size|color)\].*/i, "");
+			}
 
-			search.frag.appendChild(createLink(url, cloneContents(range), newTab, image));
+			// Guess protocol
+			if (!m.protocol && m.user && (mm = m.user.match(/^mailto:(.+)/))) {
+				m.protocol = "mailto:";
+				m.user = mm[1];
+			}
 
-			// We have to set lastIndex manually if we had changed face.
-			re.lastIndex = m.index + face.length;
-			search.textIndex = re.lastIndex;
+			if (m.protocol && m.protocol.match(/^(hxxp|h\*\*p|ttp)/)) {
+				m.protocol = "http://";
+			}
 
-		} else if (angular && !unsafeWindow.angular) {
-			// Next search start after "{{" if there is no window.angular
-			re.lastIndex = m.index + 2;
+			if (!m.protocol) {
+				if ((mm = m.domain.match(/^(ftp|irc)/))) {
+					m.protocol = mm[0] + "://";
+				} else if (m.domain.match(/^(www|web)/)) {
+					m.protocol = "http://";
+				} else if (m.user && m.user.indexOf(":") < 0 && !m.path) {
+					m.protocol = "mailto:";
+				} else {
+					m.protocol = "http://";
+				}
+			}
+
+			// Create URL
+			url = m.protocol + (m.user && m.user + "@") + m.domain + m.port + m.path;
 		}
 
-		return true;
+		if (!search.frag) {
+			search.frag = document.createDocumentFragment();
+		}
+		
+		// A position to record where the range is working
+		range = document.createRange();
+
+		// the text part before search pos
+		range.setStart(search.pos.container, search.pos.offset);
+		search.pos.add(m.index - search.textIndex);
+		range.setEnd(search.pos.container, search.pos.offset);
+
+		search.frag.appendChild(cloneContents(range));
+
+		// the url part
+		range.setStart(search.pos.container, search.pos.offset);
+		search.pos.add(m.face.length);
+		range.setEnd(search.pos.container, search.pos.offset);
+
+		search.frag.appendChild(createLink(url, cloneContents(range), options));
+
+		// We have to set lastIndex manually if we had changed face.
+		re.lastIndex = m.index + m.face.length;
+		search.textIndex = re.lastIndex;
 	}
 
 	function createSearch(range) {
@@ -406,7 +435,7 @@ var linkify = function(){
 					re.lastIndex = 0;
 				}
 
-				linkifySearch(search, options.newTab, options.image, re);
+				linkifySearch(search, options, re);
 
 				if (search.end) {
 					search = null;
@@ -631,17 +660,10 @@ function isArray(item) {
 				options.selector &&
 				item.matches(options.selector)
 			) {
-				linkify.linkify(item, {
-					image: options.image,
-					unicode: options.unicode,
-					validator: options.validator,
-					newTab: options.newTab,
-					maxRunTime: options.maxRunTime,
-					timeout: options.timeout,
-					customRules: options.customRules,
-					done: done
-				});
-
+				linkify.linkify(
+					item,
+					Object.assign({done: done}, options)
+				);
 			} else {
 				done();
 			}
@@ -686,6 +708,11 @@ function isArray(item) {
 
 	// Program init
 	initConfig({
+		ip: {
+			label: "Match 4 digits IP",
+			type: "checkbox",
+			default: true
+		},
 		image: {
 			label: "Embed images",
 			type: "checkbox",
