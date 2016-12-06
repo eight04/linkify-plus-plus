@@ -10,7 +10,7 @@
   },
   "scripts": {
     "build-tlds": "node build-tlds.js > tlds.json",
-    "build": "replaceinfiles -s src/*.user.js -d dist/{base} -r tlds.json",
+    "build": "replaceinfiles -S -s src/*.user.js -d dist/{base} -r tlds.json",
     "test": "eslint --ignore-pattern dist **/*.js",
     "preversion": "npm test",
     "version": "sync-version src/linkify-plus-plus.user.js && npm run build && git add .",
