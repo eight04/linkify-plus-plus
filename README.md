@@ -71,6 +71,8 @@ Todos
 
 Changelog
 ---------
+* Version 7.4.2 (Dec 20, 2016):
+	- Fix: drop String.includes to support FF38. [something broke](https://greasyfork.org/zh-TW/forum/discussion/13387/x)
 * Version 7.4.1 (Dec 7, 2016):
 	- Fix: empty custom rule bug.
 * Version 7.4.0 (Dec 7, 2016):
