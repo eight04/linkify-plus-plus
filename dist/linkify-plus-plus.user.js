@@ -341,7 +341,7 @@ var linkify = function(){
 	}
 	
 	function inMoustache(m) {
-		return m.angular || m.prefix.includes("{{") && m.suffix.includes("}}");
+		return m.angular || m.prefix.indexOf("{{") >= 0 && m.suffix.indexOf("}}") >= 0;
 	}
 
 	function linkifySearch(search, options, re) {
