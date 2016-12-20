@@ -1,6 +1,6 @@
 {
   "name": "linkify-plus-plus",
-  "version": "7.4.1",
+  "version": "7.4.2",
   "devDependencies": {
     "cheerio": "^0.22.0",
     "npm-build-tools": "^2.2.5",
