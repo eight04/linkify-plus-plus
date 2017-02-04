@@ -3,14 +3,14 @@
   "version": "7.4.2",
   "devDependencies": {
     "cheerio": "^0.22.0",
+    "inline-js": "^0.3.0",
     "npm-build-tools": "^2.2.5",
-    "replaceinfiles": "^1.1.4",
     "request": "^2.79.0",
     "sync-version": "^0.2.0"
   },
   "scripts": {
     "build-tlds": "node build-tlds.js > tlds.json",
-    "build": "replaceinfiles -S -s src/*.user.js -d dist/{base} -r tlds.json",
+    "build": "inlinejs src/linkify-plus-plus.user.js -o dist/linkify-plus-plus.user.js",
     "test": "eslint --ignore-pattern dist **/*.js",
     "preversion": "npm test",
     "version": "sync-version src/linkify-plus-plus.user.js && npm run build && git add .",
