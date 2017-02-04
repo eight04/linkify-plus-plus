@@ -127,7 +127,8 @@ var linkify = function(){
 		if (!match) {
 			return false;
 		}
-		return tlds[match[1].toLowerCase()];
+		var key = match[1].toLowerCase();
+		return tlds.hasOwnProperty(key);
 	}
 
 	function Pos(cont, offset) {
