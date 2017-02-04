@@ -5,15 +5,14 @@
     "cheerio": "^0.22.0",
     "inline-js": "^0.3.0",
     "npm-build-tools": "^2.2.5",
-    "request": "^2.79.0",
-    "sync-version": "^0.2.0"
+    "request": "^2.79.0"
   },
   "scripts": {
     "build-tlds": "node build-tlds.js > tlds.json",
     "build": "inlinejs src/linkify-plus-plus.user.js -o dist/linkify-plus-plus.user.js",
     "test": "eslint --ignore-pattern dist **/*.js",
     "preversion": "npm test",
-    "version": "sync-version src/linkify-plus-plus.user.js && npm run build && git add .",
+    "version": "npm run build && git add .",
     "postversion": "git push --follow-tags",
     "watch": "n-run -w src/*.js \"npm run build\""
   }
