@@ -1,6 +1,6 @@
 Linkify Plus Plus
 =================
-An user script which can linkify almost everything. Based on Linkify Plus.
+An userscript which can linkify almost everything. Based on Linkify Plus.
 
 Features
 --------
@@ -71,6 +71,10 @@ Todos
 
 Changelog
 ---------
+* Version 7.4.3 (Feb 4, 2016):
+	- Fix: some js object properties becomes valid TLDs.
+	- Switch to inline-js.
+	- Update TLDs.
 * Version 7.4.2 (Dec 20, 2016):
 	- Fix: drop String.includes to support FF38. [something broke](https://greasyfork.org/zh-TW/forum/discussion/13387/x)
 * Version 7.4.1 (Dec 7, 2016):
