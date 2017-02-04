@@ -52,12 +52,12 @@ Promise.all([
 	);
 
 	var repl = {
-		"TLDS.maxLength": tlds.reduce(
+		maxLength: tlds.reduce(
 			(max, tld) => tld.length > max ? tld.length : max,
 			0
 		),
 		
-		"TLDS.charSet": [...tlds.reduce(
+		chars: [...tlds.reduce(
 			(s, tld) => {
 				for (let c of tld) {
 					if (c.charCodeAt(0) >= 128) {
@@ -69,7 +69,7 @@ Promise.all([
 			new Set
 		)].join(""),
 		
-		"TLDS.tldSet": JSON.stringify(tlds.reduce(
+		table: JSON.stringify(tlds.reduce(
 			(o, tld) => {
 				o[tld] = true;
 				return o;
