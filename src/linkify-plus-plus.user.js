@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     7.4.2
+// @version     $inline("../package.json|parse:version")
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @include     *
@@ -44,18 +44,19 @@ var createRe = function(){
 // Linkify Plus Plus core
 var linkify = function(){
 
+	// $inline.shortcut("tlds", "../tlds.json|parse:$&")
 	var RE = {
 			PROTOCOL: "([-a-z*]+://)?",
 			USER: "(?:([\\w:.+-]+)@)?",
-			DOMAIN_UNI: "([a-z0-9-.\\u00A0-\\uFFFF]+\\.[a-z0-9-TLDS.charSet]{1,TLDS.maxLength})",
-			DOMAIN: "([a-z0-9-.]+\\.[a-z0-9-]{1,TLDS.maxLength})",
+			DOMAIN_UNI: "([a-z0-9-.\\u00A0-\\uFFFF]+\\.[a-z0-9-$inline('tlds:chars')]{1,$inline('tlds:maxLength')}})",
+			DOMAIN: "([a-z0-9-.]+\\.[a-z0-9-]{1,$inline('tlds:maxLength')})",
 			PORT: "(:\\d+\\b)?",
 			PATH_UNI: "([/?#]\\S*)?",
 			PATH: "([/?#][\\w-.~!$&*+;=:@%/?#(),'\\[\\]]*)?",
 			MOUSTACHE: "\\{\\{(.+?)\\}\\}"
 		},
 		TOKENS = ["face", "angular", "prefix", "protocol", "user", "domain", "port", "path", "custom", "suffix"],
-		tlds = TLDS.tldSet,
+		tlds = $inline("tlds:table"),
 		invalidTags = {
 			A: true,
 			NOSCRIPT: true,
