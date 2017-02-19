@@ -71,7 +71,9 @@ Todos
 
 Changelog
 ---------
-* Version 7.4.3 (Feb 4, 2016):
+* Version 7.4.4 (Feb 19, 2017):
+	- Fix: protocol must start with hyphen.
+* Version 7.4.3 (Feb 4, 2017):
 	- Fix: some js object properties becomes valid TLDs.
 	- Switch to inline-js.
 	- Update TLDs.
