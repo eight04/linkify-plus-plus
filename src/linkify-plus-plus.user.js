@@ -46,7 +46,7 @@ var linkify = function(){
 
 	// $inline.shortcut("tlds", "../tlds.json|parse:$&")
 	var RE = {
-			PROTOCOL: "([-a-z*]+://)?",
+			PROTOCOL: "([a-z][-a-z*]+://)?",
 			USER: "(?:([\\w:.+-]+)@)?",
 			DOMAIN_UNI: "([a-z0-9-.\\u00A0-\\uFFFF]+\\.[a-z0-9-$inline('tlds:chars')]{1,$inline('tlds:maxLength')}})",
 			DOMAIN: "([a-z0-9-.]+\\.[a-z0-9-]{1,$inline('tlds:maxLength')})",
