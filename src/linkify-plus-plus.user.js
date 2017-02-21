@@ -550,14 +550,14 @@ var linkify = function(){
 					now;
 				do {
 					if (chunks.next().done) {
-						console.log("linkify on %o: finished in %dms", root, Date.now() - linkifyStart);
+						// console.log("linkify on %o: finished in %dms", root, Date.now() - linkifyStart);
 						resolve();
 						return;
 					}
 				} while ((now = Date.now()) - timeStart < maxRunTime);
 				
 				if (now - linkifyStart > timeout) {
-					console.log("linkify on %o: max execution time exceeded: %dms", root, now - linkifyStart);
+					console.error("linkify on %o: max execution time exceeded: %dms", root, now - linkifyStart);
 					resolve();
 					return;
 				}
