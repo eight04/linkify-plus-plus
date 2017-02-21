@@ -14,8 +14,8 @@ Features
 You can find the configuration from greasemonkey menu.
 ![Greasemonkey Menu](https://i.imgur.com/tOTr7ys.jpg)
 
-Install
--------
+Installation
+------------
 [Greasy Fork](https://greasyfork.org/scripts/4255-linkify-plus-plus).
 
 Testcase
@@ -50,7 +50,7 @@ If an element match the selector, LPP will skip the element.
 If an element match the selector, LPP will always linkify them, even the parent node is skipped.
 
 ### Max execution time (ms)
-The script will terminate if it processing too long.
+The script will terminate if it processes too long.
 
 ### Max script run time (ms)
 Split process into small chunks to prevent hanging the browser.
@@ -68,6 +68,11 @@ Todos
 	- Should we try to parse HTML source?
 	- Is extractContents() faster?
 	- Clone original range than use surroundContents()?
+	
+Other notes
+-----------
+* https://www.measurethat.net/Benchmarks/Show/1312/3/generator
+* https://www.measurethat.net/Benchmarks/Show/1313/0/generator-with-low-count-of-items
 
 Changelog
 ---------
