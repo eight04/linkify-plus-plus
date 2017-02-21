@@ -69,13 +69,13 @@ Promise.all([
 			new Set
 		)].join(""),
 		
-		table: JSON.stringify(tlds.reduce(
+		table: tlds.reduce(
 			(o, tld) => {
 				o[tld] = true;
 				return o;
 			},
 			{}
-		))
+		)
 	};
 
 	console.log(JSON.stringify(repl, null, "\t"));
