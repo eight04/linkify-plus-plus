@@ -458,24 +458,23 @@ var linkify = function(){
 			for (var range of ranges) {
 				var frag = null,
 					pos = null,
-					text = range.toString();
+					text = range.toString(),
+					textRange = null;
 				for (var result of linkifier.parse(text)) {
 					if (!frag) {
 						frag = document.createDocumentFragment();
 						pos = new Pos(range.startContainer, range.startOffset);
+						textRange = range.cloneRange();
 					}
 					// clone text
-					var textRange = document.createRange();
-					textRange.setStart(pos.container, pos.offset);
 					pos.moveTo(result.start);
 					textRange.setEnd(pos.container, pos.offset);
 					frag.appendChild(cloneContents(textRange));
 					
 					// clone link
-					var linkRange = document.createRange();
-					linkRange.setStart(pos.container, pos.offset);
+					textRange.collapse();
 					pos.moveTo(result.end);
-					linkRange.setEnd(pos.container, pos.offset);
+					textRange.setEnd(pos.container, pos.offset);
 
 					var link = document.createElement("a");
 					link.href = result.url;
@@ -490,16 +489,16 @@ var linkify = function(){
 						child.src = result.url;
 						child.alt = result.text;
 					} else {
-						child = cloneContents(linkRange);
+						child = cloneContents(textRange);
 					}
 					link.appendChild(child);
+					
+					textRange.collapse();
 
 					frag.appendChild(link);
 					yield;
 				}
 				if (pos) {
-					textRange = document.createRange();
-					textRange.setStart(pos.container, pos.offset);
 					pos.moveTo(text.length);
 					textRange.setEnd(pos.container, pos.offset);
 					frag.appendChild(cloneContents(textRange));
@@ -514,19 +513,22 @@ var linkify = function(){
 		return new Promise(resolve => {
 			var chunks = createChunks();
 			function next(){
-				var timeStart = Date.now();
-				while (Date.now() - timeStart < maxRunTime) {
+				var timeStart = Date.now(),
+					now;
+				do {
 					if (chunks.next().done) {
 						console.log(`Linkify finished in ${Date.now() - linkifyStart}ms`);
 						resolve();
 						return;
 					}
-				}
-				if (Date.now() - linkifyStart > timeout) {
-					console.log(`Max execution time exceeded: ${Date.now() - linkifyStart}ms`, root);
+				} while ((now = Date.now()) - timeStart < maxRunTime);
+				
+				if (now - linkifyStart > timeout) {
+					console.log(`Max execution time exceeded: ${now - linkifyStart}ms`, root);
 					resolve();
 					return;
 				}
+				
 				requestAnimationFrame(next);
 			}
 			requestAnimationFrame(next);
