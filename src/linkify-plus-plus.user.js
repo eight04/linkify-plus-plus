@@ -543,6 +543,7 @@ var linkify = function(){
 			}
 
 			if (options.done) {
+				console.log(`linkify finished in ${Date.now() - ts}ms`, root);
 				options.done();
 			}
 		}
@@ -558,7 +559,8 @@ var linkify = function(){
 function createQue(handler) {
 
 	var que = [],
-		running = false;
+		running = false,
+		startTime;
 
 	function unshift(item) {
 		que.unshift(item);
@@ -576,12 +578,14 @@ function createQue(handler) {
 
 	function start() {
 		running = true;
+		startTime = Date.now();
 		requestAnimationFrame(next);
 	}
 
 	function next() {
 		if (!que.length) {
 			running = false;
+			console.log(`linkify finished in ${Date.now() - startTime}ms`);
 			return;
 		}
 
