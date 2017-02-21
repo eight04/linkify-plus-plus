@@ -68,6 +68,11 @@ Todos
 	- Should we try to parse HTML source?
 	- Is extractContents() faster?
 	- Clone original range than use surroundContents()?
+	
+Performance
+-----------
+* https://www.measurethat.net/Benchmarks/Show/1312/3/generator
+* https://www.measurethat.net/Benchmarks/Show/1313/0/generator-with-low-count-of-items
 
 Changelog
 ---------
