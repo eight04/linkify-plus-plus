@@ -25,6 +25,12 @@
 
 (function(){
 
+// Limit contentType to "text/plain" or "text/html"
+if (document.contentType != undefined && document.contentType != "text/plain" && document.contentType != "text/html") {
+	return;
+}
+
+// url matcher
 var Linkifier = function(){
 	// $inline.shortcut("tlds", "../tlds.json|parse:$&")
 	var RE = {
@@ -356,6 +362,24 @@ var Linkifier = function(){
 // Linkify Plus Plus core
 var linkify = function(){
 	
+	var INVALID_TAGS = {
+		A: true,
+		NOSCRIPT: true,
+		OPTION: true,
+		SCRIPT: true,
+		STYLE: true,
+		TEXTAREA: true,
+		SVG: true,
+		CANVAS: true,
+		BUTTON: true,
+		SELECT: true,
+		TEMPLATE: true,
+		METER: true,
+		PROGRESS: true,
+		MATH: true,
+		TIME: true
+	};
+
 	class Pos {
 		constructor(container, offset, i = 0) {
 			this.container = container;
@@ -455,7 +479,7 @@ var linkify = function(){
 		return range.cloneContents();
 	}
 	
-	return function(root, {
+	function linkify(root, {
 		linkifier, validator, maxRunTime = 100, timeout = 10000,
 		newTab = true, embedImage = true
 	}) {
@@ -526,14 +550,14 @@ var linkify = function(){
 					now;
 				do {
 					if (chunks.next().done) {
-						console.log(`Linkify finished in ${Date.now() - linkifyStart}ms`);
+						console.log("linkify on %o: finished in %dms", root, Date.now() - linkifyStart);
 						resolve();
 						return;
 					}
 				} while ((now = Date.now()) - timeStart < maxRunTime);
 				
 				if (now - linkifyStart > timeout) {
-					console.log(`Max execution time exceeded: ${now - linkifyStart}ms`, root);
+					console.log("linkify on %o: max execution time exceeded: %dms", root, now - linkifyStart);
 					resolve();
 					return;
 				}
@@ -542,26 +566,12 @@ var linkify = function(){
 			}
 			requestAnimationFrame(next);
 		});
+	}
+	
+	return {
+		INVALID_TAGS, linkify
 	};
 }();
-
-var INVALID_TAGS = {
-	A: true,
-	NOSCRIPT: true,
-	OPTION: true,
-	SCRIPT: true,
-	STYLE: true,
-	TEXTAREA: true,
-	SVG: true,
-	CANVAS: true,
-	BUTTON: true,
-	SELECT: true,
-	TEMPLATE: true,
-	METER: true,
-	PROGRESS: true,
-	MATH: true,
-	TIME: true
-};
 
 // Valid root node before linkifing
 function validRoot(node, validator) {
@@ -576,7 +586,7 @@ function validRoot(node, validator) {
 		cache.push(node);
 
 		// It is invalid if it has invalid ancestor
-		if (!validator(node) || INVALID_TAGS[node.nodeName]) {
+		if (!validator(node) || linkify.INVALID_TAGS[node.nodeName]) {
 			isValid = false;
 			break;
 		}
@@ -608,12 +618,15 @@ function validRoot(node, validator) {
 	return isValid;
 }
 
-function createValidator(skipSelector) {
+function createValidator({selector, skipSelector}) {
 	return function(node) {
-		if (skipSelector && node.matches && node.matches(skipSelector)) {
+		if (node.contentEditable == "true" || node.contentEditable == "") {
 			return false;
 		}
-		if (node.contentEditable == "true" || node.contentEditable == "") {
+		if (selector && node.matches && node.matches(selector)) {
+			return true;
+		}
+		if (skipSelector && node.matches && node.matches(skipSelector)) {
 			return false;
 		}
 		return true;
@@ -638,34 +651,40 @@ function createList(text) {
 	return text.split("\n");
 }
 
-// Limit contentType to "text/plain" or "text/html"
-if (document.contentType != undefined && document.contentType != "text/plain" && document.contentType != "text/html") {
-	return;
-}
+var options, status;
 
-var options;
+status = {
+	working: null,
+	pending: []
+};
 
 function linkifyRoot(root) {
-	if (!validRoot(root, options.validator) && (!options.selector || !root.matches(options.selector))) {
+	if (!validRoot(root, options.validator)) {
 		return;
 	}
 	
-	if (root.LINKIFY) {
+	if (root.LINKIFY_PENDING) {
+		return;
+	}
+	
+	if (status.working) {
 		root.LINKIFY_PENDING = true;
+		status.pending.push(root);
 		return;
 	}
-	root.LINKIFY = true;
+	status.working = root;
 	
-	linkify(root, options).then(() => {
+	linkify.linkify(root, options).then(() => {
 		var p = Promise.resolve();
 		if (options.selector) {
 			for (var node of root.querySelectorAll(options.selector)) {
-				p = p.then(linkify.bind(null, node, options));
+				p = p.then(linkify.linkify.bind(null, node, options));
 			}
 		}
 		p.then(() => {
-			root.LINKIFY = false;
-			if (root.LINKIFY_PENDING) {
+			status.working = null;
+			if (status.pending.length) {
+				root = status.pending.pop();
 				root.LINKIFY_PENDING = false;
 				linkifyRoot(root);
 			}
@@ -746,7 +765,7 @@ GM_config.setup({
 	if (options.customRules) {
 		options.customRules = createList(options.customRules);
 	}
-	options.validator = createValidator(options.skipSelector);
+	options.validator = createValidator(options);
 	options.fuzzyIp = options.ip;
 	options.ignoreMustache = unsafeWindow.angular || unsafeWindow.Vue;
 	options.embedImage = options.image;
@@ -774,7 +793,7 @@ new MutationObserver(function(mutations){
 		linkifyRoot(document.body);
 	} else {
 		for (var record of mutations) {
-			if (record.addedNodes) {
+			if (record.addedNodes.length) {
 				linkifyRoot(record.target);
 			}
 		}
