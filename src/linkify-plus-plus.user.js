@@ -526,7 +526,7 @@ var linkify = function(){
 					now;
 				do {
 					if (chunks.next().done) {
-						console.log(`Linkify finished in ${Date.now() - linkifyStart}ms`);
+						console.log(`Linkify finished in ${Date.now() - linkifyStart}ms`, root);
 						resolve();
 						return;
 					}
@@ -643,18 +643,28 @@ if (document.contentType != undefined && document.contentType != "text/plain" &&
 	return;
 }
 
-var options;
+var options, status;
+
+status = {
+	working: null,
+	pending: []
+};
 
 function linkifyRoot(root) {
 	if (!validRoot(root, options.validator) && (!options.selector || !root.matches(options.selector))) {
 		return;
 	}
 	
-	if (root.LINKIFY) {
-		root.LINKIFY_PENDING = true;
+	if (root.LINKIFY_PENDING) {
 		return;
 	}
-	root.LINKIFY = true;
+	
+	if (status.working) {
+		root.LINKIFY_PENDING = true;
+		status.pending.push(root);
+		return;
+	}
+	status.working = root;
 	
 	linkify(root, options).then(() => {
 		var p = Promise.resolve();
@@ -664,8 +674,9 @@ function linkifyRoot(root) {
 			}
 		}
 		p.then(() => {
-			root.LINKIFY = false;
-			if (root.LINKIFY_PENDING) {
+			status.working = null;
+			if (status.pending.length) {
+				root = status.pending.pop();
 				root.LINKIFY_PENDING = false;
 				linkifyRoot(root);
 			}
@@ -774,7 +785,7 @@ new MutationObserver(function(mutations){
 		linkifyRoot(document.body);
 	} else {
 		for (var record of mutations) {
-			if (record.addedNodes) {
+			if (record.addedNodes.length) {
 				linkifyRoot(record.target);
 			}
 		}
