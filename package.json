@@ -2,6 +2,11 @@
   "name": "linkify-plus-plus",
   "version": "7.4.4",
   "devDependencies": {
+    "babel-cli": "^6.23.0",
+    "babel-plugin-transform-es2015-block-scoping": "^6.23.0",
+    "babel-plugin-transform-es2015-classes": "^6.23.0",
+    "babel-plugin-transform-es2015-destructuring": "^6.23.0",
+    "babel-plugin-transform-es2015-parameters": "^6.23.0",
     "cheerio": "^0.22.0",
     "inline-js": "^0.3.0",
     "npm-build-tools": "^2.2.5",
@@ -9,7 +14,7 @@
   },
   "scripts": {
     "build-tlds": "node build-tlds.js > tlds.json",
-    "build": "inlinejs src/linkify-plus-plus.user.js -o dist/linkify-plus-plus.user.js",
+    "build": "inlinejs src/linkify-plus-plus.user.js -o dist/linkify-plus-plus.user.js && babel dist/linkify-plus-plus.user.js > dist/linkify-plus-plus-loose.user.js",
     "test": "eslint --ignore-pattern dist **/*.js",
     "preversion": "npm test",
     "version": "npm run build && git add .",
