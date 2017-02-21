@@ -43,13 +43,13 @@ var Linkifier = function(){
 		return text.replace(/[\[\]\\^-]/g, "\\$&");
 	}
 	
-	function regexClone(regex) {
-		var flags = "";
-		if (regex.global) flags += "g";
-		if (regex.multiline) flags += "m";
-		if (regex.ignoreCase) flags += "i";
-		return new RegExp(regex.source, flags);
-	}
+	// function regexClone(regex) {
+		// var flags = "";
+		// if (regex.global) flags += "g";
+		// if (regex.multiline) flags += "m";
+		// if (regex.ignoreCase) flags += "i";
+		// return new RegExp(regex.source, flags);
+	// }
 	
 	function buildRegex({
 		unicode = false, customRules = [], standalone = false,
@@ -200,11 +200,14 @@ var Linkifier = function(){
 		}
 		
 		*parse(text) {
-			var {url, invalidSuffix, mustache} = this.regex;
+			var {url, invalidSuffix, mustache} = this.regex,
+				urlLastIndex, mustacheLastIndex;
 				
+			mustache.lastIndex = 0;
+			url.lastIndex = 0;
+			
 			var mustacheMatch, mustacheRange;
 			if (this.ignoreMustache) {
-				mustache = regexClone(mustache);
 				mustacheMatch = mustache.exec(text);
 				if (mustacheMatch) {
 					mustacheRange = {
@@ -215,7 +218,6 @@ var Linkifier = function(){
 			}
 			
 			var urlMatch;
-			url = regexClone(url);
 			while ((urlMatch = url.exec(text))) {
 				var result;
 				if (urlMatch[7]) {
@@ -336,7 +338,14 @@ var Linkifier = function(){
 					result.text = text.slice(result.start, result.end);
 				}
 				
+				// since regex is shared with other parse generators, cache lastIndex position and restore later
+				mustacheLastIndex = mustache.lastIndex;
+				urlLastIndex = url.lastIndex;
+				
 				yield result;
+				
+				url.lastIndex = urlLastIndex;
+				mustache.lastIndex = mustacheLastIndex;
 			}
 		}
 	}
