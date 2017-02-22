@@ -18,6 +18,8 @@ Installation
 ------------
 [Greasy Fork](https://greasyfork.org/scripts/4255-linkify-plus-plus).
 
+If you are using an older version of the browser, try [linkify-plus-plus-loose.user.js](https://github.com/eight04/linkify-plus-plus/tree/master/dist).
+
 Testcase
 --------
 * <https://rawgit.com/eight04/linkify-plus-plus/master/demo/demo.html>
