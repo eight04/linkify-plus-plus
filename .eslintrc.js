@@ -1,16 +1,11 @@
-{
+module.exports = {
 	"extends": "eslint:recommended",
 	"env": {
 		"browser": true,
 		"es6": true,
 		"greasemonkey": true
 	},
-	"globals": {
-		"GM_config": false,
-		"TLDS": false,
-		"$inline": false
-	},
 	"rules": {
-		"no-console": "off"
+		"no-console": ["error", {"allow": ["warn", "error"]}]
 	}
-}
+};

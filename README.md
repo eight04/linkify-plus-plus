@@ -18,8 +18,6 @@ Installation
 ------------
 [Greasy Fork](https://greasyfork.org/scripts/4255-linkify-plus-plus).
 
-If you are using an older version of the browser, try [linkify-plus-plus-loose.user.js](https://github.com/eight04/linkify-plus-plus/tree/master/dist).
-
 Testcase
 --------
 * <https://rawgit.com/eight04/linkify-plus-plus/master/demo/demo.html>
@@ -63,18 +61,6 @@ A list of regex pattern that will be likified, which is aimed to linkify non-htt
 magnet:\?xt=\S+
 evernote:///\S+
 ```
-
-Todos
------
-* `range.cloneContents()` is slow on large text.
-	- Should we try to parse HTML source?
-	- Is extractContents() faster?
-	- Clone original range than use surroundContents()?
-	
-Other notes
------------
-* https://www.measurethat.net/Benchmarks/Show/1312/3/generator
-* https://www.measurethat.net/Benchmarks/Show/1313/0/generator-with-low-count-of-items
 
 Changelog
 ---------
