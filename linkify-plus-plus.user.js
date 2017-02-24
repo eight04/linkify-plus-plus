@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Linkify Plus Plus
-// @version     7.4.4
+// @version     8.0.0
 // @namespace   eight04.blogspot.com
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @license		BSD-3-Clause; https://github.com/eight04/linkify-plus-plus/blob/master/LICENSE

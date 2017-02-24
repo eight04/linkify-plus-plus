@@ -1,6 +1,6 @@
 {
   "name": "linkify-plus-plus",
-  "version": "7.4.4",
+  "version": "8.0.0",
   "devDependencies": {
     "sync-version": "^1.0.0"
   },
