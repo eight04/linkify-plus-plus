@@ -27,6 +27,9 @@
 
 /* globals require, GM_config */
 
+// see https://github.com/Tampermonkey/tampermonkey/issues/362
+var require;
+
 (function(){
 
 // Limit contentType to "text/plain" or "text/html"
