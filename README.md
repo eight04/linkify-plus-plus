@@ -66,6 +66,8 @@ evernote:///\S+
 
 Changelog
 ---------
+* Version 8.0.1 (Feb 26, 2017):
+	- Fix global leaking bug in Tampermonkey.
 * Version 8.0.0 (Feb 24, 2017):
 	- Rewritten: the core logic is splitted out as [linkify-plus-plus-core](https://github.com/eight04/linkify-plus-plus-core).
 * Version 7.4.4 (Feb 19, 2017):
