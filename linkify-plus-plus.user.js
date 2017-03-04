@@ -14,7 +14,7 @@
 // @exclude     http://mxr.mozilla.org/*
 // @exclude		http://w3c*.github.io/*
 // @require https://greasyfork.org/scripts/7212-gm-config-eight-s-version/code/GM_config%20(eight's%20version).js?version=156587
-// @require https://greasyfork.org/scripts/27630-linkify-plus-plus-core/code/linkify-plus-plus-core.js?version=177017
+// @require https://greasyfork.org/scripts/27630-linkify-plus-plus-core/code/linkify-plus-plus-core.js?version=178765
 // @grant       GM_addStyle
 // @grant       GM_registerMenuCommand
 // @grant       GM_getValue
@@ -25,10 +25,7 @@
 // @compatible  opera
 // ==/UserScript==
 
-/* globals require, GM_config */
-
-// see https://github.com/Tampermonkey/tampermonkey/issues/362
-var require;
+/* globals GM_config */
 
 (function(){
 
@@ -37,7 +34,7 @@ if (document.contentType != undefined && document.contentType != "text/plain" &&
 	return;
 }
 
-var {Linkifier, UrlMatcher, INVALID_TAGS} = require("linkify-plus-plus-core");
+var {Linkifier, UrlMatcher, INVALID_TAGS} = window.linkifyPlusPlusCore;
 
 // Valid root node before linkifing
 function validRoot(node, validator) {
