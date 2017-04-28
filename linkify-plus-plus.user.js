@@ -30,7 +30,7 @@
 (function(){
 
 // Limit contentType to "text/plain" or "text/html"
-if (document.contentType != undefined && document.contentType != "text/plain" && document.contentType != "text/html") {
+if (document.contentType !== undefined && document.contentType != "text/plain" && document.contentType != "text/html") {
 	return;
 }
 
@@ -83,7 +83,7 @@ function validRoot(node, validator) {
 
 function createValidator({selector, skipSelector}) {
 	return function(node) {
-		if (node.contentEditable == "true" || node.contentEditable == "") {
+		if (node.contentEditable == "true" || node.contentEditable === "") {
 			return false;
 		}
 		if (selector && node.matches && node.matches(selector)) {
