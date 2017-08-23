@@ -14,7 +14,7 @@
 // @exclude     http://mxr.mozilla.org/*
 // @exclude		http://w3c*.github.io/*
 // @require https://greasyfork.org/scripts/7212-gm-config-eight-s-version/code/GM_config%20(eight's%20version).js?version=156587
-// @require https://greasyfork.org/scripts/27630-linkify-plus-plus-core/code/linkify-plus-plus-core.js?version=178765
+// @require https://greasyfork.org/scripts/27630-linkify-plus-plus-core/code/linkify-plus-plus-core.js?version=213494
 // @grant       GM_addStyle
 // @grant       GM_registerMenuCommand
 // @grant       GM_getValue
@@ -34,7 +34,7 @@ if (document.contentType != undefined && document.contentType != "text/plain" &&
 	return;
 }
 
-var {Linkifier, UrlMatcher, INVALID_TAGS} = window.linkifyPlusPlusCore;
+var {linkify, UrlMatcher, INVALID_TAGS} = window.linkifyPlusPlusCore;
 
 // Valid root node before linkifing
 function validRoot(node, validator) {
@@ -114,7 +114,7 @@ function createList(text) {
 	return text.split("\n");
 }
 
-var options, status, linkifier;
+var options, status;
 
 status = {
 	working: null,
@@ -137,11 +137,11 @@ function linkifyRoot(root) {
 	}
 	status.working = root;
 	
-	linkifier.linkify(root).then(() => {
+	linkify(root, options).then(() => {
 		var p = Promise.resolve();
 		if (options.selector) {
 			for (var node of root.querySelectorAll(options.selector)) {
-				p = p.then(linkifier.linkify.bind(linkifier, node));
+				p = p.then(linkify.bind(null, node, options));
 			}
 		}
 		return p;
@@ -157,6 +157,21 @@ function linkifyRoot(root) {
 	});
 }
 
+// handle imageSkipSelector here
+function linkCreated({link, range, content}) {
+	if (link.childNodes[0].nodeName != "IMG") return;
+	
+	var parent = range.startContainer;
+	// it might be a text node
+	if (!parent.closest) {
+		parent = parent.parentNode;
+	}
+	if (!parent.closest(options.imageSkipSelector)) return;
+	// remove image
+	link.innerHTML = "";
+	link.appendChild(content);
+}
+
 // Program init
 GM_config.setup({
 	ip: {
@@ -168,6 +183,11 @@ GM_config.setup({
 		label: "Embed images",
 		type: "checkbox",
 		default: true
+	},
+	imageSkipSelector: {
+		label: "Don't embed images under following elements",
+		type: "textarea",
+		default: ".hljs, .highlight, .brush\\:"
 	},
 	unicode: {
 		label: "Allow non-ascii character",
@@ -235,7 +255,7 @@ GM_config.setup({
 	options.ignoreMustache = unsafeWindow.angular || unsafeWindow.Vue;
 	options.embedImage = options.image;
 	options.matcher = new UrlMatcher(options);
-	linkifier = new Linkifier(options);
+	options.onlink = linkCreated;
 });
 
 GM_addStyle(".linkifyplus img { max-width: 90%; }");
