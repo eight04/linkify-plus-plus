@@ -83,7 +83,7 @@ function validRoot(node, validator) {
 
 function createValidator({selector, skipSelector}) {
 	return function(node) {
-		if (node.contentEditable == "true" || node.contentEditable == "") {
+		if (node.isContentEditable) {
 			return false;
 		}
 		if (selector && node.matches && node.matches(selector)) {
