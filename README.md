@@ -33,6 +33,9 @@ Always linkify IP even if the URL dosn't contains protocol and path.
 ### Embed images
 If the url ends with `jpg|png|gif|jpeg`, create an image object and insert into link.
 
+### Don't embed images under following elements
+If the link is a child of these element, don't embed image.
+
 ### Allow non-ascii character
 Let url match unicode characters. (e.g. `http://www.bücher.ch`)
 
@@ -66,6 +69,10 @@ evernote:///\S+
 
 Changelog
 ---------
+* Version 8.1.0 (Aug 23, 2017):
+	- Update linkify-plus-plus-core to 0.3.0.
+	- Fix: use isContentEditable.
+	- Add: ability to disable embeding under specified elements.
 * Version 8.0.2 (Mar 4, 2017):
 	- Update linkify-plus-plus-core to 0.2.0.
 	- Fix blocking bug.
