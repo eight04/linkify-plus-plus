@@ -1,28 +1,29 @@
 // ==UserScript==
-// @name        Linkify Plus Plus
-// @version     8.1.0
-// @namespace   eight04.blogspot.com
+// @name Linkify Plus Plus
+// @version 8.1.0
 // @description Based on Linkify Plus. Turn plain text URLs into links.
-// @license		BSD-3-Clause; https://github.com/eight04/linkify-plus-plus/blob/master/LICENSE
-// @include     *
-// @exclude     https://www.google.*/search*
-// @exclude     https://www.google.*/webhp*
-// @exclude     https://music.google.com/*
-// @exclude     https://mail.google.com/*
-// @exclude     https://docs.google.com/*
-// @exclude     https://encrypted.google.com/*
-// @exclude     http://mxr.mozilla.org/*
-// @exclude		http://w3c*.github.io/*
+// @license BSD-3-Clause
+// @homepageURL https://github.com/eight04/linkify-plus-plus
+// @supportURL https://github.com/eight04/linkify-plus-plus/issues
+// @namespace eight04.blogspot.com
+// @include *
+// @exclude https://www.google.*/search*
+// @exclude https://www.google.*/webhp*
+// @exclude https://music.google.com/*
+// @exclude https://mail.google.com/*
+// @exclude https://docs.google.com/*
+// @exclude https://encrypted.google.com/*
+// @exclude http://mxr.mozilla.org/*
+// @exclude http://w3c*.github.io/*
 // @require https://greasyfork.org/scripts/7212-gm-config-eight-s-version/code/GM_config%20(eight's%20version).js?version=156587
 // @require https://greasyfork.org/scripts/27630-linkify-plus-plus-core/code/linkify-plus-plus-core.js?version=213494
-// @grant       GM_addStyle
-// @grant       GM_registerMenuCommand
-// @grant       GM_getValue
-// @grant       GM_setValue
-// @grant       unsafeWindow
-// @compatible  firefox
-// @compatible  chrome
-// @compatible  opera
+// @grant GM_addStyle
+// @grant GM_registerMenuCommand
+// @grant GM_getValue
+// @grant GM_setValue
+// @grant unsafeWindow
+// @compatible firefox Tampermonkey latest
+// @compatible chrome Tampermonkey latest
 // ==/UserScript==
 
 /* globals GM_config */
@@ -35,6 +36,8 @@ if (document.contentType != undefined && document.contentType != "text/plain" &&
 }
 
 var {linkify, UrlMatcher, INVALID_TAGS} = window.linkifyPlusPlusCore;
+
+const BUFFER_SIZE = 100;
 
 // Valid root node before linkifing
 function validRoot(node, validator) {
@@ -114,153 +117,208 @@ function createList(text) {
 	return text.split("\n");
 }
 
-var options, status;
-
-status = {
-	working: null,
-	pending: []
-};
-
-function linkifyRoot(root) {
-	if (!validRoot(root, options.validator)) {
-		return;
-	}
-	
-	if (root.LINKIFY_PENDING) {
-		return;
-	}
-	
-	if (status.working) {
-		root.LINKIFY_PENDING = true;
-		status.pending.push(root);
-		return;
-	}
-	status.working = root;
-	
-	linkify(root, options).then(() => {
-		var p = Promise.resolve();
-		if (options.selector) {
-			for (var node of root.querySelectorAll(options.selector)) {
-				p = p.then(linkify.bind(null, node, options));
-			}
-		}
-		return p;
-	}).catch(err => {
-		console.error(err);
-	}).then(() => {
-		status.working = null;
-		if (status.pending.length) {
-			root = status.pending.pop();
-			root.LINKIFY_PENDING = false;
-			linkifyRoot(root);
-		}
-	});
+function createBuffer(size) {
+  const set = new Set;
+  const buff = Array(size);
+  const eventBus = document.createElement("span");
+  let start = 0;
+  let end = 0;
+  return {push, eventBus, shift};
+  
+  function push(item) {
+    if (set.has(item)) {
+      return;
+    }
+    if (set.size && start === end) {
+      // overflow
+      eventBus.dispatchEvent(new CustomEvent("overflow"));
+      set.clear();
+      return;
+    }
+    set.add(item);
+    buff[end] = item;
+    end = (end + 1) % size;
+    eventBus.dispatchEvent(new CustomEvent("add"));
+  }
+  
+  function shift() {
+    if (!set.size) {
+      return;
+    }
+    const item = buff[start];
+    set.delete(item);
+    buff[start] = null;
+    start = (start + 1) % size;
+    return item;
+  }
 }
 
-// handle imageSkipSelector here
-function linkCreated({link, range, content}) {
-	if (link.childNodes[0].nodeName != "IMG") return;
-	
-	var parent = range.startContainer;
-	// it might be a text node
-	if (!parent.closest) {
-		parent = parent.parentNode;
-	}
-	if (!parent.closest(options.imageSkipSelector)) return;
-	// remove image
-	link.innerHTML = "";
-	link.appendChild(content);
+function createLinkifyProcess(options) {
+  const buffer = createBuffer(BUFFER_SIZE);
+  let overflowed = false;
+  let started = false;
+  buffer.eventBus.addEventListener("add", start);
+  buffer.eventBus.addEventListener("overflow", () => overflowed = true);
+  return {process};
+  
+  function process(root) {
+    if (overflowed) {
+      return false
+    }
+    if (validRoot(root, options.validator)) {
+      buffer.push(root);
+    }
+    return true;
+  }
+  
+  function start() {
+    if (started) {
+      return;
+    }    
+    deque();
+  }
+  
+  function deque() {
+    let root;
+    if (overflowed) {
+      root = document.body;
+      overflowed = false;
+    } else {
+      root = buffer.shift();
+    }
+    if (!root) {
+      started = false;
+      return;
+    }
+    
+    linkify(root, options)
+      .then(() => {
+        var p = Promise.resolve();
+        if (options.selector) {
+          for (var node of root.querySelectorAll(options.selector)) {
+            p = p.then(linkify.bind(null, node, options));
+          }
+        }
+        return p;
+      })
+      .catch(err => {
+        console.error(err);
+      })
+      .then(deque);
+  }
+}
+
+function createOptions() {
+  const options = {};
+  setup();
+  return options;
+  
+  function setup() {
+    GM_config.setup({
+      ip: {
+        label: "Match 4 digits IP",
+        type: "checkbox",
+        default: true
+      },
+      image: {
+        label: "Embed images",
+        type: "checkbox",
+        default: true
+      },
+      imageSkipSelector: {
+        label: "Don't embed images under following elements",
+        type: "textarea",
+        default: ".hljs, .highlight, .brush\\:"
+      },
+      unicode: {
+        label: "Allow non-ascii character",
+        type: "checkbox",
+        default: false
+      },
+      newTab: {
+        label: "Open link in new tab",
+        type: "checkbox",
+        default: false
+      },
+      standalone: {
+        label: "URL must be surrounded by whitespace",
+        type: "checkbox",
+        default: false
+      },
+      boundaryLeft: {
+        label: "Boundary characters between whitespace and URL (left)",
+        type: "text",
+        default: "{[(\"'"
+      },
+      boundaryRight: {
+        label: "Boundary characters between whitespace and URL (right)",
+        type: "text",
+        default: "'\")]},.;?!"
+      },
+      skipSelector: {
+        label: "Do not linkify these elements. (CSS selector)",
+        type: "textarea",
+        default: ".highlight, .editbox, .brush\\:, .bdsug, .spreadsheetinfo"
+      },
+      selector: {
+        label: "Always linkify these elements, override above. (CSS selector)",
+        type: "textarea",
+        default: ""
+      },
+      timeout: {
+        label: "Max execution time (ms).",
+        type: "number",
+        default: 10000
+      },
+      maxRunTime: {
+        label: "Max script run time (ms). If the script is freezing your browser, try to decrease this value.",
+        type: "number",
+        default: 100
+      },
+      customRules: {
+        label: "Custom rules. One pattern per line. (RegExp)",
+        type: "textarea",
+        default: ""
+      }
+    }, function() {
+      Object.assign(options, GM_config.get());
+      if (options.selector && !selectorTest(options.selector)) {
+        options.selector = null;
+      }
+      if (options.skipSelector && !selectorTest(options.skipSelector)) {
+        options.skipSelector = null;
+      }
+      if (options.customRules) {
+        options.customRules = createList(options.customRules);
+      }
+      options.validator = createValidator(options);
+      options.fuzzyIp = options.ip;
+      options.ignoreMustache = unsafeWindow.angular || unsafeWindow.Vue;
+      options.embedImage = options.image;
+      options.matcher = new UrlMatcher(options);
+      options.onlink = options.imageSkipSelector ? onlink : null;
+    });
+  }
+  
+  function onlink({link, range, content}) {
+    if (link.childNodes[0].nodeName != "IMG") return;
+    
+    var parent = range.startContainer;
+    // it might be a text node
+    if (!parent.closest) {
+      parent = parent.parentNode;
+    }
+    if (!parent.closest(options.imageSkipSelector)) return;
+    // remove image
+    link.innerHTML = "";
+    link.appendChild(content);
+  }
 }
 
 // Program init
-GM_config.setup({
-	ip: {
-		label: "Match 4 digits IP",
-		type: "checkbox",
-		default: true
-	},
-	image: {
-		label: "Embed images",
-		type: "checkbox",
-		default: true
-	},
-	imageSkipSelector: {
-		label: "Don't embed images under following elements",
-		type: "textarea",
-		default: ".hljs, .highlight, .brush\\:"
-	},
-	unicode: {
-		label: "Allow non-ascii character",
-		type: "checkbox",
-		default: false
-	},
-	newTab: {
-		label: "Open link in new tab",
-		type: "checkbox",
-		default: false
-	},
-	standalone: {
-		label: "URL must be surrounded by whitespace",
-		type: "checkbox",
-		default: false
-	},
-	boundaryLeft: {
-		label: "Boundary characters between whitespace and URL (left)",
-		type: "text",
-		default: "{[(\"'"
-	},
-	boundaryRight: {
-		label: "Boundary characters between whitespace and URL (right)",
-		type: "text",
-		default: "'\")]},.;?!"
-	},
-	skipSelector: {
-		label: "Do not linkify these elements. (CSS selector)",
-		type: "textarea",
-		default: ".highlight, .editbox, .brush\\:, .bdsug, .spreadsheetinfo"
-	},
-	selector: {
-		label: "Always linkify these elements, override above. (CSS selector)",
-		type: "textarea",
-		default: ""
-	},
-	timeout: {
-		label: "Max execution time (ms).",
-		type: "number",
-		default: 10000
-	},
-	maxRunTime: {
-		label: "Max script run time (ms). If the script is freezing your browser, try to decrease this value.",
-		type: "number",
-		default: 100
-	},
-	customRules: {
-		label: "Custom rules. One pattern per line. (RegExp)",
-		type: "textarea",
-		default: ""
-	}
-}, function() {
-	options = GM_config.get();
-	if (options.selector && !selectorTest(options.selector)) {
-		options.selector = null;
-	}
-	if (options.skipSelector && !selectorTest(options.skipSelector)) {
-		options.skipSelector = null;
-	}
-	if (options.customRules) {
-		options.customRules = createList(options.customRules);
-	}
-	options.validator = createValidator(options);
-	options.fuzzyIp = options.ip;
-	options.ignoreMustache = unsafeWindow.angular || unsafeWindow.Vue;
-	options.embedImage = options.image;
-	options.matcher = new UrlMatcher(options);
-	options.onlink = linkCreated;
-});
-
 GM_addStyle(".linkifyplus img { max-width: 90%; }");
-
-new MutationObserver(function(mutations){
+const linkifyProcess = createLinkifyProcess(createOptions());
+const observer = new MutationObserver(function(mutations){
 	// Filter out mutations generated by LPP
 	var lastRecord = mutations[mutations.length - 1],
 		nodes = lastRecord.addedNodes,
@@ -274,22 +332,29 @@ new MutationObserver(function(mutations){
 		}
 	}
 
-	if (mutations.length > 100) {
-		// Do not use mutations when too big
-		linkifyRoot(document.body);
-	} else {
-		for (var record of mutations) {
-			if (record.addedNodes.length) {
-				linkifyRoot(record.target);
-			}
-		}
-	}
-
-}).observe(document.body, {
-	childList: true,
-	subtree: true
+  for (var record of mutations) {
+    if (record.addedNodes.length) {
+      if (!linkifyProcess.process(record.target)) {
+        // it's full
+        break;
+      }
+    }
+  }
 });
 
-linkifyRoot(document.body);
+function init() {
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+  linkifyProcess.process(document.body);
+}
+
+if (document.body) {
+  init();
+} else {
+  // https://github.com/Tampermonkey/tampermonkey/issues/485
+  document.addEventListener("DOMContentLoaded", init, {once: true});
+}
 
 })();
