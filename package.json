@@ -1,8 +1,10 @@
 {
-  "name": "linkify-plus-plus",
+  "name": "Linkify Plus Plus",
   "version": "8.1.0",
+  "repository": "eight04/linkify-plus-plus",
+  "license": "BSD-3-Clause",
   "devDependencies": {
-    "sync-version": "^1.0.0"
+    "userscript-meta-cli": "^0.3.0"
   },
   "scripts": {
     "build": "sync-version linkify-plus-plus.user.js",
@@ -11,5 +13,6 @@
     "version": "npm run build && git add .",
     "postversion": "git push --follow-tags",
     "watch": "n-run -w src/*.js \"npm run build\""
-  }
+  },
+  "private": true
 }
