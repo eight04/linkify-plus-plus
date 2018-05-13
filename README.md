@@ -69,6 +69,8 @@ evernote:///\S+
 
 Changelog
 ---------
+* Version 8.2.0 (May 13, 2018):
+  - Refactor, use a buffer to queue the elements..
 * Version 8.1.0 (Aug 23, 2017):
 	- Update linkify-plus-plus-core to 0.3.0.
 	- Fix: use isContentEditable.
