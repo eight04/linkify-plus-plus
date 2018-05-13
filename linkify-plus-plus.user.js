@@ -26,7 +26,7 @@
 // @compatible chrome Tampermonkey latest
 // ==/UserScript==
 
-/* globals GM_config */
+/* globals GM_config linkifyPlusPlusCore */
 
 (function(){
 
@@ -35,7 +35,7 @@ if (document.contentType != undefined && document.contentType != "text/plain" &&
 	return;
 }
 
-var {linkify, UrlMatcher, INVALID_TAGS} = window.linkifyPlusPlusCore;
+var {linkify, UrlMatcher, INVALID_TAGS} = linkifyPlusPlusCore;
 
 const BUFFER_SIZE = 100;
 
