@@ -1,18 +1,50 @@
 {
-  "name": "Linkify Plus Plus",
+  "name": "linkify-plus-plus",
+  "description": "Based on Linkify Plus. Turn plain text URLs into links.",
   "version": "8.1.0",
   "repository": "eight04/linkify-plus-plus",
   "license": "BSD-3-Clause",
   "devDependencies": {
+    "eslint": "^4.19.1",
     "userscript-meta-cli": "^0.3.0"
   },
   "scripts": {
-    "build": "sync-version linkify-plus-plus.user.js",
+    "build": "userscript-meta -u linkify-plus-plus.user.js",
     "test": "eslint **/*.js",
     "preversion": "npm test",
     "version": "npm run build && git add .",
     "postversion": "git push --follow-tags",
     "watch": "n-run -w src/*.js \"npm run build\""
+  },
+  "userscript": {
+    "name": "Linkify Plus Plus",
+    "namespace": "eight04.blogspot.com",
+    "include": "*",
+    "exclude": [
+      "https://www.google.*/search*",
+      "https://www.google.*/webhp*",
+      "https://music.google.com/*",
+      "https://mail.google.com/*",
+      "https://docs.google.com/*",
+      "https://encrypted.google.com/*",
+      "http://mxr.mozilla.org/*",
+      "http://w3c*.github.io/*"
+    ],
+    "require": [
+      "https://greasyfork.org/scripts/7212-gm-config-eight-s-version/code/GM_config%20(eight's%20version).js?version=156587",
+      "https://greasyfork.org/scripts/27630-linkify-plus-plus-core/code/linkify-plus-plus-core.js?version=213494"
+    ],
+    "grant": [
+      "GM_addStyle",
+      "GM_registerMenuCommand",
+      "GM_getValue",
+      "GM_setValue",
+      "unsafeWindow"
+    ],
+    "compatible": [
+      "firefox Tampermonkey latest",
+      "chrome Tampermonkey latest"
+    ]
   },
   "private": true
 }
