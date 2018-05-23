@@ -69,6 +69,8 @@ evernote:///\S+
 
 Changelog
 ---------
+* Version 8.2.1 (May 23, 2018):
+  - Fix: LAG. Threads are not correctly marked as started and the processor spawns a bunch of them.
 * Version 8.2.0 (May 13, 2018):
   - Refactor, use a buffer to queue the elements..
 * Version 8.1.0 (Aug 23, 2017):
