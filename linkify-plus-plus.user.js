@@ -174,7 +174,8 @@ function createLinkifyProcess(options) {
   function start() {
     if (started) {
       return;
-    }    
+    }
+    started = true;
     deque();
   }
   
