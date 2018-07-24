@@ -351,11 +351,38 @@ function init() {
   linkifyProcess.process(document.body);
 }
 
-if (document.body) {
-  init();
-} else {
-  // https://github.com/Tampermonkey/tampermonkey/issues/485
-  document.addEventListener("DOMContentLoaded", init, {once: true});
+function prepare() {
+  // wait till everything is ready
+  return Promise.all([prepareApp(), prepareBody()]);
+  
+  function prepareApp() {
+    const appRoot = document.querySelector("[data-server-rendered]");
+    if (!appRoot) {
+      return;
+    }
+    return new Promise(resolve => {
+      const onChange = () => {
+        if (!appRoot.hasAttribute("data-server-rendered")) {
+          resolve();
+          observer.disconnect();
+        }
+      };
+      const observer = new MutationObserver(onChange);
+      observer.observe(appRoot, {attributes: true});
+    });
+  }
+  
+  function prepareBody() {
+    if (document.body) {
+      return;
+    }
+    return new Promise(resolve => {
+      // https://github.com/Tampermonkey/tampermonkey/issues/485
+      document.addEventListener("DOMContentLoaded", resolve, {once: true});
+    });
+  }
 }
+
+prepare().then(init);
 
 })();
