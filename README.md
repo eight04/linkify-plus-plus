@@ -69,6 +69,8 @@ evernote:///\S+
 
 Changelog
 ---------
+* Version 8.2.2 (Jul 25, 2018):
+  - Fix: handle Vue's server side rendering pages.
 * Version 8.2.1 (May 23, 2018):
   - Fix: LAG. Threads are not correctly marked as started and the processor spawns a bunch of them.
 * Version 8.2.0 (May 13, 2018):
