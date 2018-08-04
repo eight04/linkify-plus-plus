@@ -1,15 +1,19 @@
 // const {createPref, createConfigDialog, createGMStorage} = require("webext-pref");
 
-const getPrefDefault = require("./lib/pref-default");
-const getPrefView = require("./lib/pref-view");
-const {createLinkifyPlusPlus} = require("./lib/linkify-plus-plus");
+const prefDefault = require("./lib/pref-default");
+const prefBody = require("./lib/pref-body");
+const {startLinkifyPlusPlus} = require("./lib/linkify-plus-plus");
 
-function getLabelFactory() {
+function getMessageFactory() {
   const translate = $inline("../extension/_locale/en/message.json|cleanMessage");
   return key => translate["options" + key[0].toUpperCase() + key.slice(1) + "Label"];
 }
 
 function main() {
+  const pref = GM_webextPref({
+    default: prefDefault(),
+    body: prefBody(getMessageFactory())
+  })
   const linkifyPlusPlus = createLinkifyPlusPlus();
   if (!linkifyPlusPlus) {
     return;

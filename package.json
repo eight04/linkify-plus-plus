@@ -31,14 +31,16 @@
       "http://w3c*.github.io/*"
     ],
     "require": [
-      "https://greasyfork.org/scripts/7212-gm-config-eight-s-version/code/GM_config%20(eight's%20version).js?version=156587",
       "https://greasyfork.org/scripts/27630-linkify-plus-plus-core/code/linkify-plus-plus-core.js?version=213494"
     ],
     "grant": [
+      "GM.getValue",
+      "GM.setValue",
       "GM_addStyle",
       "GM_registerMenuCommand",
       "GM_getValue",
       "GM_setValue",
+      "GM_addValueChangeListener",
       "unsafeWindow"
     ],
     "compatible": [
