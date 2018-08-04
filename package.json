@@ -46,5 +46,8 @@
       "chrome Tampermonkey latest"
     ]
   },
-  "private": true
+  "private": true,
+  "dependencies": {
+    "event-lite": "^0.1.1"
+  }
 }
