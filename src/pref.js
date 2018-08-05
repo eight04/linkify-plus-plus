@@ -1,3 +1,4 @@
+/* global pref */
 const {createPref, createWebextStorage} = require("webext-pref");
 const prefDefault = require("./lib/pref-default");
 

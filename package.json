@@ -5,7 +5,7 @@
   "repository": "eight04/linkify-plus-plus",
   "license": "BSD-3-Clause",
   "devDependencies": {
-    "eslint": "^4.19.1",
+    "eslint": "^5.3.0",
     "glob": "^7.1.2",
     "rollup": "^0.63.5",
     "rollup-plugin-cjs-es": "^0.6.0",
@@ -54,6 +54,7 @@
   },
   "private": true,
   "dependencies": {
-    "event-lite": "^0.1.1"
+    "event-lite": "^0.1.1",
+    "linkify-plus-plus-core": "^0.3.0"
   }
 }

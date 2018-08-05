@@ -1,5 +1,8 @@
 /* global pref prefReady */
-const {startLinkifyPlusPlus} = require("./lib/linkify-plus-plus");
-prefReady
-  .then(() => pref.setCurrentScope(location.hostname))
-  .then(() => startLinkifyPlusPlus(pref));
+const {startLinkifyPlusPlus} = require("./lib/main");
+
+startLinkifyPlusPlus(async () => {
+  await prefReady;
+  await pref.setCurrentScope(location.hostname);
+  return pref;
+});

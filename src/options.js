@@ -1,3 +1,4 @@
+/* global pref prefReady browser */
 const {createView} = require("webext-pref");
 const prefBody = require("./lib/pref-body");
 

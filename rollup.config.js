@@ -4,7 +4,7 @@ import cjs from "rollup-plugin-cjs-es";
 
 function base({
   output,
-  ...props
+  ...args
 }) {
   return {
     output: {
@@ -16,7 +16,7 @@ function base({
       cjs()
     ],
     experimentalCodeSplitting: true,
-    ...props
+    ...args
   };
 }
 
