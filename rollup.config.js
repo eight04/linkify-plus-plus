@@ -2,6 +2,7 @@ import usm from "userscript-meta-cli";
 
 import cjs from "rollup-plugin-cjs-es";
 import external from "rollup-plugin-external-globals";
+import inline from "rollup-plugin-inline-js";
 import json from "rollup-plugin-json";
 import resolve from "rollup-plugin-node-resolve";
 
@@ -54,7 +55,8 @@ export default [
     plugins: [
       external({
         "linkify-plus-plus-core": "linkifyPlusPlusCore"
-      })
+      }),
+      inline()
     ]
   })
 ];

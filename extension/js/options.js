@@ -340,7 +340,7 @@ var prefBody = getMessage => {
     {
       key: "ignoreMustache",
       type: "checkbox",
-      label: getMessage("optionsIgnoreMustache")
+      label: getMessage("optionsIgnoreMustacheLabel")
     },
     {
       key: "embedImage",
@@ -350,7 +350,7 @@ var prefBody = getMessage => {
         {
           key: "embedImageExcludeElement",
           type: "textarea",
-          label: getMessage("optionsEmbedImageLabel"),
+          label: getMessage("optionsEmbedImageExcludeElementLabel"),
           parse: validateSelector
         }
       ]
@@ -397,12 +397,14 @@ var prefBody = getMessage => {
     {
       key: "timeout",
       type: "number",
-      label: getMessage("optionsTimeoutLabel")
+      label: getMessage("optionsTimeoutLabel"),
+      help: getMessage("optionsTimeoutHelp")
     },
     {
       key: "maxRunTime",
       type: "number",
-      label: getMessage("optionsMaxRunTimeLabel")
+      label: getMessage("optionsMaxRunTimeLabel"),
+      help: getMessage("optionsMaxRunTimeHelp")
     },
     {
       key: "customRules",

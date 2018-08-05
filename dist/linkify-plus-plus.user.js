@@ -59,7 +59,7 @@ var prefBody = getMessage => {
     {
       key: "ignoreMustache",
       type: "checkbox",
-      label: getMessage("optionsIgnoreMustache")
+      label: getMessage("optionsIgnoreMustacheLabel")
     },
     {
       key: "embedImage",
@@ -69,7 +69,7 @@ var prefBody = getMessage => {
         {
           key: "embedImageExcludeElement",
           type: "textarea",
-          label: getMessage("optionsEmbedImageLabel"),
+          label: getMessage("optionsEmbedImageExcludeElementLabel"),
           parse: validateSelector
         }
       ]
@@ -116,12 +116,14 @@ var prefBody = getMessage => {
     {
       key: "timeout",
       type: "number",
-      label: getMessage("optionsTimeoutLabel")
+      label: getMessage("optionsTimeoutLabel"),
+      help: getMessage("optionsTimeoutHelp")
     },
     {
       key: "maxRunTime",
       type: "number",
-      label: getMessage("optionsMaxRunTimeLabel")
+      label: getMessage("optionsMaxRunTimeLabel"),
+      help: getMessage("optionsMaxRunTimeHelp")
     },
     {
       key: "customRules",
@@ -144,8 +146,6 @@ var prefBody = getMessage => {
   }
 };
 
-const {linkify, UrlMatcher, INVALID_TAGS} = linkifyPlusPlusCore;
-
 // Valid root node before linkifing
 function validRoot(node, validator) {
   // Cache valid state in node.VALID
@@ -159,7 +159,7 @@ function validRoot(node, validator) {
     cache.push(node);
 
     // It is invalid if it has invalid ancestor
-    if (!validator(node) || INVALID_TAGS[node.nodeName]) {
+    if (!validator(node) || linkifyPlusPlusCore.INVALID_TAGS[node.nodeName]) {
       isValid = false;
       break;
     }
@@ -283,12 +283,12 @@ function createLinkifyProcess({options, bufferSize}) {
       return;
     }
     
-    linkify(root, options)
+    linkifyPlusPlusCore.linkify(root, options)
       .then(() => {
         var p = Promise.resolve();
         if (options.includeElement) {
           for (var node of root.querySelectorAll(options.includeElement)) {
-            p = p.then(linkify.bind(null, node, options));
+            p = p.then(linkifyPlusPlusCore.linkify.bind(null, node, options));
           }
         }
         return p;
@@ -311,7 +311,7 @@ function createOptions(pref) {
     if (changes.includeElement != null || changes.excludeElement != null) {
       options.validator = createValidator(options);
     }
-    options.matcher = new UrlMatcher(options);
+    options.matcher = new linkifyPlusPlusCore.UrlMatcher(options);
     options.onlink = options.embedImageExcludeElement ? onlink : null;
   }
   
@@ -413,7 +413,24 @@ function prepareDocument() {
 /* global $inline GM_webextPref */
 
 function getMessageFactory() {
-  const translate = $inline("../extension/_locale/en/message.json|cleanMessage");
+  const translate = {
+    "optionsFuzzyIpLabel": "Match IP with only 4 digits",
+    "optionsIgnoreMustacheLabel": "Ignore URLs inside mustaches {{ ... }}",
+    "optionsEmbedImageLabel": "Embed Image",
+    "optionsEmbedImageExcludeElementLabel": "Exclude following elements (CSS selector)",
+    "optionsUnicodeLabel": "Match unicode characters",
+    "optionsNewTabLabel": "Open links in new tabs",
+    "optionsStandaloneLabel": "The link must be surrounded by whitespaces",
+    "optionsBoundaryLeftLabel": "Allowed characters between the whitespace and the link (left side)",
+    "optionsBoundaryRightLabel": "Allowed characters between the whitespace and the link (right side)",
+    "optionsExcludeElementLabel": "Do not linkify following elements (CSS selector)",
+    "optionsIncludeElementLabel": "Always linkify following elements. Override above. (CSS selector)",
+    "optionsTimeoutLabel": "Max executation time (ms)",
+    "optionsTimeoutHelp": "The script will terminate if it takes too long to convert the entire page.",
+    "optionsMaxRunTimeLabel": "Max script run time (ms)",
+    "optionsMaxRunTimeHelp": "Split the process into small chunks to avoid freezing the browser.",
+    "optionsCustomRulesLabel": "Custom rules (RegExp per line)"
+  };
   return key => translate[key];
 }
 

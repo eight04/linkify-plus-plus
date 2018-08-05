@@ -1,0 +1,29 @@
+{
+  "name": "Linkify Plus Plus",
+  "version": "0.0.0",
+  "description": "__MSG_extensionDescription__",
+  "homepage_url": "https://github.com/eight04/linkify-plus-plus",
+  "developer": {
+    "name": "eight04",
+    "url": "https://github.com/eight04"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "js/event-lite.min.js",
+        "js/pref.js",
+        "js/content.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "default_locale": "en",
+  "manifest_version": 2,
+  "options_ui": {
+    "page": "options.html"
+  },
+  "permissions": [
+    "storage"
+  ]
+}

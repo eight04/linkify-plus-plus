@@ -10,18 +10,22 @@
     "rollup": "^0.63.5",
     "rollup-plugin-cjs-es": "^0.6.0",
     "rollup-plugin-external-globals": "^0.1.0",
+    "rollup-plugin-inline-js": "^0.3.0",
     "rollup-plugin-json": "^3.0.0",
     "rollup-plugin-node-resolve": "^3.3.0",
     "shx": "^0.3.2",
-    "userscript-meta-cli": "^0.4.2"
+    "sync-version": "^1.0.1",
+    "userscript-meta-cli": "^0.4.2",
+    "web-ext": "^2.8.0"
   },
   "scripts": {
-    "build": "shx rm -rf extension/js && rollup -c && shx cp node_modules/event-lite/dist/event-lite.min.js extension/js/",
-    "test": "eslint **/*.js",
+    "build": "shx rm -rf extension/js && rollup -c && shx cp node_modules/event-lite/dist/event-lite.min.js extension/js/ && sync-version extension/manifest.json",
+    "test": "eslint **/*.js --cache && web-ext lint",
     "preversion": "npm test",
     "version": "npm run build && git add .",
     "postversion": "git push --follow-tags"
   },
+  "eslintIgnore": ["extension", "dist"],
   "userscript": {
     "name": "Linkify Plus Plus",
     "namespace": "eight04.blogspot.com",
