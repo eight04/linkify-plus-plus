@@ -1,5 +1,5 @@
 import glob from "glob";
-import userscriptMeta from "userscript-meta-cli";
+import usm from "userscript-meta-cli";
 import resolve from "rollup-plugin-node-resolve";
 import cjs from "rollup-plugin-cjs-es";
 
@@ -30,7 +30,7 @@ export default [
     }
   }),
   base({
-    intro: userscriptMeta.getMeta(),
+    intro: usm.stringify(usm.getMeta()),
     input: {
       "linkify-plus-plus.user": "src/userscript.js"
     },
