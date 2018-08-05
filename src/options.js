@@ -1,5 +1,5 @@
 /* global pref prefReady browser */
-const {createView} = require("webext-pref");
+const {createView} = require("webext-pref/lib/view");
 const prefBody = require("./lib/pref-body");
 
 prefReady.then(() => {

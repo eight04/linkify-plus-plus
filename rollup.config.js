@@ -1,10 +1,13 @@
-import glob from "glob";
 import usm from "userscript-meta-cli";
-import resolve from "rollup-plugin-node-resolve";
+
 import cjs from "rollup-plugin-cjs-es";
+import external from "rollup-plugin-external-globals";
+import json from "rollup-plugin-json";
+import resolve from "rollup-plugin-node-resolve";
 
 function base({
   output,
+  plugins = [],
   ...args
 }) {
   return {
@@ -13,8 +16,10 @@ function base({
       ...output
     },
     plugins: [
+      ...plugins,
       resolve(),
-      cjs()
+      json(),
+      cjs({nested: true})
     ],
     experimentalCodeSplitting: true,
     ...args
@@ -23,19 +28,33 @@ function base({
 
 export default [
   base({
-    input: glob.sync("src/*.js", {ignore: "src/userscript.js"}),
+    input: [
+      "src/options.js",
+      "src/content.js",
+      "src/pref.js"
+    ],
     output: {
       dir: "extension/js",
       format: "es"
-    }
+    },
+    plugins: [
+      external({
+        "event-lite": "EventLite"
+      })
+    ]
   }),
   base({
-    intro: usm.stringify(usm.getMeta()),
     input: {
       "linkify-plus-plus.user": "src/userscript.js"
     },
     output: {
+      banner: usm.stringify(usm.getMeta()),
       dir: "dist"
-    }
+    },
+    plugins: [
+      external({
+        "linkify-plus-plus-core": "linkifyPlusPlusCore"
+      })
+    ]
   })
 ];
