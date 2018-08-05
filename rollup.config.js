@@ -1,4 +1,5 @@
 import glob from "glob";
+import userscriptMeta from "userscript-meta-cli";
 import resolve from "rollup-plugin-node-resolve";
 import cjs from "rollup-plugin-cjs-es";
 
@@ -22,16 +23,19 @@ function base({
 
 export default [
   base({
-    input: glob.sync("src/*.js"),
+    input: glob.sync("src/*.js", {ignore: "src/userscript.js"}),
     output: {
       dir: "extension/js",
       format: "es"
     }
   }),
   base({
-    input: "src/userscript.js",
+    intro: userscriptMeta.getMeta(),
+    input: {
+      "linkify-plus-plus.user": "src/userscript.js"
+    },
     output: {
-      file: "dist/linkify-plus-plus.user.js",
+      dir: "dist"
     }
   })
 ];
