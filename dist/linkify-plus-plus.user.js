@@ -414,22 +414,22 @@ function prepareDocument() {
 
 function getMessageFactory() {
   const translate = {
-    "optionsFuzzyIpLabel": "Match IP with only 4 digits",
-    "optionsIgnoreMustacheLabel": "Ignore URLs inside mustaches {{ ... }}",
-    "optionsEmbedImageLabel": "Embed Image",
-    "optionsEmbedImageExcludeElementLabel": "Exclude following elements (CSS selector)",
-    "optionsUnicodeLabel": "Match unicode characters",
-    "optionsNewTabLabel": "Open links in new tabs",
-    "optionsStandaloneLabel": "The link must be surrounded by whitespaces",
-    "optionsBoundaryLeftLabel": "Allowed characters between the whitespace and the link (left side)",
-    "optionsBoundaryRightLabel": "Allowed characters between the whitespace and the link (right side)",
-    "optionsExcludeElementLabel": "Do not linkify following elements (CSS selector)",
+    "optionsFuzzyIpLabel": "Match IP with only 4 digits.",
+    "optionsIgnoreMustacheLabel": "Ignore URLs inside mustaches e.g. {{ ... }}.",
+    "optionsEmbedImageLabel": "Embed images.",
+    "optionsEmbedImageExcludeElementLabel": "Exclude following elements. (CSS selector)",
+    "optionsUnicodeLabel": "Match unicode characters.",
+    "optionsNewTabLabel": "Open links in new tabs.",
+    "optionsStandaloneLabel": "The link must be surrounded by whitespaces.",
+    "optionsBoundaryLeftLabel": "Allowed characters between the whitespace and the link. (left side)",
+    "optionsBoundaryRightLabel": "Allowed characters between the whitespace and the link. (right side)",
+    "optionsExcludeElementLabel": "Do not linkify following elements. (CSS selector)",
     "optionsIncludeElementLabel": "Always linkify following elements. Override above. (CSS selector)",
-    "optionsTimeoutLabel": "Max executation time (ms)",
+    "optionsTimeoutLabel": "Max executation time. (ms)",
     "optionsTimeoutHelp": "The script will terminate if it takes too long to convert the entire page.",
-    "optionsMaxRunTimeLabel": "Max script run time (ms)",
+    "optionsMaxRunTimeLabel": "Max script run time. (ms)",
     "optionsMaxRunTimeHelp": "Split the process into small chunks to avoid freezing the browser.",
-    "optionsCustomRulesLabel": "Custom rules (RegExp per line)"
+    "optionsCustomRulesLabel": "Custom rules. (RegExp per line)"
   };
   return key => translate[key];
 }

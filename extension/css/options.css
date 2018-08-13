@@ -1,0 +1,61 @@
+body {
+  padding: 0 6px;
+}
+
+/* root */
+.pref-root {
+  font-size: 15px;
+}
+
+/* nav */
+.webext-pref-nav {
+  display: flex;
+  margin-bottom: 12px;
+}
+.webext-pref-nav select {
+  flex-grow: 1;
+}
+.webext-pref-nav select,
+.webext-pref-nav button {
+  font: inherit;
+  height: 26px;
+  min-width: 30px;
+  text-align: center;
+}
+
+/* checkbox */
+.webext-pref-checkbox {
+  grid-column: span 3;
+  margin: 8px 0;
+  padding-left: 24px;
+}
+.webext-pref-checkbox::before {
+  content: "";
+  margin-left: -24px;
+}
+.webext-pref-checkbox-children {
+  margin: 6px 0 0;
+  padding: 0;
+  border-width: 0;
+}
+
+/* text */
+.webext-pref-text,
+.webext-pref-number,
+.webext-pref-textarea {
+  grid-column: span 3;
+}
+.webext-pref-text input,
+.webext-pref-number input,
+.webext-pref-textarea textarea {
+  padding: 3px 6px;
+  display: block;
+  width: 100%;
+  font: inherit;
+}
+
+/* help */
+.webext-pref-help {
+  margin: 4px 0 6px;
+  color: #737373;
+}

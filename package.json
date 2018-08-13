@@ -7,7 +7,7 @@
   "devDependencies": {
     "eslint": "^5.3.0",
     "glob": "^7.1.2",
-    "rollup": "^0.63.5",
+    "rollup": "^0.64.1",
     "rollup-plugin-cjs-es": "^0.6.0",
     "rollup-plugin-external-globals": "^0.1.0",
     "rollup-plugin-inline-js": "^0.3.0",
@@ -23,9 +23,13 @@
     "test": "eslint **/*.js --cache && web-ext lint",
     "preversion": "npm test",
     "version": "npm run build && git add .",
-    "postversion": "git push --follow-tags"
+    "postversion": "git push --follow-tags",
+    "start": "web-ext run"
   },
-  "eslintIgnore": ["extension", "dist"],
+  "eslintIgnore": [
+    "extension",
+    "dist"
+  ],
   "userscript": {
     "name": "Linkify Plus Plus",
     "namespace": "eight04.blogspot.com",
@@ -62,6 +66,9 @@
   "dependencies": {
     "event-lite": "^0.1.1",
     "linkify-plus-plus-core": "^0.3.0",
-    "webext-pref": "^0.1.2"
+    "webext-pref": "^0.2.0"
+  },
+  "webExt": {
+    "sourceDir": "extension"
   }
 }

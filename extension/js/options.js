@@ -1,4 +1,4 @@
-function createView({root, pref, body, translate = {}}) {
+function createView({root, pref, body, translate = {}, getNewScope = () => ""}) {
   translate = Object.assign({
     inputNewScopeName: "Add new scope",
     learnMore: "Learn more"
@@ -6,7 +6,7 @@ function createView({root, pref, body, translate = {}}) {
   const nav = createNav();
   const form = createForm(body);
   
-  root.append(...nav.frag, ...form.frag);
+  root.append(nav.frag, form.frag);
   
   pref.on("scopeChange", nav.updateScope);
   nav.updateScope(pref.getCurrentScope());
@@ -27,8 +27,13 @@ function createView({root, pref, body, translate = {}}) {
   }
   
   function createForm(body) {
+    const container = document.createElement("div");
+    container.className = "webext-pref-body";
+    
     const _body = createBody({body});
-    return Object.assign(_body, {updateInputs});
+    container.append(..._body.frag);
+    
+    return Object.assign(_body, {updateInputs, frag: container});
     
     function updateInputs(changes) {
       for (const [key, value] of Object.entries(changes)) {
@@ -38,9 +43,17 @@ function createView({root, pref, body, translate = {}}) {
   }
   
   function createNav() {
+    const container = document.createElement("div");
+    container.className = "webext-pref-nav";
+    
     const select = document.createElement("select");
+    select.className = "browser-style";
+    select.onchange = () => {
+      pref.setCurrentScope(select.value);
+    };
     
     const deleteButton = document.createElement("button");
+    deleteButton.className = "browser-style";
     deleteButton.type = "button";
     deleteButton.textContent = "x";
     deleteButton.onclick = () => {
@@ -51,6 +64,7 @@ function createView({root, pref, body, translate = {}}) {
     };
     
     const addButton = document.createElement("button");
+    addButton.className = "browser-style";
     addButton.type = "button";
     addButton.textContent = "+";
     addButton.onclick = () => {
@@ -59,7 +73,7 @@ function createView({root, pref, body, translate = {}}) {
       });
         
       function addNewScope() {
-        const scopeName = prompt(translate.inputNewScopeName).trim();
+        const scopeName = prompt(translate.inputNewScopeName, getNewScope()).trim();
         if (!scopeName) {
           return Promise.reject(new Error("the value is empty"));
         }
@@ -68,14 +82,12 @@ function createView({root, pref, body, translate = {}}) {
       }
     };
     
+    container.append(select, deleteButton, addButton);
+    
     return {
       updateScope,
       updateScopeList,
-      frag: [
-        select,
-        deleteButton,
-        addButton
-      ]
+      frag: container
     };
     
     function updateScope(newScope) {
@@ -98,7 +110,7 @@ function createView({root, pref, body, translate = {}}) {
     const frag = [];
     for (const el of body) {
       const container = document.createElement("div");
-      container.className = `webext-pref-${el.type}`;
+      container.className = `webext-pref-${el.type} browser-style`;
       Object.assign(
         el,
         el.type === "section" ? createSection({el, hLevel}) :
@@ -125,18 +137,21 @@ function createView({root, pref, body, translate = {}}) {
     const header = document.createElement(`h${hLevel}`);
     header.className = "webext-pref-header";
     header.textContent = el.label;
-    body = createBody({
+    
+    const body = createBody({
       body: el.children,
       hLevel: hLevel + 1
     });
     
+    const frag = [header];
+    if (el.help) {
+      frag.push(createHelp(el.help));
+    }
+    frag.push(...body.frag);
+    
     return {
       inputs: body.inputs,
-      frag: [
-        header,
-        el.help && createHelp(el.help),
-        ...body.frag
-      ]
+      frag
     };
   }
   
@@ -146,55 +161,52 @@ function createView({root, pref, body, translate = {}}) {
     input.id = `pref-${el.key}`;
     input.type = el.type;
     if (el.type === "checkbox") {
+      // checkbox
       input.onchange = () => {
-        let value = input.checked;
-        if (el.parse) {
-          value = el.parse(value);
-        }
-        pref.set(el.key, value);
+        pref.set(el.key, input.checked);
       };
     } else {
+      // radio
+      input.name = `pref-${el.parentKey}`;
       input.onchange = () => {
-        let value = el.value;
-        if (el.parentParse) {
-          value = el.parentParse(value);
+        if (input.checked) {
+          pref.set(el.parentKey, el.value);
         }
-        pref.set(el.parentKey, value);
       };
     }
     
-    const box = document.createElement("div");
-    box.className = "webext-pref-checkbox-box";
+    const frag = [
+      input,
+      createLabel(el.label, input.id)
+    ];
     
-    box.append(createLabel(el.label, input.id));
     if (el.learnMore) {
-      box.append(createLearnMore(el.learnMore));
+      frag.push(createLearnMore(el.learnMore));
     }
     if (el.help) {
-      box.append(createHelp(el.help));
+      frag.push(createHelp(el.help));
     }
-    if (el.children && el.children.length) {
-      box.append(createChildContainer(el.children));
+    const childContainer = el.children && el.children.length ?
+      createChildContainer(el.children) : null;
+    if (childContainer) {
+      frag.push(childContainer);
     }
     
     return {
-      // input,
       inputs,
-      frag: [
-        input,
-        box
-      ],
+      frag,
       setValue: value => {
-        if (el.format) {
-          value = el.format(value);
-        }
         input.checked = value;
+        if (childContainer) {
+          childContainer.disabled = !input.checked;
+        }
       }
     };
     
     function createChildContainer(children) {
       const container = document.createElement("fieldset");
       container.className = "webext-pref-checkbox-children";
+      container.disabled = true;
       const body = createBody({body: children});
       container.append(...body.frag);
       Object.assign(inputs, body.inputs);
@@ -208,12 +220,11 @@ function createView({root, pref, body, translate = {}}) {
     
     const radios = el.children.map(option => {
       const container = document.createElement("div");
-      container.className = "webext-pref-checkbox";
+      container.className = "webext-pref-checkbox browser-style";
       
       const checkbox = createCheckbox(Object.assign({}, option, {
         key: `${el.key}-${option.value}`,
-        parentKey: el.key,
-        parentParse: el.parse
+        parentKey: el.key
       }));
       
       Object.assign(inputs, checkbox.inputs);
@@ -238,14 +249,17 @@ function createView({root, pref, body, translate = {}}) {
     }
     frag.push(...radios.map(r => r.frag));
     
+    let currentValue;
+    
     return {
       inputs,
       frag,
       setValue: value => {
-        if (el.format) {
-          value = el.format(value);
+        if (currentValue) {
+          radioMap[currentValue].setValue(false);
         }
         radioMap[value].setValue(true);
+        currentValue = value;
       }
     };
     
@@ -264,10 +278,11 @@ function createView({root, pref, body, translate = {}}) {
       input = document.createElement("select");
       input.className = "browser-style";
       input.multiple = el.multiple;
-      input.append(...Object.entries(input.options).map(([key, value]) => {
+      input.append(...Object.entries(el.options).map(([key, value]) => {
         const option = document.createElement("option");
         option.value = key;
         option.textContent = value;
+        return option;
       }));
     } else if (el.type === "textarea") {
       input = document.createElement("textarea");
@@ -279,9 +294,19 @@ function createView({root, pref, body, translate = {}}) {
     }
     input.id = `pref-${el.key}`;
     input.onchange = () => {
-      let value = input.value;
-      if (el.parse) {
-        value = el.parse(value);
+      const value = el.type !== "select" || !el.multiple ? input.value :
+        [...input.selectedOptions].map(i => i.value);
+      if (el.validate) {
+        let err;
+        try {
+          el.validate(value);
+        } catch (_err) {
+          err = _err;
+        }
+        input.setCustomValidity(err ? err.message : "");
+        if (err) {
+          return;
+        }
       }
       pref.set(el.key, value);
     };
@@ -298,10 +323,17 @@ function createView({root, pref, body, translate = {}}) {
     return {
       frag,
       setValue: value => {
-        if (el.format) {
-          value = el.format(value);
+        if (el.type !== "select" || !el.multiple) {
+          input.value = value;
+        } else {
+          const set = new Set(value);
+          for (const option of input.options) {
+            option.selected = set.has(option.value);
+          }
         }
-        input.value = value;
+        if (el.validate) {
+          input.setCustomValidity("");
+        }
       }
     };
   }
@@ -316,12 +348,13 @@ function createView({root, pref, body, translate = {}}) {
   function createLabel(text, id) {
     const label = document.createElement("label");
     label.textContent = text;
-    label.for = id;
+    label.htmlFor = id;
     return label;
   }
   
   function createLearnMore(url) {
     const a = document.createElement("a");
+    a.className = "webext-pref-learn-more";
     a.href = url;
     a.target = "_blank";
     a.rel = "noopener";
