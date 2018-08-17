@@ -1,6 +1,6 @@
 
 
-function createPref(DEFAULT) {
+function createPref(DEFAULT, sep = "/") {
   let storage;
   let currentScope = "global";
   let scopeList = ["global"];
@@ -22,13 +22,74 @@ function createPref(DEFAULT) {
     setCurrentScope,
     addScope,
     deleteScope,
-    getScopeList
+    getScopeList,
+    import: import_,
+    export: export_
   });
+  
+  function import_(input) {
+    const newScopeList = input.scopeList || scopeList.slice();
+    const scopes = new Set(newScopeList);
+    if (!scopes.has("global")) {
+      throw new Error("invalid scopeList");
+    }
+    const changes = {
+      scopeList: newScopeList
+    };
+    for (const [scopeName, scope] of Object.entries(input.scopes)) {
+      if (!scopes.has(scopeName)) {
+        continue;
+      }
+      for (const [key, value] of Object.entries(scope)) {
+        if (DEFAULT[key] == undefined) {
+          continue;
+        }
+        changes[`${scopeName}${sep}${key}`] = value;
+      }
+    }
+    return storage.setMany(changes);
+  }
+  
+  function export_() {
+    const keys = [];
+    for (const scope of scopeList) {
+      keys.push(...Object.keys(DEFAULT).map(k => `${scope}${sep}${k}`));
+    }
+    keys.push("scopeList");
+    return storage.getMany(keys)
+      .then(changes => {
+        const _scopeList = changes.scopeList || scopeList.slice();
+        const scopes = new Set(_scopeList);
+        const output = {
+          scopeList: _scopeList,
+          scopes: {}
+        };
+        for (const [key, value] of Object.entries(changes)) {
+          const sepIndex = key.indexOf(sep);
+          if (sepIndex < 0) {
+            continue;
+          }
+          const scope = key.slice(0, sepIndex);
+          const realKey = key.slice(sepIndex + sep.length);
+          if (!scopes.has(scope)) {
+            continue;
+          }
+          if (DEFAULT[realKey] == undefined) {
+            continue;
+          }
+          if (!output.scopes[scope]) {
+            output.scopes[scope] = {};
+          }
+          output.scopes[scope][realKey] = value;
+        }
+        return output;
+      });
+  }
   
   function connect(_storage) {
     storage = _storage;
     initializing = storage.getMany(
-      Object.keys(DEFAULT).map(k => `global/${k}`).concat(["scopeList"])
+      Object.keys(DEFAULT).map(k => `global${sep}${k}`).concat(["scopeList"])
     )
       .then(updateCache);
     storage.on("change", updateCache);
@@ -50,8 +111,8 @@ function createPref(DEFAULT) {
     }
     const changedKeys = new Set;
     for (const [key, value] of Object.entries(changes)) {
-      const [scope, realKey] = key.startsWith("global/") ? ["global", key.slice(7)] :
-        key.startsWith(`${currentScope}/`) ? [currentScope, key.slice(currentScope.length + 1)] :
+      const [scope, realKey] = key.startsWith(`global${sep}`) ? ["global", key.slice(6 + sep.length)] :
+        key.startsWith(`${currentScope}${sep}`) ? [currentScope, key.slice(currentScope.length + sep.length)] :
           [null, null];
       if (!scope || DEFAULT[realKey] == null) {
         continue;
@@ -98,7 +159,9 @@ function createPref(DEFAULT) {
   }
   
   function set(key, value) {
-    return storage.set(`${currentScope}/${key}`, value);
+    return storage.setMany({
+      [`${currentScope}${sep}${key}`]: value
+    });
   }
   
   function getCurrentScope() {
@@ -112,7 +175,7 @@ function createPref(DEFAULT) {
     if (!scopeList.includes(newScope)) {
       return Promise.resolve(false);
     }
-    return storage.getMany(Object.keys(DEFAULT).map(k => `${newScope}/${k}`))
+    return storage.getMany(Object.keys(DEFAULT).map(k => `${newScope}${sep}${k}`))
       .then(changes => {
         currentScope = newScope;
         scopedCache = {};
@@ -126,14 +189,21 @@ function createPref(DEFAULT) {
     if (scopeList.includes(scope)) {
       return Promise.reject(new Error(`${scope} already exists`));
     }
-    return storage.set("scopeList", scopeList.concat([scope]));
+    if (scope.includes(sep)) {
+      return Promise.reject(new Error(`invalid word: ${sep}`));
+    }
+    return storage.setMany({
+      scopeList: scopeList.concat([scope])
+    });
   }
   
   function deleteScope(scope) {
     if (scope === "global") {
       return Promise.reject(new Error(`cannot delete global`));
     }
-    return storage.set("scopeList", scopeList.filter(s => s != scope));
+    return storage.setMany({
+      scopeList: scopeList.filter(s => s != scope)
+    });
   }
   
   function getScopeList() {
@@ -175,7 +245,7 @@ function createWebextStorage(area = "local") {
     browser.storage[area].set.bind(browser.storage[area]) :
     promisify(chrome.storage[area].set.bind(chrome.storage[area]));
   addListener(onChange);
-  return Object.assign(events, {getMany, set, destroy});
+  return Object.assign(events, {getMany, setMany, destroy});
   
   function destroy() {
     removeListener(onChange);
@@ -194,10 +264,12 @@ function createWebextStorage(area = "local") {
       });
   }
   
-  function set(key, value) {
-    return storageSet({
-      [`webext-pref/${key}`]: value
-    });
+  function setMany(options) {
+    const newOptions = {};
+    for (const [key, value] of Object.entries(options)) {
+      newOptions[`webext-pref/${key}`] = value;
+    }
+    return storageSet(newOptions);
   }
   
   function onChange(changes, _area) {

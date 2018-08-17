@@ -1,12 +1,17 @@
 function createView({root, pref, body, translate = {}, getNewScope = () => ""}) {
   translate = Object.assign({
     inputNewScopeName: "Add new scope",
-    learnMore: "Learn more"
+    learnMore: "Learn more",
+    import: "Import",
+    export: "Export",
+    pasteSettings: "Paste settings",
+    copySettings: "Copy settings"
   }, translate);
+  const toolbar = createToolbar();
   const nav = createNav();
   const form = createForm(body);
   
-  root.append(nav.frag, form.frag);
+  root.append(toolbar.frag, nav.frag, form.frag);
   
   pref.on("scopeChange", nav.updateScope);
   nav.updateScope(pref.getCurrentScope());
@@ -18,6 +23,39 @@ function createView({root, pref, body, translate = {}, getNewScope = () => ""}) 
   form.updateInputs(pref.getAll());
   
   return destroy;
+  
+  function createToolbar() {
+    const container = document.createElement("div");
+    container.className = "webext-pref-toolbar";
+    
+    const importButton = document.createElement("button");
+    importButton.className = "webext-pref-import browser-style";
+    importButton.type = "button";
+    importButton.textContent = translate.import;
+    importButton.onclick = () => {
+      Promise.resolve()
+        .then(() => {
+          const settings = JSON.parse(prompt(translate.pasteSettings));
+          return pref.import(settings);
+        })
+        .catch(err => alert(err.message));
+    };
+    
+    const exportButton = document.createElement("button");
+    exportButton.className = "webext-pref-export browser-style";
+    exportButton.type = "button";
+    exportButton.textContent = translate.export;
+    exportButton.onclick = () => {
+      pref.export()
+        .then(settings => {
+          prompt(translate.copySettings, JSON.stringify(settings));
+        })
+        .catch(err => alert(err.message));
+    };
+    
+    container.append(importButton, exportButton);
+    return {frag: container};
+  }
   
   function destroy() {
     root.innerHTML = "";
@@ -466,6 +504,10 @@ prefReady.then(() => {
   createView({
     pref,
     body: prefBody(browser.i18n.getMessage),
-    root: document.querySelector(".pref-root")
+    root: document.querySelector(".pref-root"),
+    translate: {
+      inputNewScopeName: "Add new domain"
+    },
+    getNewScope: () => "www.example.com"
   });
 });

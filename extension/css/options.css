@@ -1,10 +1,32 @@
 body {
-  padding: 0 6px;
+  padding: 6px;
+}
+
+button.browser-style,
+select.browser-style {
+  font-size: inherit;
+  height: auto;
+  padding: 4px 8px;
 }
 
 /* root */
 .pref-root {
   font-size: 15px;
+  line-height: 1.5;
+}
+
+/* toolbar */
+.webext-pref-toolbar {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+.webext-pref-toolbar button {
+  min-width: 8em;
+  text-align: center;
+}
+.webext-pref-toolbar button:not(:first-child) {
+  margin-left: 8px;
 }
 
 /* nav */
@@ -17,10 +39,11 @@ body {
 }
 .webext-pref-nav select,
 .webext-pref-nav button {
-  font: inherit;
-  height: 26px;
   min-width: 30px;
   text-align: center;
+}
+.webext-pref-nav button {
+  margin-left: 8px;
 }
 
 /* checkbox */
@@ -38,6 +61,9 @@ body {
   padding: 0;
   border-width: 0;
 }
+.webext-pref-checkbox-children[disabled] {
+  opacity: 0.5;
+}
 
 /* text */
 .webext-pref-text,
@@ -52,6 +78,9 @@ body {
   display: block;
   width: 100%;
   font: inherit;
+}
+.webext-pref-textarea textarea {
+  height: 6em;
 }
 
 /* help */
