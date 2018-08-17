@@ -32,7 +32,8 @@ export default [
     input: [
       "src/options.js",
       "src/content.js",
-      "src/pref.js"
+      "src/pref.js",
+      "src/background.js"
     ],
     output: {
       dir: "extension/js",
