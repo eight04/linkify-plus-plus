@@ -19,7 +19,7 @@
     "web-ext": "^2.8.0"
   },
   "scripts": {
-    "build": "shx rm -rf extension/js && rollup -c && shx cp node_modules/event-lite/dist/event-lite.min.js extension/js/ && sync-version extension/manifest.json",
+    "build": "shx rm -rf extension/js && rollup -c && shx cp node_modules/event-lite/dist/event-lite.min.js extension/js/ && sync-version extension/manifest.json && web-ext build",
     "test": "eslint \"**/*.js\" --cache && web-ext lint",
     "preversion": "npm test",
     "version": "npm run build && git add .",
