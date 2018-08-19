@@ -5,7 +5,7 @@
   "repository": "eight04/linkify-plus-plus",
   "license": "BSD-3-Clause",
   "devDependencies": {
-    "eslint": "^5.3.0",
+    "eslint": "^5.4.0",
     "glob": "^7.1.2",
     "rollup": "^0.64.1",
     "rollup-plugin-cjs-es": "^0.6.0",
@@ -45,7 +45,8 @@
       "http://w3c*.github.io/*"
     ],
     "require": [
-      "https://greasyfork.org/scripts/27630-linkify-plus-plus-core/code/linkify-plus-plus-core.js?version=213494"
+      "https://greasyfork.org/scripts/27630-linkify-plus-plus-core/code/linkify-plus-plus-core.js?version=213494",
+      "https://greasyfork.org/scripts/371339-gm-webextpref/code/GM_webextPref.js?version=621764"
     ],
     "grant": [
       "GM.getValue",
@@ -66,7 +67,7 @@
   "dependencies": {
     "event-lite": "^0.1.1",
     "linkify-plus-plus-core": "^0.3.0",
-    "webext-pref": "^0.3.0"
+    "webext-pref": "^0.3.4"
   },
   "webExt": {
     "sourceDir": "extension"

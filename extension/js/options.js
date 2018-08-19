@@ -35,7 +35,11 @@ function createView({root, pref, body, translate = {}, getNewScope = () => ""}) 
     importButton.onclick = () => {
       Promise.resolve()
         .then(() => {
-          const settings = JSON.parse(prompt(translate.pasteSettings));
+          const input = prompt(translate.pasteSettings);
+          if (input == null) {
+            return;
+          }
+          const settings = JSON.parse(input);
           return pref.import(settings);
         })
         .catch(err => alert(err.message));
@@ -75,7 +79,9 @@ function createView({root, pref, body, translate = {}, getNewScope = () => ""}) 
     
     function updateInputs(changes) {
       for (const [key, value] of Object.entries(changes)) {
-        _body.inputs[key].setValue(value);
+        if (_body.inputs[key]) {
+          _body.inputs[key].setValue(value);
+        }
       }
     }
   }
@@ -111,7 +117,11 @@ function createView({root, pref, body, translate = {}, getNewScope = () => ""}) 
       });
         
       function addNewScope() {
-        const scopeName = prompt(translate.inputNewScopeName, getNewScope()).trim();
+        let scopeName = prompt(translate.inputNewScopeName, getNewScope());
+        if (scopeName == null) {
+          return Promise.resolve();
+        }
+        scopeName = scopeName.trim();
         if (!scopeName) {
           return Promise.reject(new Error("the value is empty"));
         }
@@ -332,8 +342,9 @@ function createView({root, pref, body, translate = {}, getNewScope = () => ""}) 
     }
     input.id = `pref-${el.key}`;
     input.onchange = () => {
-      const value = el.type !== "select" || !el.multiple ? input.value :
-        [...input.selectedOptions].map(i => i.value);
+      const value = el.type === "select" && el.multiple ?
+        [...input.selectedOptions].map(i => i.value) :
+        el.type === "number" ? Number(input.value) : input.value;
       if (el.validate) {
         let err;
         try {
