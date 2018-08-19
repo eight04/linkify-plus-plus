@@ -16,7 +16,7 @@
 // @exclude http://mxr.mozilla.org/*
 // @exclude http://w3c*.github.io/*
 // @require https://greasyfork.org/scripts/27630-linkify-plus-plus-core/code/linkify-plus-plus-core.js?version=213494
-// @require https://greasyfork.org/scripts/371339-gm-webextpref/code/GM_webextPref.js?version=621769
+// @require https://greasyfork.org/scripts/371339-gm-webextpref/code/GM_webextPref.js?version=621772
 // @grant GM.getValue
 // @grant GM.setValue
 // @grant GM_addStyle
@@ -438,8 +438,13 @@ function getMessageFactory() {
 startLinkifyPlusPlus(async () => {
   const pref = GM_webextPref({
     default: prefDefault(),
-    body: prefBody(getMessageFactory())
+    body: prefBody(getMessageFactory()),
+    translate: {
+      inputNewScopeName: "Add new domain"
+    },
+    getNewScope: () => location.hostname
   });
+  window.pref = pref;
   await pref.ready();
   await pref.setCurrentScope(location.hostname);
   return pref;
