@@ -402,7 +402,7 @@ function prepareDocument() {
   
   function prepareBody() {
     if (document.readyState !== "loading") {
-      return;
+      return Promise.resolve();
     }
     return new Promise(resolve => {
       // https://github.com/Tampermonkey/tampermonkey/issues/485
