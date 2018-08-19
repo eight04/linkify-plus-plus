@@ -28,43 +28,22 @@ Testcase
 * <https://rawgit.com/eight04/linkify-plus-plus/master/demo/demo.html>
 * <https://rawgit.com/eight04/linkify-plus-plus/master/demo/demo-large-content.html>
 
-Configure
----------
-### Match 4 digits IP
-Always linkify IP even if the URL dosn't contains protocol and path.
+Embed images
+------------
 
-### Embed images
-If the url ends with `jpg|png|gif|jpeg`, create an image object and insert into link.
+The script uses the following regular expression to detect images:
 
-### Don't embed images under following elements
-If the link is a child of these element, don't embed image.
+```
+/^[^?#]+\.(?:jpg|png|gif|jpeg|svg)(?:$|[?#])/i
+```
 
-### Allow non-ascii character
-Let url match unicode characters. (e.g. `http://www.bücher.ch`)
+[Source](https://github.com/eight04/linkify-plus-plus-core/blob/99efed69429ca18601615facd0a6fc1e72bf9af9/lib/linkifier.js#L225)
 
-### Open link in new tab
-Add `target="_blank"` to linkified links.
+Custom rules
+------------
 
-### URL must be surrounded by whitespace
-Never linkify URLs concatenated with other words.
-
-### Boundary characters between whitespace and URL
-Only works if `URL must be surrounded by whitespace` is checked.
-
-### Do not linkify these elements. (CSS selector)
-If an element match the selector, LPP will skip the element.
-
-### Always linkify these elements, override above. (CSS selector)
-If an element match the selector, LPP will always linkify them, even the parent node is skipped.
-
-### Max execution time (ms)
-The script will terminate if it processes too long.
-
-### Max script run time (ms)
-Split process into small chunks to prevent hanging the browser.
-
-### Custom rules
 A list of regex pattern that will be likified, which is aimed to linkify non-http links. For example:
+
 ```
 magnet:\?xt=\S+
 evernote:///\S+
