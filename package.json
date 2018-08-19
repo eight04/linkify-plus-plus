@@ -6,7 +6,6 @@
   "license": "BSD-3-Clause",
   "devDependencies": {
     "eslint": "^5.4.0",
-    "glob": "^7.1.2",
     "rollup": "^0.64.1",
     "rollup-plugin-cjs-es": "^0.6.0",
     "rollup-plugin-external-globals": "^0.1.0",
@@ -70,6 +69,9 @@
     "webext-pref": "^0.3.4"
   },
   "webExt": {
-    "sourceDir": "extension"
+    "sourceDir": "extension",
+    "build": {
+      "overwriteDest": true
+    }
   }
 }
