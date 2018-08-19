@@ -11,7 +11,11 @@ function getMessageFactory() {
 startLinkifyPlusPlus(async () => {
   const pref = GM_webextPref({
     default: prefDefault(),
-    body: prefBody(getMessageFactory())
+    body: prefBody(getMessageFactory()),
+    translate: {
+      inputNewScopeName: "Add new domain"
+    },
+    getNewScope: () => location.hostname
   });
   await pref.ready();
   await pref.setCurrentScope(location.hostname);
