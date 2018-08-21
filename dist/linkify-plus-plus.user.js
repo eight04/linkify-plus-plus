@@ -16,7 +16,7 @@
 // @exclude http://mxr.mozilla.org/*
 // @exclude http://w3c*.github.io/*
 // @require https://greasyfork.org/scripts/27630-linkify-plus-plus-core/code/linkify-plus-plus-core.js?version=213494
-// @require https://greasyfork.org/scripts/371339-gm-webextpref/code/GM_webextPref.js?version=621775
+// @require https://greasyfork.org/scripts/371339-gm-webextpref/code/GM_webextPref.js?version=622261
 // @grant GM.getValue
 // @grant GM.setValue
 // @grant GM_addStyle
@@ -443,7 +443,7 @@ function getMessageFactory() {
     if (!params) {
       return translate[key];
     }
-    if (Array.isArray(params)) {
+    if (!Array.isArray(params)) {
       params = [params];
     }
     return translate[key].replace(/\$\d/g, m => {
@@ -456,8 +456,8 @@ function getMessageFactory() {
 startLinkifyPlusPlus(async () => {
   const getMessage = getMessageFactory();
   const pref = GM_webextPref({
-    default: prefDefault(getMessage),
-    body: prefBody(),
+    default: prefDefault(),
+    body: prefBody(getMessage),
     getMessage,
     getNewScope: () => location.hostname
   });

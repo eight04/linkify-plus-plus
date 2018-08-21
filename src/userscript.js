@@ -9,7 +9,7 @@ function getMessageFactory() {
     if (!params) {
       return translate[key];
     }
-    if (Array.isArray(params)) {
+    if (!Array.isArray(params)) {
       params = [params];
     }
     return translate[key].replace(/\$\d/g, m => {
@@ -22,8 +22,8 @@ function getMessageFactory() {
 startLinkifyPlusPlus(async () => {
   const getMessage = getMessageFactory();
   const pref = GM_webextPref({
-    default: prefDefault(getMessage),
-    body: prefBody(),
+    default: prefDefault(),
+    body: prefBody(getMessage),
     getMessage,
     getNewScope: () => location.hostname
   });
