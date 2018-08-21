@@ -24,7 +24,7 @@
     "page": "options.html"
   },
   "browser_action": {
-    "default_title": "Configure"
+    "default_title": "__MSG_extensionOptions__"
   },
   "background": {
     "scripts": [

@@ -1,4 +1,7 @@
 {
+  "extensionOptions": {
+    "message": "Linkify Plus Plus Options"
+  },
   "extensionDescription": {
     "message": "Based on Linkify Plus. Turn plain text URLs into links."
   },
