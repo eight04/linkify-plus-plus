@@ -1,28 +1,62 @@
-function createView({root, pref, body, translate = {}, getNewScope = () => ""}) {
-  translate = Object.assign({
-    inputNewScopeName: "Add new scope",
-    learnMore: "Learn more",
-    import: "Import",
-    export: "Export",
-    pasteSettings: "Paste settings",
-    copySettings: "Copy settings"
-  }, translate);
+function promisify(fn) {
+  return (...args) => {
+    try {
+      return Promise.resolve(fn(...args));
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  };
+}
+
+function createView({
+  root,
+  pref,
+  body,
+  getMessage = () => {},
+  getNewScope = () => "",
+  prompt: _prompt = promisify(prompt),
+  alert: _alert = promisify(alert),
+  confirm: _confirm = promisify(confirm)
+}) {
+  getMessage = createGetMessage(getMessage);
   const toolbar = createToolbar();
   const nav = createNav();
   const form = createForm(body);
   
   root.append(toolbar.frag, nav.frag, form.frag);
   
-  pref.on("scopeChange", nav.updateScope);
-  nav.updateScope(pref.getCurrentScope());
-  
   pref.on("scopeListChange", nav.updateScopeList);
   nav.updateScopeList(pref.getScopeList());
+  
+  pref.on("scopeChange", nav.updateScope);
+  nav.updateScope(pref.getCurrentScope());
   
   pref.on("change", form.updateInputs);
   form.updateInputs(pref.getAll());
   
   return destroy;
+  
+  function createGetMessage(userGetMessage) {
+    const DEFAULT = {
+      addScopePrompt: "Add new scope",
+      deleteScopeConfirm: scope => `Delete scope ${scope}?`,
+      learnMoreButton: "Learn more",
+      importButton: "Import",
+      exportButton: "Export",
+      importPrompt: "Paste settings",
+      exportPrompt: "Copy settings"
+    };
+    return (key, params) => {
+      const message = userGetMessage(key, params);
+      if (message) {
+        return message;
+      }
+      if (typeof DEFAULT[key] === "function") {
+        return DEFAULT[key](params);
+      }
+      return DEFAULT[key];
+    };
+  }
   
   function createToolbar() {
     const container = document.createElement("div");
@@ -31,30 +65,29 @@ function createView({root, pref, body, translate = {}, getNewScope = () => ""}) 
     const importButton = document.createElement("button");
     importButton.className = "webext-pref-import browser-style";
     importButton.type = "button";
-    importButton.textContent = translate.import;
+    importButton.textContent = getMessage("importButton");
     importButton.onclick = () => {
-      Promise.resolve()
-        .then(() => {
-          const input = prompt(translate.pasteSettings);
+      _prompt(getMessage("importPrompt"))
+        .then(input => {
           if (input == null) {
             return;
           }
           const settings = JSON.parse(input);
           return pref.import(settings);
         })
-        .catch(err => alert(err.message));
+        .catch(err => _alert(err.message));
     };
     
     const exportButton = document.createElement("button");
     exportButton.className = "webext-pref-export browser-style";
     exportButton.type = "button";
-    exportButton.textContent = translate.export;
+    exportButton.textContent = getMessage("exportButton");
     exportButton.onclick = () => {
       pref.export()
-        .then(settings => {
-          prompt(translate.copySettings, JSON.stringify(settings));
-        })
-        .catch(err => alert(err.message));
+        .then(settings =>
+          _prompt(getMessage("exportPrompt"), JSON.stringify(settings))
+        )
+        .catch(err => _alert(err.message));
     };
     
     container.append(importButton, exportButton);
@@ -97,37 +130,40 @@ function createView({root, pref, body, translate = {}, getNewScope = () => ""}) 
     };
     
     const deleteButton = document.createElement("button");
-    deleteButton.className = "browser-style";
+    deleteButton.className = "browser-style webext-pref-delete-scope";
     deleteButton.type = "button";
     deleteButton.textContent = "x";
     deleteButton.onclick = () => {
-      pref.deleteScope(pref.getCurrentScope())
-        .catch(err => {
-          alert(err.message);
-        });
+      const scopeName = pref.getCurrentScope();
+      _confirm(getMessage("deleteScopeConfirm", scopeName))
+        .then(result => {
+          if (result) {
+            return pref.deleteScope(scopeName);
+          }
+        })
+        .catch(err => _alert(err.message));
     };
     
     const addButton = document.createElement("button");
-    addButton.className = "browser-style";
+    addButton.className = "browser-style webext-pref-add-scope";
     addButton.type = "button";
     addButton.textContent = "+";
     addButton.onclick = () => {
-      addNewScope().catch(err => {
-        alert(err.message);
-      });
-        
-      function addNewScope() {
-        let scopeName = prompt(translate.inputNewScopeName, getNewScope());
-        if (scopeName == null) {
-          return Promise.resolve();
-        }
-        scopeName = scopeName.trim();
-        if (!scopeName) {
-          return Promise.reject(new Error("the value is empty"));
-        }
-        return pref.addScope(scopeName)
-          .then(() => pref.setCurrentScope(scopeName));
-      }
+      _prompt(getMessage("addScopePrompt"), getNewScope())
+        .then(scopeName => {
+          if (scopeName == null) {
+            return;
+          }
+          scopeName = scopeName.trim();
+          if (!scopeName) {
+            throw new Error("the value is empty");
+          }
+          return pref.addScope(scopeName)
+            .then(() => pref.setCurrentScope(scopeName));
+        })
+        .catch(err => {
+          _alert(err.message);
+        });
     };
     
     container.append(select, deleteButton, addButton);
@@ -407,7 +443,7 @@ function createView({root, pref, body, translate = {}, getNewScope = () => ""}) 
     a.href = url;
     a.target = "_blank";
     a.rel = "noopener";
-    a.textContent = translate.learnMore;
+    a.textContent = getMessage("learnMoreButton");
     return a;
   }
 }
@@ -509,8 +545,7 @@ var prefBody = getMessage => {
   }
 };
 
-/* global pref prefReady browser */
-
+/* eslint-env webextensions */
 
 prefReady.then(() => {
   let domain = "";
@@ -519,10 +554,13 @@ prefReady.then(() => {
     pref,
     body: prefBody(browser.i18n.getMessage),
     root: document.querySelector(".pref-root"),
-    translate: {
-      inputNewScopeName: "Add new domain"
+    getNewScope: () => domain,
+    getMessage: (key, params) => {
+      return browser.i18n.getMessage(`pref${key[0].toUpperCase()}${key.slice(1)}`, params);
     },
-    getNewScope: () => domain
+    alert: createDialog("alert"),
+    confirm: createDialog("confirm"),
+    prompt: createDialog("prompt")
   });
   
   const port = browser.runtime.connect({
@@ -534,4 +572,10 @@ prefReady.then(() => {
       pref.setCurrentScope(pref.getScopeList().includes(domain) ? domain : "global");
     }
   });
+  
+  function createDialog(type) {
+    if (/Chrome\/\d+/.test(navigator.userAgent)) {
+      return async (...args) => chrome.extension.getBackgroundPage()[type](...args);
+    }
+  }
 });
