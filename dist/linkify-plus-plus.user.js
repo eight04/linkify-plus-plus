@@ -430,18 +430,35 @@ function getMessageFactory() {
     "optionsTimeoutHelp": "The script will terminate if it takes too long to convert the entire page.",
     "optionsMaxRunTimeLabel": "Max script run time. (ms)",
     "optionsMaxRunTimeHelp": "Split the process into small chunks to avoid freezing the browser.",
-    "optionsCustomRulesLabel": "Custom rules. (RegExp per line)"
+    "optionsCustomRulesLabel": "Custom rules. (RegExp per line)",
+    "addScopePrompt": "Add new domain",
+    "deleteScopeConfirm": "Delete domain $1?",
+    "learnMoreButton": "Learn more",
+    "importButton": "Import",
+    "importPrompt": "Paste settings",
+    "exportButton": "Export",
+    "exportPrompt": "Copy settings"
   };
-  return key => translate[key];
+  return (key, params) => {
+    if (!params) {
+      return translate[key];
+    }
+    if (Array.isArray(params)) {
+      params = [params];
+    }
+    return translate[key].replace(/\$\d/g, m => {
+      const index = Number(m.slice(1));
+      return params[index - 1];
+    });
+  };
 }
 
 startLinkifyPlusPlus(async () => {
+  const getMessage = getMessageFactory();
   const pref = GM_webextPref({
-    default: prefDefault(),
-    body: prefBody(getMessageFactory()),
-    translate: {
-      inputNewScopeName: "Add new domain"
-    },
+    default: prefDefault(getMessage),
+    body: prefBody(),
+    getMessage,
     getNewScope: () => location.hostname
   });
   await pref.ready();
