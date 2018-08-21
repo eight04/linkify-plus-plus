@@ -41,6 +41,7 @@ select.browser-style {
 .webext-pref-nav button {
   min-width: 30px;
   text-align: center;
+  text-align-last: center;
 }
 .webext-pref-nav button {
   margin-left: 8px;
@@ -48,7 +49,6 @@ select.browser-style {
 
 /* checkbox */
 .webext-pref-checkbox {
-  grid-column: span 3;
   margin: 8px 0;
   padding-left: 24px;
 }
@@ -56,20 +56,39 @@ select.browser-style {
   content: "";
   margin-left: -24px;
 }
+.webext-pref-checkbox > input {
+  font: inherit;
+  width: 1em;
+  height: 1em;
+  margin: 0 calc(24px - 1em) 0 0;
+  vertical-align: middle;
+}
+.webext-pref-checkbox > label {
+  vertical-align: middle;
+}
 .webext-pref-checkbox-children {
-  margin: 6px 0 0;
+  margin: 6px 0;
   padding: 0;
   border-width: 0;
 }
 .webext-pref-checkbox-children[disabled] {
   opacity: 0.5;
 }
+.webext-pref-checkbox-children > :first-child {
+  margin-top: 0;
+}
+.webext-pref-checkbox-children > :last-child {
+  margin-bottom: 0;
+}
+.webext-pref-checkbox-children > :last-child > :last-child {
+  margin-bottom: 0;
+}
 
 /* text */
 .webext-pref-text,
 .webext-pref-number,
 .webext-pref-textarea {
-  grid-column: span 3;
+  margin: 8px 0;
 }
 .webext-pref-text input,
 .webext-pref-number input,
@@ -78,6 +97,7 @@ select.browser-style {
   display: block;
   width: 100%;
   font: inherit;
+  box-sizing: border-box;
 }
 .webext-pref-textarea textarea {
   height: 6em;
