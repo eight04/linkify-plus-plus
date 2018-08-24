@@ -1,3 +1,5 @@
+import dataurl from "dataurl";
+import fs from "fs";
 import usm from "userscript-meta-cli";
 
 import cjs from "rollup-plugin-cjs-es";
@@ -50,7 +52,7 @@ export default [
       "linkify-plus-plus.user": "src/userscript.js"
     },
     output: {
-      banner: usm.stringify(usm.getMeta()),
+      banner: metaDataBlock(),
       dir: "dist"
     },
     plugins: [
@@ -61,3 +63,12 @@ export default [
     ]
   })
 ];
+
+function metaDataBlock() {
+  const meta = usm.getMeta();
+  meta.icon = dataurl.format({
+    data: fs.readFileSync("extension/icon.svg"),
+    mimetype: "image/svg+xml"
+  });
+  return usm.stringify(meta);
+}
