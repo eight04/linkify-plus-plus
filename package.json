@@ -67,8 +67,8 @@
   "dependencies": {
     "event-lite": "^0.1.1",
     "linkify-plus-plus-core": "^0.3.0",
-    "webext-pref": "^0.4.0",
-    "webextension-polyfill": "^0.3.0"
+    "webext-pref": "^0.4.1",
+    "webextension-polyfill": "^0.3.1"
   },
   "webExt": {
     "sourceDir": "extension",
