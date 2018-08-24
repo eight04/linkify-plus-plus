@@ -53,8 +53,17 @@
   "optionsCustomRulesLabel": {
     "message": "Custom rules. (RegExp per line)"
   },
+  "prefCurrentScopeLabel": {
+    "message": "Current domain"
+  },
+  "prefAddScopeLabel": {
+    "message": "Add new domain"
+  },
   "prefAddScopePrompt": {
     "message": "Add new domain"
+  },
+  "prefDeleteScopeLabel": {
+    "message": "Delete current domain"
   },
   "prefDeleteScopeConfirm": {
     "message": "Delete domain $DOMAIN$?",
