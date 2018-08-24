@@ -201,9 +201,12 @@ function createPref(DEFAULT, sep = "/") {
     if (scope === "global") {
       return Promise.reject(new Error(`cannot delete global`));
     }
-    return storage.setMany({
-      scopeList: scopeList.filter(s => s != scope)
-    });
+    return Promise.all([
+      storage.setMany({
+        scopeList: scopeList.filter(s => s != scope)
+      }),
+      storage.deleteMany(Object.keys(DEFAULT).map(k => `${scope}${sep}${k}`))
+    ]);
   }
   
   function getScopeList() {
@@ -230,34 +233,38 @@ function promisify(func) {
     });
 }
 
-function createWebextStorage(area = "local") {
+function createWebextStorage(area = "local", prefix = "webext-pref/") {
   const events = new EventLite;
-  const addListener = typeof browser === "object" ?
-    browser.storage.onChanged.addListener.bind(browser.storage.onChanged) :
-    chrome.storage.onChanged.addListener.bind(chrome.storage.onChanged);
-  const removeListener = typeof browser === "object" ?
-    browser.storage.onChanged.removeListener.bind(browser.storage.onChanged) :
-    chrome.storage.onChanged.removeListener.bind(chrome.storage.onChanged);
-  const storageGet = typeof browser === "object" ?
-    browser.storage[area].get.bind(browser.storage[area]) : 
-    promisify(chrome.storage[area].get.bind(chrome.storage[area]));
-  const storageSet = typeof browser === "object" ?
-    browser.storage[area].set.bind(browser.storage[area]) :
-    promisify(chrome.storage[area].set.bind(chrome.storage[area]));
-  addListener(onChange);
-  return Object.assign(events, {getMany, setMany, destroy});
+  
+  const ON_CHANGED = ["addListener", "removeListener"].reduce((output, key) => {
+    output[key] = typeof browser === "object" ?
+      browser.storage.onChanged[key].bind(browser.storage.onChanged) :
+      chrome.storage.onChanged[key].bind(chrome.storage.onChanged);
+    return output;
+  }, {});
+  
+  const METHODS = ["get", "set", "remove"].reduce((output, key) => {
+    output[key] = typeof browser === "object" ?
+      browser.storage[area][key].bind(browser.storage[area]) : 
+      promisify(chrome.storage[area][key].bind(chrome.storage[area]));
+    return output;
+  }, {});
+  
+  ON_CHANGED.addListener(onChange);
+  
+  return Object.assign(events, {getMany, setMany, deleteMany, destroy});
   
   function destroy() {
-    removeListener(onChange);
+    ON_CHANGED.removeListener(onChange);
   }
   
   function getMany(keys) {
-    return storageGet(keys.map(k => `webext-pref/${k}`))
+    return METHODS.get(keys.map(k => prefix + k))
       .then(changes => {
         const o = {};
         for (const [key, value] of Object.entries(changes)) {
-          if (key.startsWith("webext-pref/")) {
-            o[key.slice(12)] = value;
+          if (key.startsWith(prefix)) {
+            o[key.slice(prefix.length)] = value;
           }
         }
         return o;
@@ -267,9 +274,13 @@ function createWebextStorage(area = "local") {
   function setMany(options) {
     const newOptions = {};
     for (const [key, value] of Object.entries(options)) {
-      newOptions[`webext-pref/${key}`] = value;
+      newOptions[prefix + key] = value;
     }
-    return storageSet(newOptions);
+    return METHODS.set(newOptions);
+  }
+  
+  function deleteMany(keys) {
+    return METHODS.remove(keys.map(k => prefix + k));
   }
   
   function onChange(changes, _area) {
@@ -278,8 +289,8 @@ function createWebextStorage(area = "local") {
     }
     const realChanges = {};
     for (const [key, {newValue}] of Object.entries(changes)) {
-      if (key.startsWith("webext-pref/")) {
-        realChanges[key.slice(12)] = newValue;
+      if (key.startsWith(prefix)) {
+        realChanges[key.slice(prefix.length)] = newValue;
       }
     }
     events.emit("change", realChanges);

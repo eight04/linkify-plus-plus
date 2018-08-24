@@ -16,7 +16,7 @@
 // @exclude http://mxr.mozilla.org/*
 // @exclude http://w3c*.github.io/*
 // @require https://greasyfork.org/scripts/27630-linkify-plus-plus-core/code/linkify-plus-plus-core.js?version=213494
-// @require https://greasyfork.org/scripts/371339-gm-webextpref/code/GM_webextPref.js?version=623235
+// @require https://greasyfork.org/scripts/371339-gm-webextpref/code/GM_webextPref.js?version=623327
 // @grant GM.getValue
 // @grant GM.setValue
 // @grant GM_addStyle
