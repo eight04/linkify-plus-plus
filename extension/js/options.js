@@ -38,7 +38,10 @@ function createView({
   
   function createGetMessage(userGetMessage) {
     const DEFAULT = {
+      currentScopeLabel: "Current scope",
+      addScopeLabel: "Add new scope",
       addScopePrompt: "Add new scope",
+      deleteScopeLabel: "Delete current scope",
       deleteScopeConfirm: scope => `Delete scope ${scope}?`,
       learnMoreButton: "Learn more",
       importButton: "Import",
@@ -125,14 +128,16 @@ function createView({
     
     const select = document.createElement("select");
     select.className = "browser-style";
+    select.title = getMessage("currentScopeLabel");
     select.onchange = () => {
       pref.setCurrentScope(select.value);
     };
     
     const deleteButton = document.createElement("button");
     deleteButton.className = "browser-style webext-pref-delete-scope";
+    deleteButton.title = getMessage("deleteScopeLabel");
     deleteButton.type = "button";
-    deleteButton.textContent = "x";
+    deleteButton.textContent = "×";
     deleteButton.onclick = () => {
       const scopeName = pref.getCurrentScope();
       _confirm(getMessage("deleteScopeConfirm", scopeName))
@@ -146,6 +151,7 @@ function createView({
     
     const addButton = document.createElement("button");
     addButton.className = "browser-style webext-pref-add-scope";
+    addButton.title = getMessage("addScopeLabel");
     addButton.type = "button";
     addButton.textContent = "+";
     addButton.onclick = () => {

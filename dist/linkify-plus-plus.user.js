@@ -16,7 +16,7 @@
 // @exclude http://mxr.mozilla.org/*
 // @exclude http://w3c*.github.io/*
 // @require https://greasyfork.org/scripts/27630-linkify-plus-plus-core/code/linkify-plus-plus-core.js?version=213494
-// @require https://greasyfork.org/scripts/371339-gm-webextpref/code/GM_webextPref.js?version=622261
+// @require https://greasyfork.org/scripts/371339-gm-webextpref/code/GM_webextPref.js?version=623235
 // @grant GM.getValue
 // @grant GM.setValue
 // @grant GM_addStyle
@@ -27,7 +27,7 @@
 // @grant unsafeWindow
 // @compatible firefox Tampermonkey latest
 // @compatible chrome Tampermonkey latest
-// @icon data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDE2IDE2Ij4gPHBhdGggZmlsbD0iY29udGV4dC1maWxsIiBmaWxsLW9wYWNpdHk9ImNvbnRleHQtZmlsbC1vcGFjaXR5IiBkPSJNMy41IDFhLjUuNSAwIDEgMCAwIDFINHY5aC0uNWEuNS41IDAgMCAwIDAgMWg3Ljg1NWEuNS41IDAgMCAwIC40NzUtLjE4NC41LjUgMCAwIDAgLjEwNi0uMzk4VjEwLjVhLjUuNSAwIDEgMC0xIDB2LjVINlYyaC41YS41LjUgMCAxIDAgMC0xaC0zeiIvPiA8cGF0aCBmaWxsPSIjNDVhMWZmIiBmaWxsLW9wYWNpdHk9ImNvbnRleHQtZmlsbC1vcGFjaXR5IiBkPSJNMi41IDE0YTEgMSAwIDEgMCAwIDJoMTFhMSAxIDAgMSAwIDAtMmgtMTF6Ii8+IDwvc3ZnPg==
+// @icon data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDE2IDE2Ij4gPHBhdGggZmlsbD0iIzRjNGM0ZCIgZD0iTTMuNSAxYS41LjUgMCAxIDAgMCAxSDR2OWgtLjVhLjUuNSAwIDAgMCAwIDFoNy44NTVhLjUuNSAwIDAgMCAuNDc1LS4xODQuNS41IDAgMCAwIC4xMDYtLjM5OFYxMC41YS41LjUgMCAxIDAtMSAwdi41SDZWMmguNWEuNS41IDAgMSAwIDAtMWgtM3oiLz4gPHBhdGggZmlsbD0iIzQ1YTFmZiIgZD0iTTIuNSAxNGExIDEgMCAxIDAgMCAyaDExYTEgMSAwIDEgMCAwLTJoLTExeiIvPiA8L3N2Zz4=
 // ==/UserScript==
 
 
@@ -432,7 +432,10 @@ function getMessageFactory() {
     "optionsMaxRunTimeLabel": "Max script run time. (ms)",
     "optionsMaxRunTimeHelp": "Split the process into small chunks to avoid freezing the browser.",
     "optionsCustomRulesLabel": "Custom rules. (RegExp per line)",
+    "currentScopeLabel": "Current domain",
+    "addScopeLabel": "Add new domain",
     "addScopePrompt": "Add new domain",
+    "deleteScopeLabel": "Delete current domain",
     "deleteScopeConfirm": "Delete domain $1?",
     "learnMoreButton": "Learn more",
     "importButton": "Import",
