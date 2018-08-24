@@ -19,10 +19,12 @@
 // @require https://greasyfork.org/scripts/371339-gm-webextpref/code/GM_webextPref.js?version=623327
 // @grant GM.getValue
 // @grant GM.setValue
+// @grant GM.deleteValue
 // @grant GM_addStyle
 // @grant GM_registerMenuCommand
 // @grant GM_getValue
 // @grant GM_setValue
+// @grant GM_deleteValue
 // @grant GM_addValueChangeListener
 // @grant unsafeWindow
 // @compatible firefox Tampermonkey latest
