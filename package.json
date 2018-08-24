@@ -51,10 +51,12 @@
     "grant": [
       "GM.getValue",
       "GM.setValue",
+      "GM.deleteValue",
       "GM_addStyle",
       "GM_registerMenuCommand",
       "GM_getValue",
       "GM_setValue",
+      "GM_deleteValue",
       "GM_addValueChangeListener",
       "unsafeWindow"
     ],
