@@ -3,7 +3,7 @@ Linkify Plus Plus
 
 [![Build Status](https://travis-ci.org/eight04/linkify-plus-plus.svg?branch=master)](https://travis-ci.org/eight04/linkify-plus-plus)
 
-An userscript which can linkify almost everything. Based on Linkify Plus.
+A userscript/extension that can linkify almost everything. Based on Linkify Plus.
 
 See also [linkify-plus-plus-core](https://github.com/eight04/linkify-plus-plus-core).
 
