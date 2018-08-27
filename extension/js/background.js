@@ -19,3 +19,9 @@ browser.browserAction.onClicked.addListener(tab => {
   }
   browser.runtime.openOptionsPage();
 });
+
+if (/Chrome\/\d+/.test(navigator.userAgent)) {
+  browser.browserAction.setIcon({
+    path: "/icon.svg"
+  });
+}
