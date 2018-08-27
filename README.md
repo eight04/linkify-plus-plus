@@ -22,7 +22,7 @@ Installation
 
 ### Userscript
 
-[Instal from Greasy Fork](https://greasyfork.org/scripts/4255-linkify-plus-plus).
+[Install from Greasy Fork](https://greasyfork.org/scripts/4255-linkify-plus-plus).
 
 ### Firefox extension
 
