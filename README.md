@@ -20,7 +20,22 @@ Features
 Installation
 ------------
 
-[Greasy Fork](https://greasyfork.org/scripts/4255-linkify-plus-plus).
+### Userscript
+
+[Instal from Greasy Fork](https://greasyfork.org/scripts/4255-linkify-plus-plus).
+
+### Firefox extension
+
+[Install from Firefox Add-ons](https://addons.mozilla.org/zh-TW/firefox/addon/linkify-plus-plus/).
+
+### Chrome extension
+
+This extension can be installed on Chrome. However, it is not hosted on Chrome Webstore. You have to download the source code and [load the extension as an unpacked extension](https://developer.chrome.com/extensions/getstarted#manifest).
+
+1. Download and extract the [ZIP file](https://github.com/eight04/linkify-plus-plus/archive/master.zip).
+2. Navigate to `chrome://extensions/`.
+3. Enable "Developer mode".
+4. Click "LOAD UNPACKED" button and select the `extension` folder that is previously extracted.
 
 Testcase
 --------
