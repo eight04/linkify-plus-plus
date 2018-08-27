@@ -51,6 +51,14 @@ evernote:///\S+
 
 Changelog
 ---------
+
+* 9.0.0 (Aug 27, 2018)
+
+  - **Breaking: replace `GM_config` with `GM_webextPref`. Note that because the configuration system is changed, the script won't be able to read the configuration before version 9.**
+  - Add: icon. Made by [@FatOrangutan](https://github.com/FatOrangutan).
+  - Add: webextension build.
+  - Add: compatible with Greasemonkey 4. Although the script itself can be executed on GM 4, [GM 4 doesn't support monkey menu API](https://github.com/greasemonkey/greasemonkey/issues/2714) so there is no way to open the configuration dialog.
+
 * Version 8.2.2 (Jul 25, 2018):
   - Fix: handle Vue's server side rendering pages.
 * Version 8.2.1 (May 23, 2018):
