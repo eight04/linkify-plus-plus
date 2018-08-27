@@ -9,6 +9,7 @@ See also [linkify-plus-plus-core](https://github.com/eight04/linkify-plus-plus-c
 
 Features
 --------
+
 * Detect text url and convert them into links.
 * Support dynamic content.
 * Support unicode characters.
@@ -16,24 +17,32 @@ Features
 * Custom whitelist, blacklist.
 * Embed images.
 
-You can find the configuration from greasemonkey menu.
-![Greasemonkey Menu](https://i.imgur.com/tOTr7ys.jpg)
-
 Installation
 ------------
+
 [Greasy Fork](https://greasyfork.org/scripts/4255-linkify-plus-plus).
 
 Testcase
 --------
+
 * <https://rawgit.com/eight04/linkify-plus-plus/master/demo/demo.html>
 * <https://rawgit.com/eight04/linkify-plus-plus/master/demo/demo-large-content.html>
+
+Configuration
+-------------
+
+For the userscript, you can find the configuration from monkey menu.  
+![monkey Menu](https://i.imgur.com/Pbdysee.png)
+
+For the extension, you can open the options page by clicking the browser button.  
+![browser button](https://i.imgur.com/bIx3KEM.png)
 
 Embed images
 ------------
 
 The script uses the following regular expression to detect images:
 
-```
+```js
 /^[^?#]+\.(?:jpg|png|gif|jpeg|svg)(?:$|[?#])/i
 ```
 
