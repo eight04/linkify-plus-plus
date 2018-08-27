@@ -1,0 +1,52 @@
+{
+  "name": "Linkify Plus Plus",
+  "version": "8.2.2",
+  "description": "__MSG_extensionDescription__",
+  "homepage_url": "https://github.com/eight04/linkify-plus-plus",
+  "developer": {
+    "name": "eight04",
+    "url": "https://github.com/eight04"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "js/event-lite.min.js",
+        "js/pref.js",
+        "js/content.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "default_locale": "en",
+  "manifest_version": 2,
+  "options_ui": {
+    "page": "options.html"
+  },
+  "browser_action": {
+    "default_icon": "icon.svg",
+    "default_title": "__MSG_extensionOptions__",
+    "theme_icons": [
+      {
+        "dark": "icon.svg",
+        "light": "icon-light.svg",
+        "size": 32
+      }
+    ]
+  },
+  "background": {
+    "scripts": [
+      "js/browser-polyfill.min.js",
+      "js/background.js"
+    ]
+  },
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  "applications": {
+    "gecko": {
+      "strict_min_version": "52.0"
+    }
+  }
+}

@@ -1,0 +1,110 @@
+body {
+  padding: 6px;
+}
+
+button.browser-style,
+select.browser-style {
+  font-size: inherit;
+  height: auto;
+  padding: 4px 8px;
+}
+
+/* root */
+.pref-root {
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* toolbar */
+.webext-pref-toolbar {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+.webext-pref-toolbar button {
+  min-width: 8em;
+  text-align: center;
+}
+.webext-pref-toolbar button:not(:first-child) {
+  margin-left: 8px;
+}
+
+/* nav */
+.webext-pref-nav {
+  display: flex;
+  margin-bottom: 12px;
+}
+.webext-pref-nav select {
+  flex-grow: 1;
+}
+.webext-pref-nav select,
+.webext-pref-nav button {
+  min-width: 30px;
+  text-align: center;
+  text-align-last: center;
+}
+.webext-pref-nav button {
+  margin-left: 8px;
+}
+
+/* checkbox */
+.webext-pref-checkbox {
+  margin: 8px 0;
+  padding-left: 24px;
+}
+.webext-pref-checkbox::before {
+  content: "";
+  margin-left: -24px;
+}
+.webext-pref-checkbox > input {
+  font: inherit;
+  width: 1em;
+  height: 1em;
+  margin: 0 calc(24px - 1em) 0 0;
+  vertical-align: middle;
+}
+.webext-pref-checkbox > label {
+  vertical-align: middle;
+}
+.webext-pref-checkbox-children {
+  margin: 6px 0;
+  padding: 0;
+  border-width: 0;
+}
+.webext-pref-checkbox-children[disabled] {
+  opacity: 0.5;
+}
+.webext-pref-checkbox-children > :first-child {
+  margin-top: 0;
+}
+.webext-pref-checkbox-children > :last-child {
+  margin-bottom: 0;
+}
+.webext-pref-checkbox-children > :last-child > :last-child {
+  margin-bottom: 0;
+}
+
+/* text */
+.webext-pref-text,
+.webext-pref-number,
+.webext-pref-textarea {
+  margin: 8px 0;
+}
+.webext-pref-text input,
+.webext-pref-number input,
+.webext-pref-textarea textarea {
+  padding: 3px 6px;
+  display: block;
+  width: 100%;
+  font: inherit;
+  box-sizing: border-box;
+}
+.webext-pref-textarea textarea {
+  height: 6em;
+}
+
+/* help */
+.webext-pref-help {
+  margin: 4px 0 6px;
+  color: #737373;
+}

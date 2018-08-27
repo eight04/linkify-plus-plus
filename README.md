@@ -1,5 +1,8 @@
 Linkify Plus Plus
 =================
+
+[![Build Status](https://travis-ci.org/eight04/linkify-plus-plus.svg?branch=master)](https://travis-ci.org/eight04/linkify-plus-plus)
+
 An userscript which can linkify almost everything. Based on Linkify Plus.
 
 See also [linkify-plus-plus-core](https://github.com/eight04/linkify-plus-plus-core).
@@ -25,43 +28,22 @@ Testcase
 * <https://rawgit.com/eight04/linkify-plus-plus/master/demo/demo.html>
 * <https://rawgit.com/eight04/linkify-plus-plus/master/demo/demo-large-content.html>
 
-Configure
----------
-### Match 4 digits IP
-Always linkify IP even if the URL dosn't contains protocol and path.
+Embed images
+------------
 
-### Embed images
-If the url ends with `jpg|png|gif|jpeg`, create an image object and insert into link.
+The script uses the following regular expression to detect images:
 
-### Don't embed images under following elements
-If the link is a child of these element, don't embed image.
+```
+/^[^?#]+\.(?:jpg|png|gif|jpeg|svg)(?:$|[?#])/i
+```
 
-### Allow non-ascii character
-Let url match unicode characters. (e.g. `http://www.bücher.ch`)
+[Source](https://github.com/eight04/linkify-plus-plus-core/blob/99efed69429ca18601615facd0a6fc1e72bf9af9/lib/linkifier.js#L225)
 
-### Open link in new tab
-Add `target="_blank"` to linkified links.
+Custom rules
+------------
 
-### URL must be surrounded by whitespace
-Never linkify URLs concatenated with other words.
-
-### Boundary characters between whitespace and URL
-Only works if `URL must be surrounded by whitespace` is checked.
-
-### Do not linkify these elements. (CSS selector)
-If an element match the selector, LPP will skip the element.
-
-### Always linkify these elements, override above. (CSS selector)
-If an element match the selector, LPP will always linkify them, even the parent node is skipped.
-
-### Max execution time (ms)
-The script will terminate if it processes too long.
-
-### Max script run time (ms)
-Split process into small chunks to prevent hanging the browser.
-
-### Custom rules
 A list of regex pattern that will be likified, which is aimed to linkify non-http links. For example:
+
 ```
 magnet:\?xt=\S+
 evernote:///\S+
@@ -69,6 +51,14 @@ evernote:///\S+
 
 Changelog
 ---------
+
+* 9.0.0 (Aug 27, 2018)
+
+  - **Breaking: replace `GM_config` with `GM_webextPref`. Note that because the configuration system is changed, the script won't be able to read the configuration before version 9.**
+  - Add: icon. Made by [@FatOrangutan](https://github.com/FatOrangutan).
+  - Add: webextension build.
+  - Add: compatible with Greasemonkey 4. Although the script itself can be executed on GM 4, [GM 4 doesn't support monkey menu API](https://github.com/greasemonkey/greasemonkey/issues/2714) so there is no way to open the configuration dialog.
+
 * Version 8.2.2 (Jul 25, 2018):
   - Fix: handle Vue's server side rendering pages.
 * Version 8.2.1 (May 23, 2018):

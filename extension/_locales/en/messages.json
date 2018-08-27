@@ -1,0 +1,92 @@
+{
+  "extensionOptions": {
+    "message": "Linkify Plus Plus Options"
+  },
+  "extensionDescription": {
+    "message": "Based on Linkify Plus. Turn plain text URLs into links."
+  },
+  "optionsFuzzyIpLabel": {
+    "message": "Match IP with only 4 digits."
+  },
+  "optionsIgnoreMustacheLabel": {
+    "message": "Ignore URLs inside mustaches e.g. {{ ... }}."
+  },
+  "optionsEmbedImageLabel": {
+    "message": "Embed images."
+  },
+  "optionsEmbedImageExcludeElementLabel": {
+    "message": "Exclude following elements. (CSS selector)"
+  },
+  "optionsUnicodeLabel": {
+    "message": "Match unicode characters."
+  },
+  "optionsNewTabLabel": {
+    "message": "Open links in new tabs."
+  },
+  "optionsStandaloneLabel": {
+    "message": "The link must be surrounded by whitespaces."
+  },
+  "optionsBoundaryLeftLabel": {
+    "message": "Allowed characters between the whitespace and the link. (left side)"
+  },
+  "optionsBoundaryRightLabel": {
+    "message": "Allowed characters between the whitespace and the link. (right side)"
+  },
+  "optionsExcludeElementLabel": {
+    "message": "Do not linkify following elements. (CSS selector)"
+  },
+  "optionsIncludeElementLabel": {
+    "message": "Always linkify following elements. Override above. (CSS selector)"
+  },
+  "optionsTimeoutLabel": {
+    "message": "Max executation time. (ms)"
+  },
+  "optionsTimeoutHelp": {
+    "message": "The script will terminate if it takes too long to convert the entire page."
+  },
+  "optionsMaxRunTimeLabel": {
+    "message": "Max script run time. (ms)"
+  },
+  "optionsMaxRunTimeHelp": {
+    "message": "Split the process into small chunks to avoid freezing the browser."
+  },
+  "optionsCustomRulesLabel": {
+    "message": "Custom rules. (RegExp per line)"
+  },
+  "prefCurrentScopeLabel": {
+    "message": "Current domain"
+  },
+  "prefAddScopeLabel": {
+    "message": "Add new domain"
+  },
+  "prefAddScopePrompt": {
+    "message": "Add new domain"
+  },
+  "prefDeleteScopeLabel": {
+    "message": "Delete current domain"
+  },
+  "prefDeleteScopeConfirm": {
+    "message": "Delete domain $DOMAIN$?",
+    "placeholders": {
+      "domain": {
+        "content": "$1",
+        "example": "www.example.com"
+      }
+    }
+  },
+  "prefLearnMoreButton": {
+    "message": "Learn more"
+  },
+  "prefImportButton": {
+    "message": "Import"
+  },
+  "prefImportPrompt": {
+    "message": "Paste settings"
+  },
+  "prefExportButton": {
+    "message": "Export"
+  },
+  "prefExportPrompt": {
+    "message": "Copy settings"
+  }
+}

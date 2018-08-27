@@ -5,17 +5,31 @@
   "repository": "eight04/linkify-plus-plus",
   "license": "BSD-3-Clause",
   "devDependencies": {
-    "eslint": "^4.19.1",
-    "userscript-meta-cli": "^0.3.0"
+    "dataurl": "^0.1.0",
+    "eslint": "^5.4.0",
+    "rollup": "^0.64.1",
+    "rollup-plugin-cjs-es": "^0.6.0",
+    "rollup-plugin-external-globals": "^0.1.0",
+    "rollup-plugin-inline-js": "^0.3.0",
+    "rollup-plugin-json": "^3.0.0",
+    "rollup-plugin-node-resolve": "^3.3.0",
+    "shx": "^0.3.2",
+    "sync-version": "^1.0.1",
+    "userscript-meta-cli": "^0.4.2",
+    "web-ext": "^2.8.0"
   },
   "scripts": {
-    "build": "userscript-meta -u linkify-plus-plus.user.js",
-    "test": "eslint **/*.js",
+    "build": "shx rm -rf extension/js && rollup -c && shx cp node_modules/event-lite/dist/event-lite.min.js extension/js/ && shx cp node_modules/webextension-polyfill/dist/browser-polyfill.min.js extension/js/ && sync-version extension/manifest.json && web-ext build",
+    "test": "eslint \"**/*.js\" --cache && web-ext lint",
     "preversion": "npm test",
     "version": "npm run build && git add .",
     "postversion": "git push --follow-tags",
-    "watch": "n-run -w src/*.js \"npm run build\""
+    "start": "web-ext run"
   },
+  "eslintIgnore": [
+    "extension",
+    "dist"
+  ],
   "userscript": {
     "name": "Linkify Plus Plus",
     "namespace": "eight04.blogspot.com",
@@ -31,14 +45,19 @@
       "http://w3c*.github.io/*"
     ],
     "require": [
-      "https://greasyfork.org/scripts/7212-gm-config-eight-s-version/code/GM_config%20(eight's%20version).js?version=156587",
-      "https://greasyfork.org/scripts/27630-linkify-plus-plus-core/code/linkify-plus-plus-core.js?version=213494"
+      "https://greasyfork.org/scripts/27630-linkify-plus-plus-core/code/linkify-plus-plus-core.js?version=213494",
+      "https://greasyfork.org/scripts/371339-gm-webextpref/code/GM_webextPref.js?version=623327"
     ],
     "grant": [
+      "GM.getValue",
+      "GM.setValue",
+      "GM.deleteValue",
       "GM_addStyle",
       "GM_registerMenuCommand",
       "GM_getValue",
       "GM_setValue",
+      "GM_deleteValue",
+      "GM_addValueChangeListener",
       "unsafeWindow"
     ],
     "compatible": [
@@ -46,5 +65,17 @@
       "chrome Tampermonkey latest"
     ]
   },
-  "private": true
+  "private": true,
+  "dependencies": {
+    "event-lite": "^0.1.1",
+    "linkify-plus-plus-core": "^0.3.0",
+    "webext-pref": "^0.5.0",
+    "webextension-polyfill": "^0.3.1"
+  },
+  "webExt": {
+    "sourceDir": "extension",
+    "build": {
+      "overwriteDest": true
+    }
+  }
 }
