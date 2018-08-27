@@ -58,6 +58,15 @@ magnet:\?xt=\S+
 evernote:///\S+
 ```
 
+Build the extension
+-------------------
+
+JavaScript files inside `extension/js/` and `dist/` are built from the `src/` folder:
+
+1. Install Node.js.
+2. Run `npm install` to install dependencies.
+3. Run `npm run build` to build the extension and the userscript.
+
 Changelog
 ---------
 
