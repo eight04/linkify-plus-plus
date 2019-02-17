@@ -7,12 +7,12 @@
   "devDependencies": {
     "dataurl": "^0.1.0",
     "eslint": "^5.14.0",
-    "rollup": "^0.64.1",
-    "rollup-plugin-cjs-es": "^0.6.0",
-    "rollup-plugin-external-globals": "^0.1.0",
+    "rollup": "^1.2.0",
+    "rollup-plugin-cjs-es": "^0.7.0",
+    "rollup-plugin-external-globals": "^0.2.1",
     "rollup-plugin-inline-js": "^0.3.0",
     "rollup-plugin-json": "^3.1.0",
-    "rollup-plugin-node-resolve": "^3.4.0",
+    "rollup-plugin-node-resolve": "^4.0.0",
     "shx": "^0.3.2",
     "sync-version": "^1.0.1",
     "userscript-meta-cli": "^0.4.2",
@@ -68,9 +68,9 @@
   "private": true,
   "dependencies": {
     "event-lite": "^0.1.2",
-    "linkify-plus-plus-core": "^0.3.0",
+    "linkify-plus-plus-core": "^0.4.0",
     "webext-pref": "^0.5.0",
-    "webextension-polyfill": "^0.3.1"
+    "webextension-polyfill": "^0.4.0"
   },
   "webExt": {
     "sourceDir": "extension",
