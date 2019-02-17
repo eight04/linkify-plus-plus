@@ -6,17 +6,17 @@
   "license": "BSD-3-Clause",
   "devDependencies": {
     "dataurl": "^0.1.0",
-    "eslint": "^5.4.0",
+    "eslint": "^5.14.0",
     "rollup": "^0.64.1",
     "rollup-plugin-cjs-es": "^0.6.0",
     "rollup-plugin-external-globals": "^0.1.0",
     "rollup-plugin-inline-js": "^0.3.0",
-    "rollup-plugin-json": "^3.0.0",
-    "rollup-plugin-node-resolve": "^3.3.0",
+    "rollup-plugin-json": "^3.1.0",
+    "rollup-plugin-node-resolve": "^3.4.0",
     "shx": "^0.3.2",
     "sync-version": "^1.0.1",
     "userscript-meta-cli": "^0.4.2",
-    "web-ext": "^2.8.0"
+    "web-ext": "^2.9.3"
   },
   "scripts": {
     "build": "shx rm -rf extension/js && rollup -c && shx cp node_modules/event-lite/dist/event-lite.min.js extension/js/ && shx cp node_modules/webextension-polyfill/dist/browser-polyfill.min.js extension/js/ && sync-version extension/manifest.json && web-ext build",
@@ -67,7 +67,7 @@
   },
   "private": true,
   "dependencies": {
-    "event-lite": "^0.1.1",
+    "event-lite": "^0.1.2",
     "linkify-plus-plus-core": "^0.3.0",
     "webext-pref": "^0.5.0",
     "webextension-polyfill": "^0.3.1"
