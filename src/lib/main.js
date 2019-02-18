@@ -13,7 +13,7 @@ function validRoot(node, validator) {
     cache.push(node);
 
     // It is invalid if it has invalid ancestor
-    if (!validator(node) || INVALID_TAGS[node.nodeName]) {
+    if (!validator(node) || INVALID_TAGS[node.localName]) {
       isValid = false;
       break;
     }
@@ -170,7 +170,7 @@ function createOptions(pref) {
   }
   
   function onlink({link, range, content}) {
-    if (link.childNodes[0].nodeName != "IMG" || !options.embedImageExcludeElement) {
+    if (link.childNodes[0].localName !== "img" || !options.embedImageExcludeElement) {
       return;
     }
     
@@ -187,11 +187,10 @@ function createOptions(pref) {
 }
 
 async function startLinkifyPlusPlus(getPref) {
-  // Limit contentType to "text/plain" or "text/html"
+  // Limit contentType to specific content type
   if (
-    document.contentType !== undefined &&
-    document.contentType != "text/plain" &&
-    document.contentType != "text/html"
+    document.contentType &&
+    !["text/plain", "text/html", "application/xhtml+xml"].includes(document.contentType)
   ) {
     return;
   }
