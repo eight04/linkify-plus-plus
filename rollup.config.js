@@ -3,7 +3,7 @@ import fs from "fs";
 import usm from "userscript-meta-cli";
 
 import cjs from "rollup-plugin-cjs-es";
-import external from "rollup-plugin-external-globals";
+import iife from "rollup-plugin-iife";
 import inline from "rollup-plugin-inline-js";
 import json from "rollup-plugin-json";
 import resolve from "rollup-plugin-node-resolve";
@@ -11,6 +11,7 @@ import resolve from "rollup-plugin-node-resolve";
 function base({
   output,
   plugins = [],
+  cache,
   ...args
 }) {
   return {
@@ -22,9 +23,8 @@ function base({
       ...plugins,
       resolve(),
       json(),
-      cjs({nested: true})
+      cjs({nested: true, cache})
     ],
-    experimentalCodeSplitting: true,
     ...args
   };
 }
@@ -39,13 +39,15 @@ export default [
     ],
     output: {
       dir: "extension/js",
-      format: "es"
+      globals: {
+        "event-lite": "EventLite"
+      }
     },
     plugins: [
-      external({
-        "event-lite": "EventLite"
-      })
-    ]
+      iife()
+    ],
+    external: ["event-lite"],
+    cache: ".extension.cjsescache"
   }),
   base({
     input: {
@@ -56,11 +58,11 @@ export default [
       dir: "dist"
     },
     plugins: [
-      external({
-        "linkify-plus-plus-core": "linkifyPlusPlusCore"
-      }),
-      inline()
-    ]
+      inline(),
+      iife()
+    ],
+    external: ["linkify-plus-plus-core"],
+    cache: ".userscript.cjsescache"
   })
 ];
 

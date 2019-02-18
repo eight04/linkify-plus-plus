@@ -1,9 +1,9 @@
 /* eslint-env webextensions */
-/* global pref prefReady */
 const {createView} = require("webext-pref/lib/view");
 const prefBody = require("./lib/pref-body");
+const pref = require("./pref");
 
-prefReady.then(() => {
+pref.ready.then(() => {
   let domain = "";
   
   createView({

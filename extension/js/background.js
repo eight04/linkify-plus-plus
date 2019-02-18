@@ -1,4 +1,5 @@
 /* eslint-env webextensions */
+(function () {
 let domain = "";
 const ports = new Set;
 
@@ -25,3 +26,4 @@ if (/Chrome\/\d+/.test(navigator.userAgent)) {
     path: "/icon.svg"
   });
 }
+})();

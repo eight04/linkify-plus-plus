@@ -1,3 +1,7 @@
+(function () {
+
+
+
 function promisify(fn) {
   return (...args) => {
     try {
@@ -10,7 +14,7 @@ function promisify(fn) {
 
 function createView({
   root,
-  pref,
+  pref: _local_pref,
   body,
   getMessage = () => {},
   getNewScope = () => "",
@@ -25,14 +29,14 @@ function createView({
   
   root.append(toolbar.frag, nav.frag, form.frag);
   
-  pref.on("scopeListChange", nav.updateScopeList);
-  nav.updateScopeList(pref.getScopeList());
+  _local_pref.on("scopeListChange", nav.updateScopeList);
+  nav.updateScopeList(_local_pref.getScopeList());
   
-  pref.on("scopeChange", nav.updateScope);
-  nav.updateScope(pref.getCurrentScope());
+  _local_pref.on("scopeChange", nav.updateScope);
+  nav.updateScope(_local_pref.getCurrentScope());
   
-  pref.on("change", form.updateInputs);
-  form.updateInputs(pref.getAll());
+  _local_pref.on("change", form.updateInputs);
+  form.updateInputs(_local_pref.getAll());
   
   return destroy;
   
@@ -76,7 +80,7 @@ function createView({
             return;
           }
           const settings = JSON.parse(input);
-          return pref.import(settings);
+          return _local_pref.import(settings);
         })
         .catch(err => _alert(err.message));
     };
@@ -86,7 +90,7 @@ function createView({
     exportButton.type = "button";
     exportButton.textContent = getMessage("exportButton");
     exportButton.onclick = () => {
-      pref.export()
+      _local_pref.export()
         .then(settings =>
           _prompt(getMessage("exportPrompt"), JSON.stringify(settings))
         )
@@ -99,9 +103,9 @@ function createView({
   
   function destroy() {
     root.innerHTML = "";
-    pref.off("scopeChange", nav.updateScope);
-    pref.off("scopeListChange", nav.updateScopeList);
-    pref.off("change", form.updateInputs);
+    _local_pref.off("scopeChange", nav.updateScope);
+    _local_pref.off("scopeListChange", nav.updateScopeList);
+    _local_pref.off("change", form.updateInputs);
   }
   
   function createForm(body) {
@@ -130,7 +134,7 @@ function createView({
     select.className = "browser-style";
     select.title = getMessage("currentScopeLabel");
     select.onchange = () => {
-      pref.setCurrentScope(select.value);
+      _local_pref.setCurrentScope(select.value);
     };
     
     const deleteButton = document.createElement("button");
@@ -139,11 +143,11 @@ function createView({
     deleteButton.type = "button";
     deleteButton.textContent = "×";
     deleteButton.onclick = () => {
-      const scopeName = pref.getCurrentScope();
+      const scopeName = _local_pref.getCurrentScope();
       _confirm(getMessage("deleteScopeConfirm", scopeName))
         .then(result => {
           if (result) {
-            return pref.deleteScope(scopeName);
+            return _local_pref.deleteScope(scopeName);
           }
         })
         .catch(err => _alert(err.message));
@@ -164,8 +168,8 @@ function createView({
           if (!scopeName) {
             throw new Error("the value is empty");
           }
-          return pref.addScope(scopeName)
-            .then(() => pref.setCurrentScope(scopeName));
+          return _local_pref.addScope(scopeName)
+            .then(() => _local_pref.setCurrentScope(scopeName));
         })
         .catch(err => {
           _alert(err.message);
@@ -253,14 +257,14 @@ function createView({
     if (el.type === "checkbox") {
       // checkbox
       input.onchange = () => {
-        pref.set(el.key, input.checked);
+        _local_pref.set(el.key, input.checked);
       };
     } else {
       // radio
       input.name = `pref-${el.parentKey}`;
       input.onchange = () => {
         if (input.checked) {
-          pref.set(el.parentKey, el.value);
+          _local_pref.set(el.parentKey, el.value);
         }
       };
     }
@@ -399,7 +403,7 @@ function createView({
           return;
         }
       }
-      pref.set(el.key, value);
+      _local_pref.set(el.key, value);
     };
     
     frag.push(createLabel(el.label, input.id));
@@ -553,7 +557,7 @@ var prefBody = getMessage => {
 
 /* eslint-env webextensions */
 
-prefReady.then(() => {
+pref.ready.then(() => {
   let domain = "";
   
   createView({
@@ -585,3 +589,4 @@ prefReady.then(() => {
     }
   }
 });
+})();
