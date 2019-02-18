@@ -85,6 +85,10 @@ JavaScript files inside `extension/js/` and `dist/` are built from the `src/` fo
 Changelog
 ---------
 
+* 9.0.1 (Feb 19, 2019)
+
+  - Add: support XHTML pages.
+
 * 9.0.0 (Aug 27, 2018)
 
   - **Breaking: replace `GM_config` with `GM_webextPref`. Note that because the configuration system is changed, the script won't be able to read the configuration before version 9.**
