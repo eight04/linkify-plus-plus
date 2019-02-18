@@ -1,0 +1,7 @@
+{
+  "node_modules/event-lite/event-lite.js": "node_modules/webext-pref/lib/pref.js",
+  "node_modules/webext-pref/lib/promisify.js": null,
+  "src/lib/pref-body.js": null,
+  "src/lib/pref-default.js": null,
+  "src/pref.js": null
+}

@@ -1,12 +1,15 @@
+(function () {
+
 
 
 var maxLength = 22;
-var chars = "セール佛山ಭಾರತ慈善集团在线한국ଭାରତভাৰত八卦موقعবংল公益司香格里拉网站移动我爱你москвақзнлйтрбгеファッションストア삼성சிங்கபூர商标店城дию新闻家電中文信国國娱乐భారత్ලංකාクラウドभारतम्ोसंगठन餐厅络у港食品飞利浦台湾灣手机الجزئرنیتبپکسديةڀ澳門닷컴شكგე构健康ไทยфみんなελ世界書籍ഭാരതം址넷コム游戏企业息嘉大酒صط广东இலைநதயாհայ加坡ف政务";
+var chars = "セール佛山ಭಾರತ慈善集团在线한국ଭାରତভাৰত八卦موقعবংল公益司香格里拉网站移动我爱你москвақзнлйтрбгеקוםファッションストアசிங்கபூர商标店城дию新闻家電中文信国國娱乐భారత్ලංකා购物クラウドभारतम्ोसंगठन餐厅络у港食品飞利浦台湾灣手机الجزئرنیتبيپکسدظةڀ澳門닷컴شكგე构健康ไทย招聘фみんなελ世界書籍ഭാരതംਭਾਰਤ址넷コム游戏企业息嘉大酒صط广东இலைநதயாհայ加坡ف政务";
 var table = {
 	aarp: true,
 	abb: true,
 	abbott: true,
 	abc: true,
+	able: true,
 	abogado: true,
 	abudhabi: true,
 	ac: true,
@@ -15,13 +18,13 @@ var table = {
 	accountant: true,
 	accountants: true,
 	aco: true,
-	active: true,
 	actor: true,
 	ad: true,
 	adult: true,
 	ae: true,
 	aeg: true,
 	aero: true,
+	aetna: true,
 	af: true,
 	afamilycompany: true,
 	afl: true,
@@ -33,20 +36,28 @@ var table = {
 	airbus: true,
 	airforce: true,
 	al: true,
+	allfinanz: true,
 	allstate: true,
 	alsace: true,
 	am: true,
+	americanexpress: true,
+	amex: true,
 	amfam: true,
 	amica: true,
 	amsterdam: true,
 	analytics: true,
+	anz: true,
 	ao: true,
+	aol: true,
 	apartments: true,
+	app: true,
+	apple: true,
 	aq: true,
 	aquarelle: true,
 	ar: true,
 	archi: true,
 	army: true,
+	arpa: true,
 	art: true,
 	arte: true,
 	as: true,
@@ -76,10 +87,14 @@ var table = {
 	barcelona: true,
 	barclaycard: true,
 	barclays: true,
+	barefoot: true,
 	bargains: true,
 	basketball: true,
+	bauhaus: true,
 	bayern: true,
 	bb: true,
+	bbc: true,
+	bbt: true,
 	bbva: true,
 	bd: true,
 	be: true,
@@ -102,7 +117,6 @@ var table = {
 	bj: true,
 	black: true,
 	blackfriday: true,
-	blanco: true,
 	blog: true,
 	bloomberg: true,
 	blue: true,
@@ -113,6 +127,7 @@ var table = {
 	bnpparibas: true,
 	bo: true,
 	boats: true,
+	bofa: true,
 	bosch: true,
 	bostik: true,
 	boston: true,
@@ -170,13 +185,16 @@ var table = {
 	cg: true,
 	ch: true,
 	chanel: true,
+	charity: true,
 	chase: true,
 	chat: true,
 	cheap: true,
+	chintai: true,
 	christmas: true,
 	church: true,
 	ci: true,
 	cisco: true,
+	citi: true,
 	citic: true,
 	city: true,
 	ck: true,
@@ -198,6 +216,7 @@ var table = {
 	college: true,
 	cologne: true,
 	com: true,
+	commbank: true,
 	community: true,
 	company: true,
 	computer: true,
@@ -206,6 +225,7 @@ var table = {
 	consulting: true,
 	contractors: true,
 	cooking: true,
+	cookingchannel: true,
 	cool: true,
 	coop: true,
 	corsica: true,
@@ -244,6 +264,7 @@ var table = {
 	dentist: true,
 	desi: true,
 	design: true,
+	dev: true,
 	dhl: true,
 	diamonds: true,
 	diet: true,
@@ -251,6 +272,8 @@ var table = {
 	direct: true,
 	directory: true,
 	discount: true,
+	discover: true,
+	diy: true,
 	dj: true,
 	dk: true,
 	dm: true,
@@ -262,6 +285,7 @@ var table = {
 	download: true,
 	dubai: true,
 	duck: true,
+	dupont: true,
 	durban: true,
 	dvag: true,
 	dz: true,
@@ -285,6 +309,7 @@ var table = {
 	erni: true,
 	es: true,
 	estate: true,
+	esurance: true,
 	et: true,
 	eu: true,
 	eurovision: true,
@@ -308,6 +333,7 @@ var table = {
 	feedback: true,
 	ferrero: true,
 	fi: true,
+	fidelity: true,
 	film: true,
 	finance: true,
 	financial: true,
@@ -324,6 +350,8 @@ var table = {
 	fm: true,
 	fo: true,
 	foo: true,
+	food: true,
+	foodnetwork: true,
 	football: true,
 	ford: true,
 	forex: true,
@@ -335,6 +363,7 @@ var table = {
 	fresenius: true,
 	frl: true,
 	frogans: true,
+	frontdoor: true,
 	fujitsu: true,
 	fujixerox: true,
 	fun: true,
@@ -345,6 +374,7 @@ var table = {
 	ga: true,
 	gal: true,
 	gallery: true,
+	gallo: true,
 	game: true,
 	games: true,
 	garden: true,
@@ -364,12 +394,14 @@ var table = {
 	gl: true,
 	glade: true,
 	glass: true,
+	gle: true,
 	global: true,
 	globo: true,
 	gm: true,
 	gmail: true,
 	gmbh: true,
 	gmo: true,
+	gmx: true,
 	gn: true,
 	gold: true,
 	golf: true,
@@ -381,6 +413,7 @@ var table = {
 	gp: true,
 	gq: true,
 	gr: true,
+	grainger: true,
 	graphics: true,
 	gratis: true,
 	green: true,
@@ -402,6 +435,8 @@ var table = {
 	healthcare: true,
 	help: true,
 	here: true,
+	hermes: true,
+	hgtv: true,
 	hiphop: true,
 	hisamitsu: true,
 	hitachi: true,
@@ -426,9 +461,12 @@ var table = {
 	hsbc: true,
 	ht: true,
 	hu: true,
+	hyatt: true,
 	ice: true,
+	icu: true,
 	id: true,
 	ie: true,
+	ieee: true,
 	ifm: true,
 	ikano: true,
 	il: true,
@@ -436,6 +474,7 @@ var table = {
 	immo: true,
 	immobilien: true,
 	"in": true,
+	inc: true,
 	industries: true,
 	info: true,
 	ink: true,
@@ -443,6 +482,7 @@ var table = {
 	insurance: true,
 	insure: true,
 	int: true,
+	intel: true,
 	international: true,
 	investments: true,
 	io: true,
@@ -463,6 +503,7 @@ var table = {
 	je: true,
 	jetzt: true,
 	jewelry: true,
+	jio: true,
 	jll: true,
 	jm: true,
 	jmp: true,
@@ -471,11 +512,16 @@ var table = {
 	jobs: true,
 	joburg: true,
 	jp: true,
+	jpmorgan: true,
 	jprs: true,
 	juegos: true,
+	juniper: true,
 	kaufen: true,
 	ke: true,
 	kerryhotels: true,
+	kerrylogistics: true,
+	kerryproperties: true,
+	kfh: true,
 	kg: true,
 	kh: true,
 	ki: true,
@@ -489,10 +535,12 @@ var table = {
 	koeln: true,
 	komatsu: true,
 	kp: true,
+	kpmg: true,
 	kpn: true,
 	kr: true,
 	krd: true,
 	kred: true,
+	kuokgroup: true,
 	kw: true,
 	ky: true,
 	kyoto: true,
@@ -512,6 +560,7 @@ var table = {
 	lc: true,
 	lease: true,
 	leclerc: true,
+	lefrak: true,
 	legal: true,
 	lego: true,
 	lexus: true,
@@ -530,6 +579,7 @@ var table = {
 	live: true,
 	lixil: true,
 	lk: true,
+	llc: true,
 	loan: true,
 	loans: true,
 	locus: true,
@@ -545,10 +595,12 @@ var table = {
 	lu: true,
 	lundbeck: true,
 	lupin: true,
+	luxe: true,
 	luxury: true,
 	lv: true,
 	ly: true,
 	ma: true,
+	madrid: true,
 	maif: true,
 	maison: true,
 	makeup: true,
@@ -559,6 +611,7 @@ var table = {
 	marketing: true,
 	markets: true,
 	marriott: true,
+	mattel: true,
 	mba: true,
 	mc: true,
 	md: true,
@@ -576,6 +629,7 @@ var table = {
 	microsoft: true,
 	mil: true,
 	mini: true,
+	mit: true,
 	mk: true,
 	ml: true,
 	mlb: true,
@@ -590,6 +644,7 @@ var table = {
 	mom: true,
 	monash: true,
 	money: true,
+	monster: true,
 	mortgage: true,
 	moscow: true,
 	motorcycles: true,
@@ -621,6 +676,7 @@ var table = {
 	ne: true,
 	nec: true,
 	net: true,
+	netbank: true,
 	network: true,
 	neustar: true,
 	"new": true,
@@ -634,11 +690,14 @@ var table = {
 	nico: true,
 	nikon: true,
 	ninja: true,
+	nissan: true,
 	nissay: true,
 	nl: true,
 	no: true,
 	nokia: true,
+	northwesternmutual: true,
 	norton: true,
+	nowruz: true,
 	np: true,
 	nr: true,
 	nra: true,
@@ -675,6 +734,7 @@ var table = {
 	pe: true,
 	pet: true,
 	pf: true,
+	pfizer: true,
 	pg: true,
 	ph: true,
 	pharmacy: true,
@@ -722,6 +782,7 @@ var table = {
 	radio: true,
 	raid: true,
 	re: true,
+	realestate: true,
 	realtor: true,
 	realty: true,
 	recipes: true,
@@ -746,11 +807,13 @@ var table = {
 	ricoh: true,
 	rio: true,
 	rip: true,
+	rmit: true,
 	ro: true,
 	rocks: true,
 	rodeo: true,
 	rs: true,
 	ru: true,
+	rugby: true,
 	ruhr: true,
 	run: true,
 	rw: true,
@@ -773,6 +836,7 @@ var table = {
 	sc: true,
 	sca: true,
 	scb: true,
+	schaeffler: true,
 	schmidt: true,
 	school: true,
 	schule: true,
@@ -819,6 +883,7 @@ var table = {
 	so: true,
 	soccer: true,
 	social: true,
+	softbank: true,
 	software: true,
 	sohu: true,
 	solar: true,
@@ -826,14 +891,17 @@ var table = {
 	sony: true,
 	soy: true,
 	space: true,
+	sport: true,
 	spreadbetting: true,
 	sr: true,
 	srl: true,
+	ss: true,
 	st: true,
 	stada: true,
+	statebank: true,
 	statefarm: true,
-	statoil: true,
 	stc: true,
+	stockholm: true,
 	storage: true,
 	store: true,
 	stream: true,
@@ -869,6 +937,7 @@ var table = {
 	tech: true,
 	technology: true,
 	tel: true,
+	temasek: true,
 	tennis: true,
 	teva: true,
 	tf: true,
@@ -876,6 +945,7 @@ var table = {
 	th: true,
 	theater: true,
 	theatre: true,
+	tiaa: true,
 	tickets: true,
 	tienda: true,
 	tiffany: true,
@@ -893,7 +963,6 @@ var table = {
 	tools: true,
 	top: true,
 	toray: true,
-	toshiba: true,
 	total: true,
 	tours: true,
 	town: true,
@@ -904,6 +973,7 @@ var table = {
 	trading: true,
 	training: true,
 	travel: true,
+	travelchannel: true,
 	travelers: true,
 	trust: true,
 	tt: true,
@@ -912,6 +982,7 @@ var table = {
 	tw: true,
 	tz: true,
 	ua: true,
+	ubank: true,
 	ubs: true,
 	ug: true,
 	uk: true,
@@ -934,12 +1005,13 @@ var table = {
 	vi: true,
 	viajes: true,
 	video: true,
-	vig: true,
 	villas: true,
 	vin: true,
 	vip: true,
+	visa: true,
 	vision: true,
 	vistaprint: true,
+	vivo: true,
 	vlaanderen: true,
 	vn: true,
 	vodka: true,
@@ -1004,10 +1076,10 @@ var table = {
 	"xn--90a3ac": true,
 	"xn--90ae": true,
 	"xn--90ais": true,
+	"xn--9dbq2a": true,
 	"xn--bck1b9a5dre4c": true,
 	"xn--c1avg": true,
 	"xn--cck2b3b": true,
-	"xn--cg4bki": true,
 	"xn--clchc0ea0b2g2a9gcd": true,
 	"xn--czr694b": true,
 	"xn--czrs0t": true,
@@ -1024,6 +1096,7 @@ var table = {
 	"xn--fjq720a": true,
 	"xn--fpcrj9c3d": true,
 	"xn--fzc2c9e2c": true,
+	"xn--g2xx48c": true,
 	"xn--gckr3f0f": true,
 	"xn--h2breg3eve": true,
 	"xn--h2brj9c": true,
@@ -1045,9 +1118,11 @@ var table = {
 	"xn--mgba3a4f16a": true,
 	"xn--mgbaam7a8h": true,
 	"xn--mgbab2bd": true,
+	"xn--mgbah1a3hjkrd": true,
 	"xn--mgbai9azgqp6j": true,
 	"xn--mgbayh7gpa": true,
 	"xn--mgbbh1a": true,
+	"xn--mgbca7dzdo": true,
 	"xn--mgberp4a5d4ar": true,
 	"xn--mgbgu82a": true,
 	"xn--mgbpl2fh": true,
@@ -1060,6 +1135,7 @@ var table = {
 	"xn--nyqy26a": true,
 	"xn--o3cw4h": true,
 	"xn--ogbpf8fl": true,
+	"xn--otu796d": true,
 	"xn--p1acf": true,
 	"xn--p1ai": true,
 	"xn--pgbs0dh": true,
@@ -1068,6 +1144,7 @@ var table = {
 	"xn--rhqv96g": true,
 	"xn--rovu88b": true,
 	"xn--rvc1e0am3e": true,
+	"xn--s9brj9c": true,
 	"xn--ses554g": true,
 	"xn--t60b56a": true,
 	"xn--tckwe": true,
@@ -1075,6 +1152,7 @@ var table = {
 	"xn--vhquv": true,
 	"xn--vuq861b": true,
 	"xn--w4r85el8fhu5dnra": true,
+	"xn--w4rs40l": true,
 	"xn--wgbh1c": true,
 	"xn--wgbl6a": true,
 	"xn--xhq521b": true,
@@ -1084,7 +1162,6 @@ var table = {
 	"xn--yfro4i67o": true,
 	"xn--ygbi2ammx": true,
 	"xn--zfr164b": true,
-	xperia: true,
 	xxx: true,
 	xyz: true,
 	yachts: true,
@@ -1092,8 +1169,10 @@ var table = {
 	ye: true,
 	yoga: true,
 	yokohama: true,
+	youtube: true,
 	yt: true,
 	za: true,
+	zara: true,
 	zm: true,
 	zone: true,
 	zw: true,
@@ -1122,10 +1201,10 @@ var table = {
 	"срб": true,
 	"бг": true,
 	"бел": true,
+	"קום": true,
 	"ファッション": true,
 	"орг": true,
 	"ストア": true,
-	"삼성": true,
 	"சிங்கப்பூர்": true,
 	"商标": true,
 	"商店": true,
@@ -1142,6 +1221,7 @@ var table = {
 	"娱乐": true,
 	"భారత్": true,
 	"ලංකා": true,
+	"购物": true,
 	"クラウド": true,
 	"भारतम्": true,
 	"भारत": true,
@@ -1163,9 +1243,11 @@ var table = {
 	"ایران": true,
 	"امارات": true,
 	"بازار": true,
+	"موريتانيا": true,
 	"پاکستان": true,
 	"الاردن": true,
 	"بارت": true,
+	"ابوظبي": true,
 	"السعودية": true,
 	"ڀارت": true,
 	"سودان": true,
@@ -1178,6 +1260,7 @@ var table = {
 	"健康": true,
 	"ไทย": true,
 	"سورية": true,
+	"招聘": true,
 	"рус": true,
 	"рф": true,
 	"تونس": true,
@@ -1186,6 +1269,7 @@ var table = {
 	"世界": true,
 	"書籍": true,
 	"ഭാരതം": true,
+	"ਭਾਰਤ": true,
 	"网址": true,
 	"닷넷": true,
 	"コム": true,
@@ -1193,6 +1277,7 @@ var table = {
 	"企业": true,
 	"信息": true,
 	"嘉里大酒店": true,
+	"嘉里": true,
 	"مصر": true,
 	"قطر": true,
 	"广东": true,
@@ -1519,21 +1604,21 @@ class UrlMatcher {
 /* eslint-env browser */
 
 var INVALID_TAGS = {
-	A: true,
-	NOSCRIPT: true,
-	OPTION: true,
-	SCRIPT: true,
-	STYLE: true,
-	TEXTAREA: true,
-	SVG: true,
-	CANVAS: true,
-	BUTTON: true,
-	SELECT: true,
-	TEMPLATE: true,
-	METER: true,
-	PROGRESS: true,
-	MATH: true,
-	TIME: true
+	a: true,
+	noscript: true,
+	option: true,
+	script: true,
+	style: true,
+	textarea: true,
+	svg: true,
+	canvas: true,
+	button: true,
+	select: true,
+	template: true,
+	meter: true,
+	progress: true,
+	math: true,
+	time: true
 };
 
 class Pos {
@@ -1644,10 +1729,10 @@ class Linkifier extends EventLite {
 				if (validator && !validator(node)) {
 					return NodeFilter.FILTER_REJECT;
 				}
-				if (INVALID_TAGS[node.nodeName]) {
+				if (INVALID_TAGS[node.localName]) {
 					return NodeFilter.FILTER_REJECT;
 				}
-				if (node.nodeName == "WBR") {
+				if (node.localName == "wbr") {
 					return NodeFilter.FILTER_ACCEPT;
 				}
 				if (node.nodeType == 3) {
@@ -1777,7 +1862,7 @@ function validRoot(node, validator) {
     cache.push(node);
 
     // It is invalid if it has invalid ancestor
-    if (!validator(node) || INVALID_TAGS[node.nodeName]) {
+    if (!validator(node) || INVALID_TAGS[node.localName]) {
       isValid = false;
       break;
     }
@@ -1918,10 +2003,10 @@ function createLinkifyProcess({options, bufferSize}) {
   }
 }
 
-function createOptions(pref) {
+function createOptions(_local_pref) {
   const options = {};
-  pref.on("change", update);
-  update(pref.getAll());
+  _local_pref.on("change", update);
+  update(_local_pref.getAll());
   return options;
   
   function update(changes) {
@@ -1934,7 +2019,7 @@ function createOptions(pref) {
   }
   
   function onlink({link, range, content}) {
-    if (link.childNodes[0].nodeName != "IMG" || !options.embedImageExcludeElement) {
+    if (link.childNodes[0].localName !== "img" || !options.embedImageExcludeElement) {
       return;
     }
     
@@ -1951,18 +2036,17 @@ function createOptions(pref) {
 }
 
 async function startLinkifyPlusPlus(getPref) {
-  // Limit contentType to "text/plain" or "text/html"
+  // Limit contentType to specific content type
   if (
-    document.contentType !== undefined &&
-    document.contentType != "text/plain" &&
-    document.contentType != "text/html"
+    document.contentType &&
+    !["text/plain", "text/html", "application/xhtml+xml"].includes(document.contentType)
   ) {
     return;
   }
   
-  const pref = await getPref();
+  const _local_pref = await getPref();
   const linkifyProcess = createLinkifyProcess({
-    options: createOptions(pref),
+    options: createOptions(_local_pref),
     bufferSize: 100
   });  
   const observer = new MutationObserver(function(mutations){
@@ -2028,10 +2112,9 @@ function prepareDocument() {
   }
 }
 
-/* global pref prefReady */
-
 startLinkifyPlusPlus(async () => {
-  await prefReady;
+  await pref.ready;
   await pref.setCurrentScope(location.hostname);
   return pref;
 });
+})();

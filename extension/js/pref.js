@@ -1,3 +1,4 @@
+var pref = (function () {
 
 
 function createPref(DEFAULT, sep = "/") {
@@ -214,14 +215,13 @@ function createPref(DEFAULT, sep = "/") {
   }
 }
 
-/* global browser chrome */
-
+/* global chrome */
 function promisify(func) {
   return (...args) =>
     new Promise((resolve, reject) => {
       func(...args, (...results) => {
-        if (chrome.runtime.error) {
-          reject(chrome.runtime.error);
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
           return;
         }
         if (results.length <= 1) {
@@ -232,6 +232,8 @@ function promisify(func) {
       });
     });
 }
+
+/* global browser chrome */
 
 function createWebextStorage(area = "local", prefix = "webext-pref/") {
   const events = new EventLite;
@@ -316,7 +318,9 @@ function prefDefault() {
   };
 }
 
-/* global pref */
+const pref = createPref(prefDefault());
+pref.ready = pref.connect(createWebextStorage());
 
-window.pref = createPref(prefDefault());
-window.prefReady = pref.connect(createWebextStorage());
+
+return pref;
+})();

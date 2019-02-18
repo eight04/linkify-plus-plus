@@ -15,7 +15,7 @@
 // @exclude https://encrypted.google.com/*
 // @exclude http://mxr.mozilla.org/*
 // @exclude http://w3c*.github.io/*
-// @require https://greasyfork.org/scripts/27630-linkify-plus-plus-core/code/linkify-plus-plus-core.js?version=213494
+// @require https://greasyfork.org/scripts/27630-linkify-plus-plus-core/code/linkify-plus-plus-core.js?version=671353
 // @require https://greasyfork.org/scripts/371339-gm-webextpref/code/GM_webextPref.js?version=623327
 // @grant GM.getValue
 // @grant GM.setValue
@@ -32,6 +32,7 @@
 // @icon data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDE2IDE2Ij4gPHBhdGggZmlsbD0iIzRjNGM0ZCIgZD0iTTMuNSAxYS41LjUgMCAxIDAgMCAxSDR2OWgtLjVhLjUuNSAwIDAgMCAwIDFoNy44NTVhLjUuNSAwIDAgMCAuNDc1LS4xODQuNS41IDAgMCAwIC4xMDYtLjM5OFYxMC41YS41LjUgMCAxIDAtMSAwdi41SDZWMmguNWEuNS41IDAgMSAwIDAtMWgtM3oiLz4gPHBhdGggZmlsbD0iIzQ1YTFmZiIgZD0iTTIuNSAxNGExIDEgMCAxIDAgMCAyaDExYTEgMSAwIDEgMCAwLTJoLTExeiIvPiA8L3N2Zz4=
 // ==/UserScript==
 
+(function () {
 
 
 function prefDefault() {
@@ -163,7 +164,7 @@ function validRoot(node, validator) {
     cache.push(node);
 
     // It is invalid if it has invalid ancestor
-    if (!validator(node) || linkifyPlusPlusCore.INVALID_TAGS[node.nodeName]) {
+    if (!validator(node) || linkifyPlusPlusCore.INVALID_TAGS[node.localName]) {
       isValid = false;
       break;
     }
@@ -320,7 +321,7 @@ function createOptions(pref) {
   }
   
   function onlink({link, range, content}) {
-    if (link.childNodes[0].nodeName != "IMG" || !options.embedImageExcludeElement) {
+    if (link.childNodes[0].localName !== "img" || !options.embedImageExcludeElement) {
       return;
     }
     
@@ -337,11 +338,10 @@ function createOptions(pref) {
 }
 
 async function startLinkifyPlusPlus(getPref) {
-  // Limit contentType to "text/plain" or "text/html"
+  // Limit contentType to specific content type
   if (
-    document.contentType !== undefined &&
-    document.contentType != "text/plain" &&
-    document.contentType != "text/html"
+    document.contentType &&
+    !["text/plain", "text/html", "application/xhtml+xml"].includes(document.contentType)
   ) {
     return;
   }
@@ -471,3 +471,4 @@ startLinkifyPlusPlus(async () => {
   await pref.setCurrentScope(location.hostname);
   return pref;
 });
+})();
