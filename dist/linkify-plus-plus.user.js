@@ -315,11 +315,11 @@ function createOptions(pref) {
     if (changes.includeElement != null || changes.excludeElement != null) {
       options.validator = createValidator(options);
     }
-    options.matcher = new linkifyPlusPlusCore.UrlMatcher(options);
-    options.onlink = options.embedImageExcludeElement ? onlink : null;
     if (typeof options.customRules === "string") {
       options.customRules = stringToList(options.customRules);
     }
+    options.matcher = new linkifyPlusPlusCore.UrlMatcher(options);
+    options.onlink = options.embedImageExcludeElement ? onlink : null;
   }
   
   function onlink({link, range, content}) {

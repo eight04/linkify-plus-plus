@@ -2031,11 +2031,11 @@ function createOptions(_local_pref) {
     if (changes.includeElement != null || changes.excludeElement != null) {
       options.validator = createValidator(options);
     }
-    options.matcher = new UrlMatcher(options);
-    options.onlink = options.embedImageExcludeElement ? onlink : null;
     if (typeof options.customRules === "string") {
       options.customRules = stringToList(options.customRules);
     }
+    options.matcher = new UrlMatcher(options);
+    options.onlink = options.embedImageExcludeElement ? onlink : null;
   }
   
   function onlink({link, range, content}) {
