@@ -85,6 +85,11 @@ JavaScript files inside `extension/js/` and `dist/` are built from the `src/` fo
 Changelog
 ---------
 
+* 9.0.2 (Jun 17, 2019)
+
+  - Fix: custom rules are broken.
+  - Fix: do not allow users to input broken selector in options.
+
 * 9.0.1 (Feb 19, 2019)
 
   - Add: support XHTML pages.
