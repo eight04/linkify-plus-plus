@@ -19,7 +19,7 @@ module.exports = getMessage => {
           key: "embedImageExcludeElement",
           type: "textarea",
           label: getMessage("optionsEmbedImageExcludeElementLabel"),
-          parse: validateSelector
+          validate: validateSelector
         }
       ]
     },
@@ -54,13 +54,13 @@ module.exports = getMessage => {
       key: "excludeElement",
       type: "textarea",
       label: getMessage("optionsExcludeElementLabel"),
-      parse: validateSelector
+      validate: validateSelector
     },
     {
       key: "includeElement",
       type: "textarea",
       label: getMessage("optionsIncludeElementLabel"),
-      parse: validateSelector
+      validate: validateSelector
     },
     {
       key: "timeout",
@@ -77,20 +77,11 @@ module.exports = getMessage => {
     {
       key: "customRules",
       type: "textarea",
-      label: getMessage("optionsCustomRulesLabel"),
-      parse: value => {
-        value = value.trim();
-        if (!value) {
-          return [];
-        }
-        return value.split(/\s*\n\s*/g);
-      },
-      format: value => value.join("\n")
+      label: getMessage("optionsCustomRulesLabel")
     }
   ];
   
   function validateSelector(value) {
     document.documentElement.matches(value);
-    return value;
   }
 };

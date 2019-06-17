@@ -13,6 +13,6 @@ module.exports = function() {
     includeElement: "",
     timeout: 10000,
     maxRunTime: 100,
-    customRules: [],
+    customRules: "",
   };
 };

@@ -154,6 +154,14 @@ function createLinkifyProcess({options, bufferSize}) {
   }
 }
 
+function stringToList(value) {
+  value = value.trim();
+  if (!value) {
+    return [];
+  }
+  return value.split(/\s*\n\s*/g);  
+}
+
 function createOptions(pref) {
   const options = {};
   pref.on("change", update);
@@ -167,6 +175,9 @@ function createOptions(pref) {
     }
     options.matcher = new UrlMatcher(options);
     options.onlink = options.embedImageExcludeElement ? onlink : null;
+    if (typeof options.customRules === "string") {
+      options.customRules = stringToList(options.customRules);
+    }
   }
   
   function onlink({link, range, content}) {
