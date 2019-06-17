@@ -1,7 +1,7 @@
 {
   "name": "linkify-plus-plus",
   "description": "Based on Linkify Plus. Turn plain text URLs into links.",
-  "version": "9.0.1",
+  "version": "9.0.2",
   "repository": "eight04/linkify-plus-plus",
   "license": "BSD-3-Clause",
   "devDependencies": {
