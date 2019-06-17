@@ -50,7 +50,7 @@ function prefDefault() {
     includeElement: "",
     timeout: 10000,
     maxRunTime: 100,
-    customRules: [],
+    customRules: "",
   };
 }
 
@@ -75,7 +75,7 @@ var prefBody = getMessage => {
           key: "embedImageExcludeElement",
           type: "textarea",
           label: getMessage("optionsEmbedImageExcludeElementLabel"),
-          parse: validateSelector
+          validate: validateSelector
         }
       ]
     },
@@ -110,13 +110,13 @@ var prefBody = getMessage => {
       key: "excludeElement",
       type: "textarea",
       label: getMessage("optionsExcludeElementLabel"),
-      parse: validateSelector
+      validate: validateSelector
     },
     {
       key: "includeElement",
       type: "textarea",
       label: getMessage("optionsIncludeElementLabel"),
-      parse: validateSelector
+      validate: validateSelector
     },
     {
       key: "timeout",
@@ -133,21 +133,12 @@ var prefBody = getMessage => {
     {
       key: "customRules",
       type: "textarea",
-      label: getMessage("optionsCustomRulesLabel"),
-      parse: value => {
-        value = value.trim();
-        if (!value) {
-          return [];
-        }
-        return value.split(/\s*\n\s*/g);
-      },
-      format: value => value.join("\n")
+      label: getMessage("optionsCustomRulesLabel")
     }
   ];
   
   function validateSelector(value) {
     document.documentElement.matches(value);
-    return value;
   }
 };
 
@@ -305,6 +296,14 @@ function createLinkifyProcess({options, bufferSize}) {
   }
 }
 
+function stringToList(value) {
+  value = value.trim();
+  if (!value) {
+    return [];
+  }
+  return value.split(/\s*\n\s*/g);  
+}
+
 function createOptions(pref) {
   const options = {};
   pref.on("change", update);
@@ -318,6 +317,9 @@ function createOptions(pref) {
     }
     options.matcher = new linkifyPlusPlusCore.UrlMatcher(options);
     options.onlink = options.embedImageExcludeElement ? onlink : null;
+    if (typeof options.customRules === "string") {
+      options.customRules = stringToList(options.customRules);
+    }
   }
   
   function onlink({link, range, content}) {

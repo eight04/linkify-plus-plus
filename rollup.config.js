@@ -47,7 +47,7 @@ export default [
       iife()
     ],
     external: ["event-lite"],
-    cache: ".extension.cjsescache"
+    cache: "cjs.extension.json"
   }),
   base({
     input: {
@@ -62,7 +62,7 @@ export default [
       iife()
     ],
     external: ["linkify-plus-plus-core"],
-    cache: ".userscript.cjsescache"
+    cache: "cjs.userscript.json"
   })
 ];
 

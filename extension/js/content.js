@@ -3,7 +3,7 @@
 
 
 var maxLength = 22;
-var chars = "セール佛山ಭಾರತ慈善集团在线한국ଭାରତভাৰত八卦موقعবংল公益司香格里拉网站移动我爱你москвақзнлйтрбгеקוםファッションストアசிங்கபூர商标店城дию新闻家電中文信国國娱乐భారత్ලංකා购物クラウドभारतम्ोसंगठन餐厅络у港食品飞利浦台湾灣手机الجزئرنیتبيپکسدظةڀ澳門닷컴شكგე构健康ไทย招聘фみんなελ世界書籍ഭാരതംਭਾਰਤ址넷コム游戏企业息嘉大酒صط广东இலைநதயாհայ加坡ف政务";
+var chars = "セール佛山ಭಾರತ慈善集团在线한국ଭାରତভাৰতর八卦موقعবংল公益司香格里拉网站移动我爱你москвақзнлйтрбгеקוםファッションストアசிங்கபூர商标店城дию新闻家電中文信国國娱乐భారత్ලංකා购物クラウドભારતभारतम्ोसंगठन餐厅络у港食品飞利浦台湾灣手机الجزئرنیتبيپکسدغظةڀ澳門닷컴شكგე构健康ไทย招聘фみんなελ世界書籍ഭാരതംਭਾਰਤ址넷コム游戏企业息嘉大酒صط广东இலைநதயாհայ加坡ف政务";
 var table = {
 	aarp: true,
 	abb: true,
@@ -20,6 +20,7 @@ var table = {
 	aco: true,
 	actor: true,
 	ad: true,
+	adac: true,
 	adult: true,
 	ae: true,
 	aeg: true,
@@ -80,7 +81,6 @@ var table = {
 	azure: true,
 	ba: true,
 	baby: true,
-	baidu: true,
 	band: true,
 	bank: true,
 	bar: true,
@@ -174,6 +174,7 @@ var table = {
 	catering: true,
 	catholic: true,
 	cba: true,
+	cbn: true,
 	cc: true,
 	cd: true,
 	center: true,
@@ -405,7 +406,6 @@ var table = {
 	gn: true,
 	gold: true,
 	golf: true,
-	goo: true,
 	goog: true,
 	google: true,
 	gop: true,
@@ -496,6 +496,7 @@ var table = {
 	ist: true,
 	istanbul: true,
 	it: true,
+	itau: true,
 	itv: true,
 	jaguar: true,
 	java: true,
@@ -525,7 +526,6 @@ var table = {
 	kg: true,
 	kh: true,
 	ki: true,
-	kia: true,
 	kim: true,
 	kinder: true,
 	kitchen: true,
@@ -577,7 +577,6 @@ var table = {
 	link: true,
 	lipsy: true,
 	live: true,
-	lixil: true,
 	lk: true,
 	llc: true,
 	loan: true,
@@ -709,6 +708,7 @@ var table = {
 	obi: true,
 	observer: true,
 	off: true,
+	office: true,
 	okinawa: true,
 	om: true,
 	omega: true,
@@ -756,6 +756,7 @@ var table = {
 	plus: true,
 	pm: true,
 	pn: true,
+	pohl: true,
 	poker: true,
 	porn: true,
 	post: true,
@@ -978,6 +979,7 @@ var table = {
 	trust: true,
 	tt: true,
 	tube: true,
+	tui: true,
 	tv: true,
 	tw: true,
 	tz: true,
@@ -1005,6 +1007,7 @@ var table = {
 	vi: true,
 	viajes: true,
 	video: true,
+	vig: true,
 	villas: true,
 	vin: true,
 	vip: true,
@@ -1060,6 +1063,7 @@ var table = {
 	"xn--3e0b707e": true,
 	"xn--3hcrj9c": true,
 	"xn--45br5cyl": true,
+	"xn--45brj9c": true,
 	"xn--45q11c": true,
 	"xn--4gbrim": true,
 	"xn--54b7fta0cc": true,
@@ -1098,6 +1102,7 @@ var table = {
 	"xn--fzc2c9e2c": true,
 	"xn--g2xx48c": true,
 	"xn--gckr3f0f": true,
+	"xn--gecrj9c": true,
 	"xn--h2breg3eve": true,
 	"xn--h2brj9c": true,
 	"xn--h2brj9c8c": true,
@@ -1122,6 +1127,7 @@ var table = {
 	"xn--mgbai9azgqp6j": true,
 	"xn--mgbayh7gpa": true,
 	"xn--mgbbh1a": true,
+	"xn--mgbc0a9azcg": true,
 	"xn--mgbca7dzdo": true,
 	"xn--mgberp4a5d4ar": true,
 	"xn--mgbgu82a": true,
@@ -1185,6 +1191,7 @@ var table = {
 	"한국": true,
 	"ଭାରତ": true,
 	"ভাৰত": true,
+	"ভারত": true,
 	"八卦": true,
 	"موقع": true,
 	"বাংলা": true,
@@ -1223,6 +1230,7 @@ var table = {
 	"ලංකා": true,
 	"购物": true,
 	"クラウド": true,
+	"ભારત": true,
 	"भारतम्": true,
 	"भारत": true,
 	"भारोत": true,
@@ -1247,6 +1255,7 @@ var table = {
 	"پاکستان": true,
 	"الاردن": true,
 	"بارت": true,
+	"المغرب": true,
 	"ابوظبي": true,
 	"السعودية": true,
 	"ڀارت": true,
@@ -2003,6 +2012,14 @@ function createLinkifyProcess({options, bufferSize}) {
   }
 }
 
+function stringToList(value) {
+  value = value.trim();
+  if (!value) {
+    return [];
+  }
+  return value.split(/\s*\n\s*/g);  
+}
+
 function createOptions(_local_pref) {
   const options = {};
   _local_pref.on("change", update);
@@ -2016,6 +2033,9 @@ function createOptions(_local_pref) {
     }
     options.matcher = new UrlMatcher(options);
     options.onlink = options.embedImageExcludeElement ? onlink : null;
+    if (typeof options.customRules === "string") {
+      options.customRules = stringToList(options.customRules);
+    }
   }
   
   function onlink({link, range, content}) {
