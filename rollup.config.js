@@ -32,10 +32,10 @@ function base({
 export default [
   base({
     input: [
-      "src/options.js",
-      "src/content.js",
-      "src/pref.js",
-      "src/background.js"
+      "src/extension/options.js",
+      "src/extension/content.js",
+      "src/extension/pref.js",
+      "src/extension/background.js"
     ],
     output: {
       dir: "extension/js",
@@ -51,7 +51,7 @@ export default [
   }),
   base({
     input: {
-      "linkify-plus-plus.user": "src/userscript.js"
+      "linkify-plus-plus.user": "src/userscript/main.js"
     },
     output: {
       banner: metaDataBlock(),

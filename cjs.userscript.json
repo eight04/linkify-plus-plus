@@ -1,4 +1,4 @@
 [
-  "src/lib/pref-body.js",
-  "src/lib/pref-default.js"
+  "src/shared/pref-body.js",
+  "src/shared/pref-default.js"
 ]

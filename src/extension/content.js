@@ -1,4 +1,4 @@
-const {startLinkifyPlusPlus} = require("./lib/main");
+const {startLinkifyPlusPlus} = require("../shared/main");
 const pref = require("./pref");
 
 startLinkifyPlusPlus(async () => {

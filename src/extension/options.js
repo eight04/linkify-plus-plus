@@ -1,6 +1,6 @@
 /* eslint-env webextensions */
 const {createView} = require("webext-pref/lib/view");
-const prefBody = require("./lib/pref-body");
+const prefBody = require("../shared/pref-body");
 const pref = require("./pref");
 
 pref.ready.then(() => {
