@@ -26,7 +26,7 @@ Installation
 
 ### Firefox extension
 
-[Install from Firefox Add-ons](https://addons.mozilla.org/zh-TW/firefox/addon/linkify-plus-plus/).
+[Install from Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/linkify-plus-plus/).
 
 ### Chrome extension
 
