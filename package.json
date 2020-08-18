@@ -5,18 +5,18 @@
   "repository": "eight04/linkify-plus-plus",
   "license": "BSD-3-Clause",
   "devDependencies": {
+    "@rollup/plugin-node-resolve": "^9.0.0",
     "dataurl": "^0.1.0",
-    "eslint": "^5.16.0",
-    "rollup": "^1.15.6",
-    "rollup-plugin-cjs-es": "^0.9.0",
-    "rollup-plugin-iife": "^0.2.0",
+    "eslint": "^7.7.0",
+    "rollup": "^2.26.3",
+    "rollup-plugin-cjs-es": "^1.0.1",
+    "rollup-plugin-iife": "^0.3.1",
     "rollup-plugin-inline-js": "^0.4.0",
     "rollup-plugin-json": "^4.0.0",
-    "rollup-plugin-node-resolve": "^5.0.3",
     "shx": "^0.3.2",
     "sync-version": "^1.0.1",
     "userscript-meta-cli": "^0.4.2",
-    "web-ext": "^3.0.0"
+    "web-ext": "^5.0.0"
   },
   "scripts": {
     "build": "shx rm -rf extension/js && rollup -c && shx cp node_modules/event-lite/dist/event-lite.min.js extension/js/ && shx cp node_modules/webextension-polyfill/dist/browser-polyfill.min.js extension/js/ && sync-version extension/manifest.json && web-ext build",
@@ -69,8 +69,8 @@
   "dependencies": {
     "event-lite": "^0.1.2",
     "linkify-plus-plus-core": "^0.4.1",
-    "webext-pref": "^0.5.1",
-    "webextension-polyfill": "^0.4.0"
+    "webext-pref": "^0.6.0",
+    "webextension-polyfill": "^0.6.0"
   },
   "webExt": {
     "sourceDir": "extension",
