@@ -10,11 +10,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": [
-        "js/event-lite.min.js",
-        "js/pref.js",
-        "js/content.js"
-      ],
+      "js": [],
       "run_at": "document_start"
     }
   ],
@@ -35,10 +31,7 @@
     ]
   },
   "background": {
-    "scripts": [
-      "js/browser-polyfill.min.js",
-      "js/background.js"
-    ]
+    "scripts": []
   },
   "permissions": [
     "storage",

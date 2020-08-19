@@ -1,19 +1,23 @@
 /* eslint-env webextensions */
-const {createView} = require("webext-pref/lib/view");
-const prefBody = require("../shared/pref-body");
-const pref = require("./pref");
+const {createUI, createBinding} = require("webext-pref-ui");
+const prefBody = require("../lib/pref-body");
+const pref = require("../lib/extension-pref");
 
 pref.ready.then(() => {
   let domain = "";
   
-  createView({
+  const root = document.querySelector(".pref-root");
+  
+  root.append(createUI({
+    body,
+    getMessage
+  }));
+  
+  createBinding({
     pref,
-    body: prefBody(browser.i18n.getMessage),
-    root: document.querySelector(".pref-root"),
+    root,
     getNewScope: () => domain,
-    getMessage: (key, params) => {
-      return browser.i18n.getMessage(`pref${key[0].toUpperCase()}${key.slice(1)}`, params);
-    },
+    getMessage,
     alert: createDialog("alert"),
     confirm: createDialog("confirm"),
     prompt: createDialog("prompt")
@@ -33,5 +37,9 @@ pref.ready.then(() => {
     if (/Chrome\/\d+/.test(navigator.userAgent)) {
       return async (...args) => chrome.extension.getBackgroundPage()[type](...args);
     }
+  }
+  
+  function getMessage(key, params) {
+    return browser.i18n.getMessage(`pref${key[0].toUpperCase()}${key.slice(1)}`, params);
   }
 });

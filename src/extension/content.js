@@ -1,5 +1,5 @@
-const {startLinkifyPlusPlus} = require("../shared/main");
-const pref = require("./pref");
+const {startLinkifyPlusPlus} = require("../lib/main");
+const pref = require("../lib/extension-pref");
 
 startLinkifyPlusPlus(async () => {
   await pref.ready;
