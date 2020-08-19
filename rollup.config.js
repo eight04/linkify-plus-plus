@@ -9,6 +9,7 @@ import iife from "rollup-plugin-iife";
 import inline from "rollup-plugin-inline-js";
 import json from "rollup-plugin-json";
 import output from "rollup-plugin-write-output";
+import {terser} from "rollup-plugin-terser";
 import resolve from "@rollup/plugin-node-resolve";
 import inject from "@rollup/plugin-inject";
 
@@ -25,7 +26,7 @@ export default async () => [
     input: await glob("src/extension/*.js"),
     output: {
       format: "es",
-      dir: "dist-extension"
+      dir: "dist-extension/js"
     },
     plugins: [
       copy([
@@ -36,6 +37,7 @@ export default async () => [
       ]),
       ...commonPlugins(),
       inject({
+        exclude: ["**/*/browser-polyfill.js"],
         browser: "webextension-polyfill"
       }),
       iife(),
@@ -61,7 +63,8 @@ export default async () => [
             return content;
           }
         }
-      ])
+      ]),
+      terser()
     ]
   },
   {
@@ -83,7 +86,7 @@ export default async () => [
 function metaDataBlock() {
   const meta = usm.getMeta();
   meta.icon = dataurl.format({
-    data: fs.readFileSync("extension/icon.svg"),
+    data: fs.readFileSync("src/static/icon.svg"),
     mimetype: "image/svg+xml"
   });
   return usm.stringify(meta);

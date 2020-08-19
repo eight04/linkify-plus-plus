@@ -15,6 +15,7 @@
     "rollup-plugin-iife": "^0.3.1",
     "rollup-plugin-inline-js": "^0.4.0",
     "rollup-plugin-json": "^4.0.0",
+    "rollup-plugin-terser": "^7.0.0",
     "rollup-plugin-write-output": "^0.1.0",
     "shx": "^0.3.2",
     "sync-version": "^1.0.1",
@@ -31,7 +32,7 @@
     "start": "web-ext run"
   },
   "eslintIgnore": [
-    "extension",
+    "dist-extension",
     "dist"
   ],
   "userscript": {

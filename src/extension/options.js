@@ -9,7 +9,7 @@ pref.ready.then(() => {
   const root = document.querySelector(".pref-root");
   
   root.append(createUI({
-    body,
+    body: prefBody(getMessage),
     getMessage
   }));
   
