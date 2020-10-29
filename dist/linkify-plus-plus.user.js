@@ -1678,11 +1678,12 @@ var prefBody = getMessage => {
 };
 
 var maxLength = 22;
-var chars = "セール佛山ಭಾರತ慈善集团在线한국ଭାରତভাৰতর八卦موقعবংল公益司香格里拉网站移动我爱你москвақзнлйтрбгеקוםファッションストアசிங்கபூர商标店城дию新闻家電中文信国國娱乐భారత్ලංකා购物クラウドભારતभारतम्ोसंगठन餐厅络у港食品飞利浦台湾灣手机الجزئرنیتبيپکسدغظةڀ澳門닷컴شكგე构健康ไทย招聘фみんなελ世界書籍ഭാരതംਭਾਰਤ址넷コム游戏企业息嘉大酒صط广东இலைநதயாհայ加坡ف政务";
+var chars = "セール佛山ಭಾರತ慈善集团在线한국ଭାରତভাৰতর八卦موقعবংল公益司香格里拉网站移动我爱你москвақзнлйтрбгеקוםファッションストアマゾசிங்கபூர商标店城дию新闻家電中文信国國娱乐భారత్ලංකා购物クラウドભારતभारतम्ोसंगठन餐厅络у港亚马逊食品飞利浦台湾灣手机الجزئرنیتبيپکسدھغظحةڀ澳門닷컴شكგე构健康ไทย招聘фລາວみんなευλ世界書籍ഭാരതംਭਾਰਤ址넷コム游戏企业息嘉大酒صط广东இலைநதயாհայ加坡ف政务";
 var table = {
 	aarp: true,
 	abb: true,
 	abbott: true,
+	abbvie: true,
 	abc: true,
 	able: true,
 	abogado: true,
@@ -1716,6 +1717,7 @@ var table = {
 	allstate: true,
 	alsace: true,
 	am: true,
+	amazon: true,
 	americanexpress: true,
 	amex: true,
 	amfam: true,
@@ -1731,6 +1733,7 @@ var table = {
 	aq: true,
 	aquarelle: true,
 	ar: true,
+	aramco: true,
 	archi: true,
 	army: true,
 	arpa: true,
@@ -1773,6 +1776,7 @@ var table = {
 	bbva: true,
 	bd: true,
 	be: true,
+	beauty: true,
 	beer: true,
 	bentley: true,
 	berlin: true,
@@ -1803,6 +1807,7 @@ var table = {
 	bo: true,
 	boats: true,
 	bofa: true,
+	bond: true,
 	bosch: true,
 	bostik: true,
 	boston: true,
@@ -1850,6 +1855,7 @@ var table = {
 	catholic: true,
 	cba: true,
 	cbn: true,
+	cbs: true,
 	cc: true,
 	cd: true,
 	center: true,
@@ -1895,6 +1901,7 @@ var table = {
 	commbank: true,
 	community: true,
 	company: true,
+	compare: true,
 	computer: true,
 	condos: true,
 	construction: true,
@@ -1908,6 +1915,7 @@ var table = {
 	country: true,
 	coupons: true,
 	courses: true,
+	cpa: true,
 	cr: true,
 	credit: true,
 	creditcard: true,
@@ -1924,12 +1932,14 @@ var table = {
 	cx: true,
 	cy: true,
 	cymru: true,
+	cyou: true,
 	cz: true,
 	dabur: true,
 	dance: true,
 	date: true,
 	dating: true,
 	de: true,
+	dealer: true,
 	deals: true,
 	degree: true,
 	delivery: true,
@@ -1979,19 +1989,18 @@ var table = {
 	engineer: true,
 	engineering: true,
 	enterprises: true,
+	epson: true,
 	equipment: true,
 	er: true,
 	ericsson: true,
 	erni: true,
 	es: true,
 	estate: true,
-	esurance: true,
 	et: true,
 	eu: true,
 	eurovision: true,
 	eus: true,
 	events: true,
-	everbank: true,
 	exchange: true,
 	expert: true,
 	exposed: true,
@@ -2054,6 +2063,7 @@ var table = {
 	game: true,
 	games: true,
 	garden: true,
+	gay: true,
 	gd: true,
 	gdn: true,
 	ge: true,
@@ -2079,6 +2089,7 @@ var table = {
 	gmo: true,
 	gmx: true,
 	gn: true,
+	godaddy: true,
 	gold: true,
 	golf: true,
 	goog: true,
@@ -2104,6 +2115,7 @@ var table = {
 	guru: true,
 	gw: true,
 	gy: true,
+	hair: true,
 	hamburg: true,
 	haus: true,
 	health: true,
@@ -2157,7 +2169,6 @@ var table = {
 	insurance: true,
 	insure: true,
 	int: true,
-	intel: true,
 	international: true,
 	investments: true,
 	io: true,
@@ -2166,7 +2177,6 @@ var table = {
 	ir: true,
 	irish: true,
 	is: true,
-	iselect: true,
 	ismaili: true,
 	ist: true,
 	istanbul: true,
@@ -2201,6 +2211,7 @@ var table = {
 	kg: true,
 	kh: true,
 	ki: true,
+	kia: true,
 	kim: true,
 	kinder: true,
 	kitchen: true,
@@ -2221,7 +2232,6 @@ var table = {
 	kyoto: true,
 	kz: true,
 	la: true,
-	ladbrokes: true,
 	lamborghini: true,
 	lancaster: true,
 	land: true,
@@ -2241,7 +2251,6 @@ var table = {
 	lexus: true,
 	lgbt: true,
 	li: true,
-	liaison: true,
 	lidl: true,
 	life: true,
 	lighting: true,
@@ -2340,7 +2349,6 @@ var table = {
 	mz: true,
 	na: true,
 	nab: true,
-	nadex: true,
 	nagoya: true,
 	name: true,
 	nationwide: true,
@@ -2421,6 +2429,7 @@ var table = {
 	pics: true,
 	pictet: true,
 	pictures: true,
+	ping: true,
 	pink: true,
 	pioneer: true,
 	pizza: true,
@@ -2433,6 +2442,7 @@ var table = {
 	pn: true,
 	pohl: true,
 	poker: true,
+	politie: true,
 	porn: true,
 	post: true,
 	pr: true,
@@ -2454,6 +2464,7 @@ var table = {
 	qa: true,
 	qpon: true,
 	quebec: true,
+	quest: true,
 	racing: true,
 	radio: true,
 	raid: true,
@@ -2524,6 +2535,7 @@ var table = {
 	se: true,
 	seat: true,
 	security: true,
+	select: true,
 	sener: true,
 	services: true,
 	ses: true,
@@ -2566,6 +2578,7 @@ var table = {
 	solutions: true,
 	sony: true,
 	soy: true,
+	spa: true,
 	space: true,
 	sport: true,
 	spreadbetting: true,
@@ -2598,7 +2611,6 @@ var table = {
 	sx: true,
 	sy: true,
 	sydney: true,
-	symantec: true,
 	systems: true,
 	sz: true,
 	taipei: true,
@@ -2639,6 +2651,7 @@ var table = {
 	tools: true,
 	top: true,
 	toray: true,
+	toshiba: true,
 	total: true,
 	tours: true,
 	town: true,
@@ -2688,7 +2701,6 @@ var table = {
 	vip: true,
 	visa: true,
 	vision: true,
-	vistaprint: true,
 	vivo: true,
 	vlaanderen: true,
 	vn: true,
@@ -2703,7 +2715,6 @@ var table = {
 	wales: true,
 	walter: true,
 	wang: true,
-	warman: true,
 	watch: true,
 	webcam: true,
 	weber: true,
@@ -2759,6 +2770,7 @@ var table = {
 	"xn--bck1b9a5dre4c": true,
 	"xn--c1avg": true,
 	"xn--cck2b3b": true,
+	"xn--cckwcxetd": true,
 	"xn--clchc0ea0b2g2a9gcd": true,
 	"xn--czr694b": true,
 	"xn--czrs0t": true,
@@ -2787,6 +2799,7 @@ var table = {
 	"xn--io0a7i": true,
 	"xn--j1amh": true,
 	"xn--j6w193g": true,
+	"xn--jlq480n2rg": true,
 	"xn--jvr189m": true,
 	"xn--kcrx77d1x4a": true,
 	"xn--kprw13d": true,
@@ -2802,8 +2815,10 @@ var table = {
 	"xn--mgbai9azgqp6j": true,
 	"xn--mgbayh7gpa": true,
 	"xn--mgbbh1a": true,
+	"xn--mgbbh1a71e": true,
 	"xn--mgbc0a9azcg": true,
 	"xn--mgbca7dzdo": true,
+	"xn--mgbcpq6gpa1a": true,
 	"xn--mgberp4a5d4ar": true,
 	"xn--mgbgu82a": true,
 	"xn--mgbpl2fh": true,
@@ -2811,6 +2826,7 @@ var table = {
 	"xn--mix891f": true,
 	"xn--mk1bu44c": true,
 	"xn--ngbc5azd": true,
+	"xn--ngbe9e0a": true,
 	"xn--node": true,
 	"xn--nqv7f": true,
 	"xn--nyqy26a": true,
@@ -2820,7 +2836,9 @@ var table = {
 	"xn--p1acf": true,
 	"xn--p1ai": true,
 	"xn--pgbs0dh": true,
+	"xn--q7ce6a": true,
 	"xn--q9jyb4c": true,
+	"xn--qxa6a": true,
 	"xn--qxam": true,
 	"xn--rhqv96g": true,
 	"xn--rovu88b": true,
@@ -2856,6 +2874,7 @@ var table = {
 	zara: true,
 	zm: true,
 	zone: true,
+	zuerich: true,
 	zw: true,
 	"セール": true,
 	"佛山": true,
@@ -2887,6 +2906,7 @@ var table = {
 	"ファッション": true,
 	"орг": true,
 	"ストア": true,
+	"アマゾン": true,
 	"சிங்கப்பூர்": true,
 	"商标": true,
 	"商店": true,
@@ -2915,6 +2935,7 @@ var table = {
 	"网络": true,
 	"укр": true,
 	"香港": true,
+	"亚马逊": true,
 	"食品": true,
 	"飞利浦": true,
 	"台湾": true,
@@ -2930,8 +2951,10 @@ var table = {
 	"پاکستان": true,
 	"الاردن": true,
 	"بارت": true,
+	"بھارت": true,
 	"المغرب": true,
 	"ابوظبي": true,
+	"البحرين": true,
 	"السعودية": true,
 	"ڀارت": true,
 	"سودان": true,
@@ -2939,6 +2962,7 @@ var table = {
 	"澳門": true,
 	"닷컴": true,
 	"شبكة": true,
+	"بيتك": true,
 	"გე": true,
 	"机构": true,
 	"健康": true,
@@ -2948,7 +2972,9 @@ var table = {
 	"рус": true,
 	"рф": true,
 	"تونس": true,
+	"ລາວ": true,
 	"みんな": true,
+	"ευ": true,
 	"ελ": true,
 	"世界": true,
 	"書籍": true,
@@ -3107,16 +3133,13 @@ function isIP(s) {
 	return true;
 }
 
-function isDomain(d) {
-	return /^[^.-]/.test(d) && d.indexOf("..") < 0;
-}
-
 function inTLDS(domain) {
 	var match = domain.match(/\.([^.]+)$/);
 	if (!match) {
 		return false;
 	}
 	var key = match[1].toLowerCase();
+  // eslint-disable-next-line no-prototype-builtins
 	return TLD_TABLE.hasOwnProperty(key);
 }
 
@@ -3129,7 +3152,8 @@ class UrlMatcher {
 	*match(text) {
 		var {
 				fuzzyIp = true,
-				ignoreMustache = false
+				ignoreMustache = false,
+        mail = true
 			} = this.options,
 			{
 				url,
@@ -3226,20 +3250,13 @@ class UrlMatcher {
 					}
 					continue;
 				}
-				
-				// check domain
-				if (isIP(result.domain)) {
-					if (!fuzzyIp && !result.protocol && !result.auth && !result.path) {
-						continue;
-					}
-				} else if (isDomain(result.domain)) {
-					if (!inTLDS(result.domain)) {
-						continue;
-					}
-				} else {
-					continue;
-				}
-				
+        
+        // ignore fuzzy ip
+				if (!fuzzyIp && isIP(result.domain) &&
+            !result.protocol && !result.auth && !result.path) {
+          continue;
+        }
+        
 				// mailto protocol
 				if (!result.protocol && result.auth) {
 					var matchMail = result.auth.match(/^mailto:(.+)/);
@@ -3267,6 +3284,16 @@ class UrlMatcher {
 						result.protocol = "http://";
 					}
 				}
+        
+        // ignore mail
+        if (!mail && result.protocol === "mailto:") {
+          continue;
+        }
+        
+				// verify domain
+        if (!validDomain(result.domain, result.protocol)) {
+          continue;
+        }
 
 				// Create URL
 				result.url = result.protocol + (result.auth && result.auth + "@") + result.domain + result.port + result.path;
@@ -3283,6 +3310,16 @@ class UrlMatcher {
 			mustache.lastIndex = mustacheLastIndex;
 		}
 	}
+}
+
+function validDomain(domain, protocol) {
+  if (isIP(domain)) return true;
+  if (domain[0] === '-' || domain[0] === '.') return false;
+  if (domain.includes('..')) return false;
+  if (/^(http|https|mailto)/.test(protocol) && !inTLDS(domain)) {
+    return false;
+  }
+  return true;
 }
 
 /* eslint-env browser */
@@ -3507,7 +3544,7 @@ class Linkifier extends Events {
 			link.rel = "noopener";
 		}
 		var child;
-		if (embedImage && /^[^?#]+\.(?:jpg|png|gif|jpeg|svg)(?:$|[?#])/i.test(result.url)) {
+		if (embedImage && /^[^?#]+\.(?:jpg|jpeg|png|apng|gif|svg|webp)(?:$|[?#])/i.test(result.url)) {
 			child = new Image;
 			child.src = result.url;
 			child.alt = result.text;
