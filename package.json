@@ -6,22 +6,22 @@
   "license": "BSD-3-Clause",
   "devDependencies": {
     "@rollup/plugin-inject": "^4.0.2",
-    "@rollup/plugin-node-resolve": "^9.0.0",
+    "@rollup/plugin-node-resolve": "^10.0.0",
     "dataurl": "^0.1.0",
-    "eslint": "^7.7.0",
-    "rollup": "^2.26.3",
+    "eslint": "^7.12.1",
+    "rollup": "^2.32.1",
     "rollup-plugin-cjs-es": "^1.0.1",
     "rollup-plugin-copy-glob": "^0.3.1",
     "rollup-plugin-iife": "^0.3.1",
     "rollup-plugin-inline-js": "^0.4.0",
     "rollup-plugin-json": "^4.0.0",
-    "rollup-plugin-terser": "^7.0.0",
+    "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-write-output": "^0.1.0",
-    "shx": "^0.3.2",
+    "shx": "^0.3.3",
     "sync-version": "^1.0.1",
     "tiny-glob": "^0.2.6",
     "userscript-meta-cli": "^0.4.2",
-    "web-ext": "^5.0.0"
+    "web-ext": "^5.3.0"
   },
   "scripts": {
     "build": "sync-version src/static/manifest.json && rollup -c && web-ext build",
@@ -70,7 +70,7 @@
   "dependencies": {
     "event-lite": "^0.1.2",
     "gm-webext-pref": "^0.4.0",
-    "linkify-plus-plus-core": "^0.4.1",
+    "linkify-plus-plus-core": "^0.5.0",
     "webext-pref": "^0.6.0",
     "webextension-polyfill": "^0.6.0"
   },
