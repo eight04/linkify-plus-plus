@@ -2,3 +2,4 @@ bower_components
 node_modules
 web-ext-artifacts
 .eslintcache
+dist-extension

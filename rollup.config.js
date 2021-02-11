@@ -1,75 +1,92 @@
 import dataurl from "dataurl";
 import fs from "fs";
 import usm from "userscript-meta-cli";
+import glob from "tiny-glob";
 
+import copy from 'rollup-plugin-copy-glob';
 import cjs from "rollup-plugin-cjs-es";
 import iife from "rollup-plugin-iife";
 import inline from "rollup-plugin-inline-js";
 import json from "rollup-plugin-json";
-import resolve from "rollup-plugin-node-resolve";
+import output from "rollup-plugin-write-output";
+import {terser} from "rollup-plugin-terser";
+import resolve from "@rollup/plugin-node-resolve";
+import inject from "@rollup/plugin-inject";
 
-function base({
-  output,
-  plugins = [],
-  cache,
-  ...args
-}) {
-  return {
-    output: {
-      format: "es",
-      ...output
-    },
-    plugins: [
-      ...plugins,
-      resolve(),
-      json(),
-      cjs({nested: true, cache})
-    ],
-    ...args
-  };
+function commonPlugins(cache) {
+  return [
+    resolve(),
+    json(),
+    cjs({nested: true, cache})
+  ];
 }
 
-export default [
-  base({
-    input: [
-      "src/extension/options.js",
-      "src/extension/content.js",
-      "src/extension/pref.js",
-      "src/extension/background.js"
-    ],
+export default async () => [
+  {
+    input: await glob("src/extension/*.js"),
     output: {
-      dir: "extension/js",
-      globals: {
-        "event-lite": "EventLite"
-      }
+      format: "es",
+      dir: "dist-extension/js"
     },
     plugins: [
-      iife()
-    ],
-    external: ["event-lite"],
-    cache: "cjs.extension.json"
-  }),
-  base({
+      copy([
+        {
+          files: "src/static/**/*",
+          dest: "dist-extension"
+        }
+      ]),
+      ...commonPlugins(),
+      inject({
+        exclude: ["**/*/browser-polyfill.js"],
+        browser: "webextension-polyfill"
+      }),
+      iife(),
+      output([
+        {
+          test: /options\.js$/,
+          target: "dist-extension/options.html",
+          handle: (content, {htmlScripts}) => content.replace("</body>", `${htmlScripts}</body>`)
+        },
+        {
+          test: /background\.js$/,
+          target: "dist-extension/manifest.json",
+          handle: (content, {scripts}) => {
+            content.background.scripts = scripts;
+            return content;
+          }
+        },
+        {
+          test: /content\.js$/,
+          target: "dist-extension/manifest.json",
+          handle: (content, {scripts}) => {
+            content.content_scripts[0].js = scripts;
+            return content;
+          }
+        }
+      ]),
+      terser({module: false})
+    ]
+  },
+  {
     input: {
-      "linkify-plus-plus.user": "src/userscript/main.js"
+      "linkify-plus-plus.user": "src/userscript/index.js"
     },
     output: {
+      format: "es",
       banner: metaDataBlock(),
       dir: "dist"
     },
     plugins: [
-      inline(),
-      iife()
-    ],
-    external: ["linkify-plus-plus-core"],
-    cache: "cjs.userscript.json"
-  })
+      ...commonPlugins(false),
+      inline()
+    ]
+  }
 ];
 
 function metaDataBlock() {
   const meta = usm.getMeta();
   meta.icon = dataurl.format({
-    data: fs.readFileSync("extension/icon.svg"),
+    data: fs.readFileSync("src/static/icon.svg"),
     mimetype: "image/svg+xml"
   });
   return usm.stringify(meta);
