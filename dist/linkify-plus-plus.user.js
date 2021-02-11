@@ -1678,8 +1678,9 @@ var prefBody = getMessage => {
 };
 
 var maxLength = 22;
-var chars = "セール佛山ಭಾರತ慈善集团在线한국ଭାରତভাৰতর八卦موقعবংল公益司香格里拉网站移动我爱你москвақзнлйтрбгеקוםファッションストアマゾசிங்கபூர商标店城дию新闻家電中文信国國娱乐భారత్ලංකා购物クラウドભારતभारतम्ोसंगठन餐厅络у港亚马逊食品飞利浦台湾灣手机الجزئرنیتبيپکسدھغظحةڀ澳門닷컴شكგე构健康ไทย招聘фລາວみんなευλ世界書籍ഭാരതംਭਾਰਤ址넷コム游戏企业息嘉大酒صط广东இலைநதயாհայ加坡ف政务";
+var chars = "セール佛山ಭಾರತ慈善集团在线한국ଭାରତভাৰতর八卦ישראלموقعবংল公益司香格里拉网站移动我爱你москвақзнлйтрбгеקוםファッションストアマゾசிங்கபூர商标店城дию新闻家電中文信国國娱乐భారత్ලංකා购物クラウドભારતभारतम्ोसंगठन餐厅络у港亚马逊食品飞利浦台湾灣手机الجزئرنیتبيپکسدھغظحةڀ澳門닷컴شكგე构健康ไทย招聘фລາວみんなευλ世界書籍ഭാരതംਭਾਰਤ址넷コム游戏企业息嘉大酒صط广东இலைநதயாհայ加坡ف政务";
 var table = {
+	aaa: true,
 	aarp: true,
 	abb: true,
 	abbott: true,
@@ -1906,6 +1907,7 @@ var table = {
 	condos: true,
 	construction: true,
 	consulting: true,
+	contact: true,
 	contractors: true,
 	cooking: true,
 	cookingchannel: true,
@@ -2121,6 +2123,7 @@ var table = {
 	health: true,
 	healthcare: true,
 	help: true,
+	helsinki: true,
 	here: true,
 	hermes: true,
 	hgtv: true,
@@ -2277,7 +2280,6 @@ var table = {
 	ltda: true,
 	lu: true,
 	lundbeck: true,
-	lupin: true,
 	luxe: true,
 	luxury: true,
 	lv: true,
@@ -2519,7 +2521,6 @@ var table = {
 	saxo: true,
 	sb: true,
 	sbi: true,
-	sbs: true,
 	sc: true,
 	sca: true,
 	scb: true,
@@ -2554,7 +2555,6 @@ var table = {
 	shop: true,
 	shopping: true,
 	show: true,
-	shriram: true,
 	si: true,
 	singles: true,
 	site: true,
@@ -2751,6 +2751,7 @@ var table = {
 	"xn--45br5cyl": true,
 	"xn--45brj9c": true,
 	"xn--45q11c": true,
+	"xn--4dbrk0ce": true,
 	"xn--4gbrim": true,
 	"xn--54b7fta0cc": true,
 	"xn--55qw42g": true,
@@ -2887,6 +2888,7 @@ var table = {
 	"ভাৰত": true,
 	"ভারত": true,
 	"八卦": true,
+	"ישראל": true,
 	"موقع": true,
 	"বাংলা": true,
 	"公益": true,
@@ -3027,9 +3029,9 @@ function buildRegex({
 	}
 	
 	if (customRules.length) {
-		pattern = "(?:" + pattern + "|(" + customRules.join("|") + "))";
+		pattern = "(?:(" + customRules.join("|") + ")|" + pattern + ")";
 	} else {
-		pattern += "()";
+		pattern = "()" + pattern;
 	}
 	
 	var prefix, suffix, invalidSuffix;
@@ -3178,35 +3180,31 @@ class UrlMatcher {
 		
 		var urlMatch;
 		while ((urlMatch = url.exec(text))) {
-			var result;
-			if (urlMatch[7]) {
-				// custom rules
-				result = {
-					start: urlMatch.index,
-					end: url.lastIndex,
-					
-					text: urlMatch[0],
-					url: urlMatch[0],
-					
-					custom: urlMatch[7]
-				};
+      const result = {
+        start: 0,
+        end: 0,
+        
+        text: "",
+        url: "",
+        
+        prefix: urlMatch[1],
+        custom: urlMatch[2],
+        protocol: urlMatch[3],
+        auth: urlMatch[4] || "",
+        domain: urlMatch[5],
+        port: urlMatch[6] || "",
+        path: urlMatch[7] || "",
+        suffix: urlMatch[8]
+      };
+      
+      if (result.custom) {
+        result.start = urlMatch.index;
+        result.end = url.lastIndex;
+        result.text = result.url = urlMatch[0];
 			} else {
-				result = {
-					start: urlMatch.index + urlMatch[1].length,
-					end: url.lastIndex - urlMatch[8].length,
-					
-					text: null,
-					url: null,
-					
-					prefix: urlMatch[1],
-					protocol: urlMatch[2],
-					auth: urlMatch[3] || "",
-					domain: urlMatch[4],
-					port: urlMatch[5] || "",
-					path: urlMatch[6] || "",
-					custom: urlMatch[7],
-					suffix: urlMatch[8]
-				};
+        
+        result.start = urlMatch.index + result.prefix.length;
+        result.end = url.lastIndex - result.suffix.length;
 			}
 			
 			if (mustacheRange && mustacheRange.end <= result.start) {
@@ -3291,8 +3289,16 @@ class UrlMatcher {
         }
         
 				// verify domain
-        if (!validDomain(result.domain, result.protocol)) {
-          continue;
+        if (!isIP(result.domain)) {
+          if (/^(http|https|mailto)/.test(result.protocol) && !inTLDS(result.domain)) {
+            continue;
+          }
+          
+          const invalidLabel = getInvalidLabel(result.domain);
+          if (invalidLabel) {
+            url.lastIndex = invalidLabel.index + 1;
+            continue;
+          }
         }
 
 				// Create URL
@@ -3312,14 +3318,23 @@ class UrlMatcher {
 	}
 }
 
-function validDomain(domain, protocol) {
-  if (isIP(domain)) return true;
-  if (domain[0] === '-' || domain[0] === '.') return false;
-  if (domain.includes('..')) return false;
-  if (/^(http|https|mailto)/.test(protocol) && !inTLDS(domain)) {
-    return false;
+function getInvalidLabel(domain) {
+  // https://tools.ietf.org/html/rfc1035
+  let index = 0;
+  const parts = domain.split(".");
+  for (const part of parts) {
+    if (
+      !part ||
+      part.length === 1 && /[\d-]/.test(part) ||
+      part.length > 1 && !/^[^\d-].*[^-]$/.test(part)
+    ) {
+      return {
+        index,
+        value: part
+      };
+    }
+    index += part.length + 1;
   }
-  return true;
 }
 
 /* eslint-env browser */
