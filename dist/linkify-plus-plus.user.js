@@ -3296,7 +3296,7 @@ class UrlMatcher {
           
           const invalidLabel = getInvalidLabel(result.domain);
           if (invalidLabel) {
-            url.lastIndex = invalidLabel.index + 1;
+            url.lastIndex = urlMatch.index + invalidLabel.index + 1;
             continue;
           }
         }
