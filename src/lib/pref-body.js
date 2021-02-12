@@ -29,6 +29,11 @@ module.exports = getMessage => {
       label: getMessage("optionsUnicodeLabel")
     },
     {
+      key: "mail",
+      type: "checkbox",
+      label: getMessage("optionsMailLabel")
+    },
+    {
       key: "newTab",
       type: "checkbox",
       label: getMessage("optionsNewTabLabel")

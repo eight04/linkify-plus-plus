@@ -5,6 +5,7 @@ module.exports = function() {
     embedImageExcludeElement: ".hljs, .highlight, .brush\\:",
     ignoreMustache: false,
     unicode: false,
+    mail: true,
     newTab: false,
     standalone: false,
     boundaryLeft: "{[(\"'",

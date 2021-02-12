@@ -461,21 +461,6 @@ function isRef(maybeRef) {
   return isObject(maybeRef) && "current" in maybeRef
 }
 
-function _objectWithoutPropertiesLoose(source, excluded) {
-  if (source == null) return {}
-  var target = {};
-  var sourceKeys = Object.keys(source);
-  var key, i;
-
-  for (i = 0; i < sourceKeys.length; i++) {
-    key = sourceKeys[i];
-    if (excluded.indexOf(key) >= 0) continue
-    target[key] = source[key];
-  }
-
-  return target
-}
-
 const isUnitlessNumber = {
   animationIterationCount: 0,
   borderImageOutset: 0,
@@ -618,15 +603,11 @@ function createElement(tag, attr, ...children) {
   attr = attr || {};
 
   if (!attr.namespaceURI && svg[tag] === 0) {
-    attr = Object.assign({}, attr, {
-      namespaceURI: SVGNamespace,
-    });
+    attr = { ...attr, namespaceURI: SVGNamespace };
   }
 
   if (attr.children != null && !children.length) {
-    var _attr = attr
-    ;({ children } = _attr);
-    attr = _objectWithoutPropertiesLoose(_attr, ["children"]);
+({ children, ...attr } = attr);
   }
 
   let node;
@@ -639,14 +620,10 @@ function createElement(tag, attr, ...children) {
     appendChild(children, node);
   } else if (isFunction(tag)) {
     if (isObject(tag.defaultProps)) {
-      attr = Object.assign({}, tag.defaultProps, attr);
+      attr = { ...tag.defaultProps, ...attr };
     }
 
-    node = tag(
-      Object.assign({}, attr, {
-        children,
-      })
-    );
+    node = tag({ ...attr, children });
   }
 
   if (isRef(attr.ref)) {
@@ -765,7 +742,13 @@ function attribute(key, value, node) {
 
   if (isFunction(value)) {
     if (key[0] === "o" && key[1] === "n") {
-      node[key.toLowerCase()] = value;
+      const attribute = key.toLowerCase();
+
+      if (node[attribute] == null) {
+        node[attribute] = value;
+      } else {
+        node.addEventListener(key, value);
+      }
     }
   } else if (value === true) {
     attr(node, key, "");
@@ -1577,6 +1560,7 @@ function prefDefault() {
     embedImageExcludeElement: ".hljs, .highlight, .brush\\:",
     ignoreMustache: false,
     unicode: false,
+    mail: true,
     newTab: false,
     standalone: false,
     boundaryLeft: "{[(\"'",
@@ -1618,6 +1602,11 @@ var prefBody = getMessage => {
       key: "unicode",
       type: "checkbox",
       label: getMessage("optionsUnicodeLabel")
+    },
+    {
+      key: "mail",
+      type: "checkbox",
+      label: getMessage("optionsMailLabel")
     },
     {
       key: "newTab",
@@ -1678,8 +1667,9 @@ var prefBody = getMessage => {
 };
 
 var maxLength = 22;
-var chars = "セール佛山ಭಾರತ慈善集团在线한국ଭାରତভাৰতর八卦موقعবংল公益司香格里拉网站移动我爱你москвақзнлйтрбгеקוםファッションストアマゾசிங்கபூர商标店城дию新闻家電中文信国國娱乐భారత్ලංකා购物クラウドભારતभारतम्ोसंगठन餐厅络у港亚马逊食品飞利浦台湾灣手机الجزئرنیتبيپکسدھغظحةڀ澳門닷컴شكგე构健康ไทย招聘фລາວみんなευλ世界書籍ഭാരതംਭਾਰਤ址넷コム游戏企业息嘉大酒صط广东இலைநதயாհայ加坡ف政务";
+var chars = "セール佛山ಭಾರತ慈善集团在线한국ଭାରତভাৰতর八卦ישראלموقعবংল公益司香格里拉网站移动我爱你москвақзнлйтрбгеקוםファッションストアマゾசிங்கபூர商标店城дию新闻家電中文信国國娱乐భారత్ලංකා购物クラウドભારતभारतम्ोसंगठन餐厅络у港亚马逊食品飞利浦台湾灣手机الجزئرنیتبيپکسدھغظحةڀ澳門닷컴شكგე构健康ไทย招聘фລາວみんなευλ世界書籍ഭാരതംਭਾਰਤ址넷コム游戏企业息嘉大酒صط广东இலைநதயாհայ加坡ف政务";
 var table = {
+	aaa: true,
 	aarp: true,
 	abb: true,
 	abbott: true,
@@ -1906,6 +1896,7 @@ var table = {
 	condos: true,
 	construction: true,
 	consulting: true,
+	contact: true,
 	contractors: true,
 	cooking: true,
 	cookingchannel: true,
@@ -2121,6 +2112,7 @@ var table = {
 	health: true,
 	healthcare: true,
 	help: true,
+	helsinki: true,
 	here: true,
 	hermes: true,
 	hgtv: true,
@@ -2277,7 +2269,6 @@ var table = {
 	ltda: true,
 	lu: true,
 	lundbeck: true,
-	lupin: true,
 	luxe: true,
 	luxury: true,
 	lv: true,
@@ -2519,7 +2510,6 @@ var table = {
 	saxo: true,
 	sb: true,
 	sbi: true,
-	sbs: true,
 	sc: true,
 	sca: true,
 	scb: true,
@@ -2554,7 +2544,6 @@ var table = {
 	shop: true,
 	shopping: true,
 	show: true,
-	shriram: true,
 	si: true,
 	singles: true,
 	site: true,
@@ -2751,6 +2740,7 @@ var table = {
 	"xn--45br5cyl": true,
 	"xn--45brj9c": true,
 	"xn--45q11c": true,
+	"xn--4dbrk0ce": true,
 	"xn--4gbrim": true,
 	"xn--54b7fta0cc": true,
 	"xn--55qw42g": true,
@@ -2887,6 +2877,7 @@ var table = {
 	"ভাৰত": true,
 	"ভারত": true,
 	"八卦": true,
+	"ישראל": true,
 	"موقع": true,
 	"বাংলা": true,
 	"公益": true,
@@ -3027,9 +3018,9 @@ function buildRegex({
 	}
 	
 	if (customRules.length) {
-		pattern = "(?:" + pattern + "|(" + customRules.join("|") + "))";
+		pattern = "(?:(" + customRules.join("|") + ")|" + pattern + ")";
 	} else {
-		pattern += "()";
+		pattern = "()" + pattern;
 	}
 	
 	var prefix, suffix, invalidSuffix;
@@ -3178,35 +3169,31 @@ class UrlMatcher {
 		
 		var urlMatch;
 		while ((urlMatch = url.exec(text))) {
-			var result;
-			if (urlMatch[7]) {
-				// custom rules
-				result = {
-					start: urlMatch.index,
-					end: url.lastIndex,
-					
-					text: urlMatch[0],
-					url: urlMatch[0],
-					
-					custom: urlMatch[7]
-				};
+      const result = {
+        start: 0,
+        end: 0,
+        
+        text: "",
+        url: "",
+        
+        prefix: urlMatch[1],
+        custom: urlMatch[2],
+        protocol: urlMatch[3],
+        auth: urlMatch[4] || "",
+        domain: urlMatch[5],
+        port: urlMatch[6] || "",
+        path: urlMatch[7] || "",
+        suffix: urlMatch[8]
+      };
+      
+      if (result.custom) {
+        result.start = urlMatch.index;
+        result.end = url.lastIndex;
+        result.text = result.url = urlMatch[0];
 			} else {
-				result = {
-					start: urlMatch.index + urlMatch[1].length,
-					end: url.lastIndex - urlMatch[8].length,
-					
-					text: null,
-					url: null,
-					
-					prefix: urlMatch[1],
-					protocol: urlMatch[2],
-					auth: urlMatch[3] || "",
-					domain: urlMatch[4],
-					port: urlMatch[5] || "",
-					path: urlMatch[6] || "",
-					custom: urlMatch[7],
-					suffix: urlMatch[8]
-				};
+        
+        result.start = urlMatch.index + result.prefix.length;
+        result.end = url.lastIndex - result.suffix.length;
 			}
 			
 			if (mustacheRange && mustacheRange.end <= result.start) {
@@ -3291,8 +3278,16 @@ class UrlMatcher {
         }
         
 				// verify domain
-        if (!validDomain(result.domain, result.protocol)) {
-          continue;
+        if (!isIP(result.domain)) {
+          if (/^(http|https|mailto)/.test(result.protocol) && !inTLDS(result.domain)) {
+            continue;
+          }
+          
+          const invalidLabel = getInvalidLabel(result.domain);
+          if (invalidLabel) {
+            url.lastIndex = urlMatch.index + invalidLabel.index + 1;
+            continue;
+          }
         }
 
 				// Create URL
@@ -3312,14 +3307,23 @@ class UrlMatcher {
 	}
 }
 
-function validDomain(domain, protocol) {
-  if (isIP(domain)) return true;
-  if (domain[0] === '-' || domain[0] === '.') return false;
-  if (domain.includes('..')) return false;
-  if (/^(http|https|mailto)/.test(protocol) && !inTLDS(domain)) {
-    return false;
+function getInvalidLabel(domain) {
+  // https://tools.ietf.org/html/rfc1035
+  let index = 0;
+  const parts = domain.split(".");
+  for (const part of parts) {
+    if (
+      !part ||
+      part.length === 1 && /[\d-]/.test(part) ||
+      part.length > 1 && !/^[^\d-].*[^-]$/.test(part)
+    ) {
+      return {
+        index,
+        value: part
+      };
+    }
+    index += part.length + 1;
   }
-  return true;
 }
 
 /* eslint-env browser */
@@ -3853,6 +3857,7 @@ function getMessageFactory() {
     "optionsEmbedImageLabel": "Embed images.",
     "optionsEmbedImageExcludeElementLabel": "Exclude following elements. (CSS selector)",
     "optionsUnicodeLabel": "Match unicode characters.",
+    "optionsMailLabel": "Match email address.",
     "optionsNewTabLabel": "Open links in new tabs.",
     "optionsStandaloneLabel": "The link must be surrounded by whitespaces.",
     "optionsBoundaryLeftLabel": "Allowed characters between the whitespace and the link. (left side)",

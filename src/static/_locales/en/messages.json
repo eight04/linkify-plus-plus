@@ -20,6 +20,9 @@
   "optionsUnicodeLabel": {
     "message": "Match unicode characters."
   },
+  "optionsMailLabel": {
+    "message": "Match email address."
+  },
   "optionsNewTabLabel": {
     "message": "Open links in new tabs."
   },
