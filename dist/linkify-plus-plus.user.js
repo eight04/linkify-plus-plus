@@ -1560,6 +1560,7 @@ function prefDefault() {
     embedImageExcludeElement: ".hljs, .highlight, .brush\\:",
     ignoreMustache: false,
     unicode: false,
+    mail: true,
     newTab: false,
     standalone: false,
     boundaryLeft: "{[(\"'",
@@ -1601,6 +1602,11 @@ var prefBody = getMessage => {
       key: "unicode",
       type: "checkbox",
       label: getMessage("optionsUnicodeLabel")
+    },
+    {
+      key: "mail",
+      type: "checkbox",
+      label: getMessage("optionsMailLabel")
     },
     {
       key: "newTab",
@@ -3851,6 +3857,7 @@ function getMessageFactory() {
     "optionsEmbedImageLabel": "Embed images.",
     "optionsEmbedImageExcludeElementLabel": "Exclude following elements. (CSS selector)",
     "optionsUnicodeLabel": "Match unicode characters.",
+    "optionsMailLabel": "Match email address.",
     "optionsNewTabLabel": "Open links in new tabs.",
     "optionsStandaloneLabel": "The link must be surrounded by whitespaces.",
     "optionsBoundaryLeftLabel": "Allowed characters between the whitespace and the link. (left side)",
