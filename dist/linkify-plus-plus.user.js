@@ -461,21 +461,6 @@ function isRef(maybeRef) {
   return isObject(maybeRef) && "current" in maybeRef
 }
 
-function _objectWithoutPropertiesLoose(source, excluded) {
-  if (source == null) return {}
-  var target = {};
-  var sourceKeys = Object.keys(source);
-  var key, i;
-
-  for (i = 0; i < sourceKeys.length; i++) {
-    key = sourceKeys[i];
-    if (excluded.indexOf(key) >= 0) continue
-    target[key] = source[key];
-  }
-
-  return target
-}
-
 const isUnitlessNumber = {
   animationIterationCount: 0,
   borderImageOutset: 0,
@@ -618,15 +603,11 @@ function createElement(tag, attr, ...children) {
   attr = attr || {};
 
   if (!attr.namespaceURI && svg[tag] === 0) {
-    attr = Object.assign({}, attr, {
-      namespaceURI: SVGNamespace,
-    });
+    attr = { ...attr, namespaceURI: SVGNamespace };
   }
 
   if (attr.children != null && !children.length) {
-    var _attr = attr
-    ;({ children } = _attr);
-    attr = _objectWithoutPropertiesLoose(_attr, ["children"]);
+({ children, ...attr } = attr);
   }
 
   let node;
@@ -639,14 +620,10 @@ function createElement(tag, attr, ...children) {
     appendChild(children, node);
   } else if (isFunction(tag)) {
     if (isObject(tag.defaultProps)) {
-      attr = Object.assign({}, tag.defaultProps, attr);
+      attr = { ...tag.defaultProps, ...attr };
     }
 
-    node = tag(
-      Object.assign({}, attr, {
-        children,
-      })
-    );
+    node = tag({ ...attr, children });
   }
 
   if (isRef(attr.ref)) {
@@ -765,7 +742,13 @@ function attribute(key, value, node) {
 
   if (isFunction(value)) {
     if (key[0] === "o" && key[1] === "n") {
-      node[key.toLowerCase()] = value;
+      const attribute = key.toLowerCase();
+
+      if (node[attribute] == null) {
+        node[attribute] = value;
+      } else {
+        node.addEventListener(key, value);
+      }
     }
   } else if (value === true) {
     attr(node, key, "");
