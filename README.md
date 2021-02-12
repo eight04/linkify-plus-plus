@@ -58,10 +58,10 @@ Embed images
 The script uses the following regular expression to detect images:
 
 ```js
-/^[^?#]+\.(?:jpg|png|gif|jpeg|svg)(?:$|[?#])/i
+/^[^?#]+\.(?:jpg|jpeg|png|apng|gif|svg|webp)(?:$|[?#])/i
 ```
 
-[Source](https://github.com/eight04/linkify-plus-plus-core/blob/99efed69429ca18601615facd0a6fc1e72bf9af9/lib/linkifier.js#L225)
+[Source](https://github.com/eight04/linkify-plus-plus-core/blob/5b8da6c2b3fd682585a81028076406ec7592ec37/lib/linkifier.js#L225)
 
 Custom rules
 ------------
@@ -76,7 +76,7 @@ evernote:///\S+
 Build the extension
 -------------------
 
-JavaScript files inside `extension/js/` and `dist/` are built from the `src/` folder:
+Files inside `dist-extension/` and `dist/` are built from the `src/` folder:
 
 1. Install Node.js.
 2. Run `npm install` to install dependencies.
@@ -84,6 +84,15 @@ JavaScript files inside `extension/js/` and `dist/` are built from the `src/` fo
 
 Changelog
 ---------
+
+* 10.0.0 (Next)
+
+  - Refactor the entire build process. The userscript no longer `@require` external resource and the extension is smaller.
+  - Add: Update TLD list.
+  - Add: mail option.
+  - Add: embed webp and apng.
+  - Fix: correctly handle invalid domain labels.
+  - Fix: match custom rules first.
 
 * 9.0.2 (Jun 17, 2019)
 
