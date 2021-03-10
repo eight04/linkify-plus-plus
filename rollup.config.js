@@ -43,8 +43,8 @@ export default async () => [
       iife(),
       output([
         {
-          test: /options\.js$/,
-          target: "dist-extension/options.html",
+          test: /(options|dialog)\.js$/,
+          target: "dist-extension/$1.html",
           handle: (content, {htmlScripts}) => content.replace("</body>", `${htmlScripts}</body>`)
         },
         {

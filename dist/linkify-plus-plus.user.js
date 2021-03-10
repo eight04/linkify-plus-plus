@@ -3309,13 +3309,14 @@ class UrlMatcher {
 
 function getInvalidLabel(domain) {
   // https://tools.ietf.org/html/rfc1035
+  // https://serverfault.com/questions/638260/is-it-valid-for-a-hostname-to-start-with-a-digit
   let index = 0;
   const parts = domain.split(".");
   for (const part of parts) {
     if (
       !part ||
-      part.length === 1 && /[\d-]/.test(part) ||
-      part.length > 1 && !/^[^\d-].*[^-]$/.test(part)
+      part.startsWith("-") ||
+      part.endsWith("-")
     ) {
       return {
         index,
