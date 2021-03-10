@@ -21,7 +21,7 @@
     "sync-version": "^1.0.1",
     "tiny-glob": "^0.2.8",
     "userscript-meta-cli": "^0.4.2",
-    "web-ext": "^5.5.0"
+    "web-ext": "^6.0.0"
   },
   "scripts": {
     "build": "sync-version src/static/manifest.json && shx rm -rf dist-extension/* && rollup -c && web-ext build",
@@ -71,6 +71,7 @@
     "event-lite": "^0.1.2",
     "gm-webext-pref": "^0.4.0",
     "linkify-plus-plus-core": "^0.5.3",
+    "webext-dialog": "^0.1.1",
     "webext-pref": "^0.6.0",
     "webextension-polyfill": "^0.7.0"
   },
