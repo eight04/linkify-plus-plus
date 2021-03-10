@@ -1,4 +1,10 @@
 {
+  "dialogOk": {
+    "message": "OK"
+  },
+  "dialogCancel": {
+    "message": "Cancel"
+  },
   "extensionOptions": {
     "message": "Linkify Plus Plus Options"
   },

@@ -1,0 +1,1 @@
+require("webext-dialog/popup");

@@ -1,12 +1,25 @@
 /* eslint-env webextensions */
 const {createUI, createBinding} = require("webext-pref-ui");
+const {createDialogService} = require("webext-dialog");
+
 const prefBody = require("../lib/pref-body");
 const pref = require("../lib/extension-pref");
+
+const dialog = createDialogService({
+  path: "dialog.html",
+  getMessage: key => browser.i18n.getMessage(`dialog${cap(key)}`)
+});
+
+function cap(s) {
+  return s[0].toUpperCase() + s.slice(1);
+}
 
 pref.ready.then(() => {
   let domain = "";
   
   const root = document.querySelector(".pref-root");
+  
+  const getMessage = (key, params) => browser.i18n.getMessage(`pref${cap(key)}`, params);
   
   root.append(createUI({
     body: prefBody(browser.i18n.getMessage),
@@ -18,9 +31,9 @@ pref.ready.then(() => {
     root,
     getNewScope: () => domain,
     getMessage,
-    alert: createDialog("alert"),
-    confirm: createDialog("confirm"),
-    prompt: createDialog("prompt")
+    alert: dialog.alert,
+    confirm: dialog.confirm,
+    prompt: dialog.prompt
   });
   
   const port = browser.runtime.connect({
@@ -32,14 +45,4 @@ pref.ready.then(() => {
       pref.setCurrentScope(pref.getScopeList().includes(domain) ? domain : "global");
     }
   });
-  
-  function createDialog(type) {
-    if (/Chrome\/\d+/.test(navigator.userAgent)) {
-      return async (...args) => chrome.extension.getBackgroundPage()[type](...args);
-    }
-  }
-  
-  function getMessage(key, params) {
-    return browser.i18n.getMessage(`pref${key[0].toUpperCase()}${key.slice(1)}`, params);
-  }
 });
