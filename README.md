@@ -32,10 +32,10 @@ Installation
 
 This extension can be installed on Chrome. However, it is not hosted on Chrome Webstore. You have to download the source code and [load the extension as an unpacked extension](https://developer.chrome.com/extensions/getstarted#manifest).
 
-1. Download and extract the [ZIP file](https://github.com/eight04/linkify-plus-plus/archive/master.zip).
+1. Go to [release page](https://github.com/eight04/linkify-plus-plus/releases), download and extract the ZIP file.
 2. Navigate to `chrome://extensions/`.
 3. Enable "Developer mode".
-4. Click "LOAD UNPACKED" button and select the `extension` folder that is previously extracted.
+4. Click "LOAD UNPACKED" button and select the folder containing `manifest.json` that is previously extracted.
 
 Testcase
 --------
@@ -85,7 +85,7 @@ Files inside `dist-extension/` and `dist/` are built from the `src/` folder:
 Changelog
 ---------
 
-* 10.0.0 (Next)
+* 10.0.0 (Mar 11, 2021)
 
   - Refactor the entire build process. The userscript no longer `@require` external resource and the extension is smaller.
   - Add: Update TLD list.
@@ -93,6 +93,7 @@ Changelog
   - Add: embed webp and apng.
   - Fix: correctly handle invalid domain labels.
   - Fix: match custom rules first.
+  - Fix: import/export now works in Firefox extension.
 
 * 9.0.2 (Jun 17, 2019)
 
