@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name Linkify Plus Plus
-// @version 9.0.2
+// @version 10.0.0
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @license BSD-3-Clause
 // @homepageURL https://github.com/eight04/linkify-plus-plus
