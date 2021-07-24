@@ -37,6 +37,7 @@
   ],
   "userscript": {
     "name": "Linkify Plus Plus",
+    "author": "eight04 <eight04@gmail.com>",
     "namespace": "eight04.blogspot.com",
     "include": "*",
     "exclude": [
