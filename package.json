@@ -1,7 +1,7 @@
 {
   "name": "linkify-plus-plus",
   "description": "Based on Linkify Plus. Turn plain text URLs into links.",
-  "version": "10.0.0",
+  "version": "10.0.1",
   "repository": "eight04/linkify-plus-plus",
   "license": "BSD-3-Clause",
   "devDependencies": {
@@ -46,8 +46,8 @@
       "https://mail.google.com/*",
       "https://docs.google.com/*",
       "https://encrypted.google.com/*",
-      "http://mxr.mozilla.org/*",
-      "http://w3c*.github.io/*"
+      "https://*.101weiqi.com/*",
+      "https://w3c*.github.io/*"
     ],
     "grant": [
       "GM.getValue",
