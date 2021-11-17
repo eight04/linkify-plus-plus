@@ -1,0 +1,101 @@
+{
+  "dialogOk": {
+    "message": "Oké"
+  },
+  "dialogCancel": {
+    "message": "Annuleren"
+  },
+  "extensionOptions": {
+    "message": "Linkify Plus Plus-instellingen"
+  },
+  "extensionDescription": {
+    "message": "Gebaseerd op Linkify Plus. Zet platte tekst-url's om in links."
+  },
+  "optionsFuzzyIpLabel": {
+    "message": "IP-adressen met 4 tekens omzetten"
+  },
+  "optionsIgnoreMustacheLabel": {
+    "message": "URL's binnen accolades, {{ … }}, negeren"
+  },
+  "optionsEmbedImageLabel": {
+    "message": "Afbeeldingen insluiten"
+  },
+  "optionsEmbedImageExcludeElementLabel": {
+    "message": "Elementen uitsluiten (css-selectie):"
+  },
+  "optionsUnicodeLabel": {
+    "message": "Unicode-tekens omzetten"
+  },
+  "optionsMailLabel": {
+    "message": "E-mailadressen omzetten"
+  },
+  "optionsNewTabLabel": {
+    "message": "Links openen op nieuwe tabbladen"
+  },
+  "optionsStandaloneLabel": {
+    "message": "Alleen links met witruimte rondom omzetten"
+  },
+  "optionsBoundaryLeftLabel": {
+    "message": "Toegestane tekens tussen witruimtes en links (linkerzijde)"
+  },
+  "optionsBoundaryRightLabel": {
+    "message": "Toegestane tekens tussen witruimtes en links (rechterzijde)"
+  },
+  "optionsExcludeElementLabel": {
+    "message": "Elementen uitsluiten (css-selectie):"
+  },
+  "optionsIncludeElementLabel": {
+    "message": "Elementen die bovenstaande negeren (css-selectie):"
+  },
+  "optionsTimeoutLabel": {
+    "message": "Max. uitvoertijd (in ms):"
+  },
+  "optionsTimeoutHelp": {
+    "message": "Het script wordt onderbroken als het te lang duurt om alle links op de gehele pagina om te zetten."
+  },
+  "optionsMaxRunTimeLabel": {
+    "message": "Max. scriptuitvoertijd (in ms)"
+  },
+  "optionsMaxRunTimeHelp": {
+    "message": "Verdeel het proces in kleinere stukken om te voorkomen dat de browser vastloopt."
+  },
+  "optionsCustomRulesLabel": {
+    "message": "Eigen regels (één reguliere uitdrukking per regel):"
+  },
+  "prefCurrentScopeLabel": {
+    "message": "Huidig domein"
+  },
+  "prefAddScopeLabel": {
+    "message": "Domein toevoegen"
+  },
+  "prefAddScopePrompt": {
+    "message": "Domein toevoegen"
+  },
+  "prefDeleteScopeLabel": {
+    "message": "Huidig domein verwijderen"
+  },
+  "prefDeleteScopeConfirm": {
+    "message": "Weet je zeker dat je $DOMAIN$ wilt verwijderen?",
+    "placeholders": {
+      "domain": {
+        "content": "$1",
+        "example": "www.voorbeeld.nl"
+      }
+    }
+  },
+  "prefLearnMoreButton": {
+    "message": "Meer informatie"
+  },
+  "prefImportButton": {
+    "message": "Importeren"
+  },
+  "prefImportPrompt": {
+    "message": "Instellingen plakken"
+  },
+  "prefExportButton": {
+    "message": "Exporteren"
+  },
+  "prefExportPrompt": {
+    "message": "Instellingen kopiëren"
+  }
+}
