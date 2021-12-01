@@ -60,6 +60,7 @@ export default async () => [
           target: "dist-extension/manifest.json",
           handle: (content, {scripts}) => {
             content.content_scripts[0].js = scripts;
+            content.content_scripts[0].exclude_globs = usm.getMeta().exclude;
             return content;
           }
         }
