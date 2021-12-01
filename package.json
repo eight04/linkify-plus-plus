@@ -25,7 +25,7 @@
   },
   "scripts": {
     "build": "sync-version src/static/manifest.json && shx rm -rf dist-extension/* && rollup -c && web-ext build",
-    "test": "eslint \"**/*.js\" --cache && web-ext lint",
+    "test": "eslint . --cache && web-ext lint",
     "preversion": "npm test",
     "version": "npm run build && git add .",
     "postversion": "git push --follow-tags",
