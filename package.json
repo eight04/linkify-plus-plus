@@ -46,7 +46,10 @@
       "https://mail.google.com/*",
       "https://docs.google.com/*",
       "https://encrypted.google.com/*",
+      "https://mastodon.social/*",
       "http://mxr.mozilla.org/*",
+      "https://www.paypal.com/*",
+      "https://term.ptt.cc/*",
       "http://w3c*.github.io/*"
     ],
     "grant": [
