@@ -51,7 +51,7 @@
       "https://w3c*.github.io/*"
       "https://www.paypal.com/*",
       "https://term.ptt.cc/*",
-      "https://mastodon.social/*",
+      "https://mastodon.social/*"
     ],
     "grant": [
       "GM.getValue",
