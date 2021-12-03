@@ -87,6 +87,8 @@ module.exports = getMessage => {
   ];
   
   function validateSelector(value) {
-    document.documentElement.matches(value);
+    if (value) {
+      document.documentElement.matches(value);
+    }
   }
 };

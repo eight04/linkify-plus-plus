@@ -82,6 +82,13 @@ Files inside `dist-extension/` and `dist/` are built from the `src/` folder:
 2. Run `npm install` to install dependencies.
 3. Run `npm run build` to build the extension and the userscript.
 
+Some sites are excluded by default
+----------------------------------
+
+You can check the default exclusion list in [package.json](https://github.com/eight04/linkify-plus-plus/blob/master/package.json#L42). The list is also used by the extension. However, since the list is written into the manifest directly, it is not configurable. Unlike the userscript which allows you to modify the list in the script manager.
+
+File an issue if you think a site should be added/removed from the list.
+
 Changelog
 ---------
 
