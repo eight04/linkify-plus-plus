@@ -4,6 +4,7 @@
   "version": "10.0.0",
   "repository": "eight04/linkify-plus-plus",
   "license": "BSD-3-Clause",
+  "author": "eight04 <eight04@gmail.com>",
   "devDependencies": {
     "@rollup/plugin-inject": "^4.0.2",
     "@rollup/plugin-node-resolve": "^11.2.0",
@@ -37,7 +38,6 @@
   ],
   "userscript": {
     "name": "Linkify Plus Plus",
-    "author": "eight04 <eight04@gmail.com>",
     "namespace": "eight04.blogspot.com",
     "include": "*",
     "exclude": [
