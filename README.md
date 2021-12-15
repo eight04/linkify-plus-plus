@@ -92,6 +92,13 @@ File an issue if you think a site should be added/removed from the list.
 Changelog
 ---------
 
+* 10.1.0 (Dec 15, 2021)
+
+  - Fix: allow empty selector in settings.
+  - Fix: apply the exclude list to the extension.
+  - Change: exclude mastodon, paypal, term.ptt.cc, 101weiqi.com.
+  - Translation: add nl.
+
 * 10.0.0 (Mar 11, 2021)
 
   - Refactor the entire build process. The userscript no longer `@require` external resource and the extension is smaller.
