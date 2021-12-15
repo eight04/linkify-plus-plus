@@ -1,8 +1,9 @@
 // ==UserScript==
 // @name Linkify Plus Plus
-// @version 10.0.0
+// @version 10.1.0
 // @description Based on Linkify Plus. Turn plain text URLs into links.
 // @license BSD-3-Clause
+// @author eight04 <eight04@gmail.com>
 // @homepageURL https://github.com/eight04/linkify-plus-plus
 // @supportURL https://github.com/eight04/linkify-plus-plus/issues
 // @namespace eight04.blogspot.com
@@ -13,8 +14,11 @@
 // @exclude https://mail.google.com/*
 // @exclude https://docs.google.com/*
 // @exclude https://encrypted.google.com/*
-// @exclude http://mxr.mozilla.org/*
-// @exclude http://w3c*.github.io/*
+// @exclude https://*101weiqi.com/*
+// @exclude https://w3c*.github.io/*
+// @exclude https://www.paypal.com/*
+// @exclude https://term.ptt.cc/*
+// @exclude https://mastodon.social/*
 // @grant GM.getValue
 // @grant GM.setValue
 // @grant GM.deleteValue
@@ -1436,20 +1440,22 @@ function createGMStorage() {
 /* eslint-env greasemonkey */
 
 function GM_webextPref({
-  default: _default,
-  body,
-  getNewScope,
-  getMessage,
-  alert,
-  confirm,
-  prompt
+  default: default_,
+  separator,
+  css = "",
+  ...options
 }) {
-  const pref = createPref(_default);
+  const pref = createPref(default_, separator);
   const initializing = pref.connect(createGMStorage());
   let isOpen = false;
   
-  if (typeof GM_registerMenuCommand === "function") {
-    GM_registerMenuCommand(`${getTitle()} - Configure`, openDialog);
+  const registerMenu = 
+    typeof GM_registerMenuCommand === "function" ? GM_registerMenuCommand :
+    typeof GM !== "undefined" && GM && GM.registerMenuCommand ? GM.registerMenuCommand.bind(GM) :
+    undefined;
+    
+  if (registerMenu) {
+    registerMenu(`${getTitle()} - Configure`, openDialog);
   }
   
   return Object.assign(pref, {
@@ -1508,24 +1514,15 @@ function GM_webextPref({
     iframe.onload = () => {
       iframe.onload = null;
       
-      iframe.contentDocument.querySelector(".dialog-style").textContent = "body{display:inline-block;font-size:16px;font-family:sans-serif;white-space:nowrap;overflow:hidden;margin:0;color:#3d3d3d;line-height:1}input[type=number],input[type=text],select,textarea{display:block;width:100%;box-sizing:border-box;height:2em;font:inherit;padding:0 .3em;border:1px solid #9e9e9e;cursor:pointer}select[multiple],textarea{height:6em}input[type=number]:hover,input[type=text]:hover,select:hover,textarea:hover{border-color:#d5d5d5}input[type=number]:focus,input[type=text]:focus,select:focus,textarea:focus{cursor:auto;border-color:#3a93ee}textarea{line-height:1.5}input[type=checkbox],input[type=radio]{display:inline-block;width:1em;height:1em;font:inherit;margin:0}button{box-sizing:border-box;height:2em;font:inherit;border:1px solid #9e9e9e;cursor:pointer;background:0 0}button:hover{border-color:#d5d5d5}button:focus{border-color:#3a93ee}.dialog-body{margin:2em}.webext-pref-toolbar{display:flex;align-items:center;margin-bottom:1em}.dialog-title{font-size:1.34em;margin:0 2em 0 0;flex-grow:1}.webext-pref-toolbar button{font-size:.7em;margin-left:.5em}.webext-pref-nav{display:flex;margin-bottom:1em}.webext-pref-nav select{text-align:center;text-align-last:center}.webext-pref-nav button{width:2em}.webext-pref-number,.webext-pref-radiogroup,.webext-pref-select,.webext-pref-text,.webext-pref-textarea{margin:1em 0}.webext-pref-body>:first-child{margin-top:0}.webext-pref-body>:last-child{margin-bottom:0}.webext-pref-number>input,.webext-pref-select>select,.webext-pref-text>input,.webext-pref-textarea>textarea{margin:.3em 0}.webext-pref-checkbox,.webext-pref-radio{margin:.5em 0;padding-left:1.5em}.webext-pref-checkbox>input,.webext-pref-radio>input{margin-left:-1.5em;margin-right:.5em;vertical-align:middle}.webext-pref-checkbox>label,.webext-pref-radio>label{cursor:pointer;vertical-align:middle}.webext-pref-checkbox>label:hover,.webext-pref-radio>label:hover{color:#707070}.webext-pref-checkbox-children,.webext-pref-radio-children{margin:.7em 0 0;padding:0;border-width:0}.webext-pref-checkbox-children[disabled],.webext-pref-radio-children[disabled]{opacity:.5}.webext-pref-checkbox-children>:first-child,.webext-pref-radio-children>:first-child{margin-top:0}.webext-pref-checkbox-children>:last-child,.webext-pref-radio-children>:last-child{margin-bottom:0}.webext-pref-checkbox-children>:last-child>:last-child,.webext-pref-radio-children>:last-child>:last-child{margin-bottom:0}.webext-pref-help{color:#969696}.responsive{white-space:normal}.responsive .dialog-body{margin:1em}.responsive .webext-pref-toolbar{display:block}.responsive .dialog-title{margin:0 0 1em 0}.responsive .webext-pref-toolbar button{font-size:1em}.responsive .webext-pref-nav{display:block}";
+      iframe.contentDocument.querySelector(".dialog-style").textContent = "body{display:inline-block;font-size:16px;font-family:sans-serif;white-space:nowrap;overflow:hidden;margin:0;color:#3d3d3d;line-height:1}input[type=number],input[type=text],select,textarea{display:block;width:100%;box-sizing:border-box;height:2em;font:inherit;padding:0 .3em;border:1px solid #9e9e9e;cursor:pointer}select[multiple],textarea{height:6em}input[type=number]:hover,input[type=text]:hover,select:hover,textarea:hover{border-color:#d5d5d5}input[type=number]:focus,input[type=text]:focus,select:focus,textarea:focus{cursor:auto;border-color:#3a93ee}textarea{line-height:1.5}input[type=checkbox],input[type=radio]{display:inline-block;width:1em;height:1em;font:inherit;margin:0}button{box-sizing:border-box;height:2em;font:inherit;border:1px solid #9e9e9e;cursor:pointer;background:0 0}button:hover{border-color:#d5d5d5}button:focus{border-color:#3a93ee}.dialog-body{margin:2em}.webext-pref-toolbar{display:flex;align-items:center;margin-bottom:1em}.dialog-title{font-size:1.34em;margin:0 2em 0 0;flex-grow:1}.webext-pref-toolbar button{font-size:.7em;margin-left:.5em}.webext-pref-nav{display:flex;margin-bottom:1em}.webext-pref-nav select{text-align:center;text-align-last:center}.webext-pref-nav button{width:2em}.webext-pref-number,.webext-pref-radiogroup,.webext-pref-select,.webext-pref-text,.webext-pref-textarea{margin:1em 0}.webext-pref-body>:first-child{margin-top:0}.webext-pref-body>:last-child{margin-bottom:0}.webext-pref-number>input,.webext-pref-select>select,.webext-pref-text>input,.webext-pref-textarea>textarea{margin:.3em 0}.webext-pref-checkbox,.webext-pref-radio{margin:.5em 0;padding-left:1.5em}.webext-pref-checkbox>input,.webext-pref-radio>input{margin-left:-1.5em;margin-right:.5em;vertical-align:middle}.webext-pref-checkbox>label,.webext-pref-radio>label{cursor:pointer;vertical-align:middle}.webext-pref-checkbox>label:hover,.webext-pref-radio>label:hover{color:#707070}.webext-pref-checkbox-children,.webext-pref-radio-children{margin:.7em 0 0;padding:0;border-width:0}.webext-pref-checkbox-children[disabled],.webext-pref-radio-children[disabled]{opacity:.5}.webext-pref-checkbox-children>:first-child,.webext-pref-radio-children>:first-child{margin-top:0}.webext-pref-checkbox-children>:last-child,.webext-pref-radio-children>:last-child{margin-bottom:0}.webext-pref-checkbox-children>:last-child>:last-child,.webext-pref-radio-children>:last-child>:last-child{margin-bottom:0}.webext-pref-help{color:#969696}.responsive{white-space:normal}.responsive .dialog-body{margin:1em}.responsive .webext-pref-toolbar{display:block}.responsive .dialog-title{margin:0 0 1em 0}.responsive .webext-pref-toolbar button{font-size:1em}.responsive .webext-pref-nav{display:block}" + css;
       
       const root = iframe.contentDocument.querySelector(".dialog-body");
-      root.append(createUI({
-        body,
-        getMessage
-      }));
+      root.append(createUI(options));
       
       destroyView = createBinding({
         pref,
-        
         root,
-        getMessage,
-        getNewScope,
-        
-        alert,
-        confirm,
-        prompt
+        ...options
       });
       
       const title = document.createElement("h2");
@@ -1662,7 +1659,9 @@ var prefBody = getMessage => {
   ];
   
   function validateSelector(value) {
-    document.documentElement.matches(value);
+    if (value) {
+      document.documentElement.matches(value);
+    }
   }
 };
 
