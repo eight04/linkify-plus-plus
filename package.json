@@ -26,10 +26,11 @@
   },
   "scripts": {
     "build": "sync-version src/static/manifest.json && shx rm -rf dist-extension/* && rollup -c && web-ext build",
+    "build-git": "git archive --output web-ext-artifacts/source.zip master",
     "test": "eslint . --cache && web-ext lint",
     "preversion": "npm test",
     "version": "npm run build && git add .",
-    "postversion": "git push --follow-tags",
+    "postversion": "git push --follow-tags && npm run build-git",
     "start": "web-ext run"
   },
   "eslintIgnore": [
