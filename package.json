@@ -75,7 +75,7 @@
   "dependencies": {
     "event-lite": "^0.1.2",
     "gm-webext-pref": "^0.4.2",
-    "linkify-plus-plus-core": "^0.5.3",
+    "linkify-plus-plus-core": "^0.6.0",
     "sentinel-js": "^0.0.7",
     "webext-dialog": "^0.1.1",
     "webext-pref": "^0.6.0",
