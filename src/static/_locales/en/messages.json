@@ -35,6 +35,21 @@
   "optionsStandaloneLabel": {
     "message": "The link must be surrounded by whitespaces."
   },
+  "optionsTriggerLabel": {
+    "message": "Trigger linkify on"
+  },
+  "optionsTriggerByPageLoadLabel": {
+    "message": "Page load"
+  },
+  "optionsTriggerByNewNodeLabel": {
+    "message": "New elements added"
+  },
+  "optionsTriggerByHoverLabel": {
+    "message": "Mouse over"
+  },
+  "optionsTriggerByClickLabel": {
+    "message": "Mouse click"
+  },
   "optionsBoundaryLeftLabel": {
     "message": "Allowed characters between the whitespace and the link. (left side)"
   },

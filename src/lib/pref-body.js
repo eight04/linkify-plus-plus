@@ -1,6 +1,32 @@
 module.exports = getMessage => {
   return [
     {
+      type: "section",
+      label: getMessage("optionsTriggerLabel"),
+      children: [
+        {
+          key: "triggerByPageLoad",
+          type: "checkbox",
+          label: getMessage("optionsTriggerByPageLoadLabel")
+        },
+        {
+          key: "triggerByNewNode",
+          type: "checkbox",
+          label: getMessage("optionsTriggerByNewNodeLabel")
+        },
+        {
+          key: "triggerByHover",
+          type: "checkbox",
+          label: getMessage("optionsTriggerByHoverLabel")
+        },
+        {
+          key: "triggerByClick",
+          type: "checkbox",
+          label: getMessage("optionsTriggerByClickLabel")
+        }
+      ]
+    },
+    {
       key: "fuzzyIp",
       type: "checkbox",
       label: getMessage("optionsFuzzyIpLabel")
