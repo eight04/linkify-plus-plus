@@ -36,10 +36,10 @@
     "message": "The link must be surrounded by whitespaces."
   },
   "optionsTriggerLabel": {
-    "message": "Trigger linkify on"
+    "message": "Trigger linkifier when"
   },
   "optionsTriggerByPageLoadLabel": {
-    "message": "Page load"
+    "message": "Page loaded"
   },
   "optionsTriggerByNewNodeLabel": {
     "message": "New elements added"

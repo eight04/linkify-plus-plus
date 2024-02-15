@@ -61,16 +61,17 @@ const triggers = [
   {
     enabled: pref => pref.get("triggerByHover"),
     trigger: options => {
-      document.addEventListener("mouseover", function(e){
+      // catch the first mousemove event since mouseover doesn't fire at page refresh
+      document.addEventListener("mousemove", handle, {passive: true, once: true});
+      document.addEventListener("mouseover", handle, { passive: true });
+
+      function handle(e) {
         const el = e.target;
-        console.log(el, processedNodes.has(el))
         if (validRoot(el, options.validator)) {
           processedNodes.add(el);
           linkify({...options, root: el, recursive: false});
         }
-      }, {
-        passive: true
-      });
+      }
     }
   },
   {

@@ -3642,16 +3642,17 @@ const triggers = [
   {
     enabled: pref => pref.get("triggerByHover"),
     trigger: options => {
-      document.addEventListener("mouseover", function(e){
+      // catch the first mousemove event since mouseover doesn't fire at page refresh
+      document.addEventListener("mousemove", handle, {passive: true, once: true});
+      document.addEventListener("mouseover", handle, { passive: true });
+
+      function handle(e) {
         const el = e.target;
-        console.log(el, processedNodes.has(el));
         if (validRoot(el, options.validator)) {
           processedNodes.add(el);
           linkify({...options, root: el, recursive: false});
         }
-      }, {
-        passive: true
-      });
+      }
     }
   },
   {
@@ -3703,7 +3704,6 @@ function createValidator({includeElement, excludeElement}) {
     if (processedNodes.has(node)) {
       return false;
     }
-    // processedNodes.add(node);
 
     if (node.isContentEditable) {
       return false;
@@ -3835,8 +3835,8 @@ function getMessageFactory() {
     "optionsMailLabel": "Match email address.",
     "optionsNewTabLabel": "Open links in new tabs.",
     "optionsStandaloneLabel": "The link must be surrounded by whitespaces.",
-    "optionsTriggerLabel": "Trigger linkify on",
-    "optionsTriggerByPageLoadLabel": "Page load",
+    "optionsTriggerLabel": "Trigger linkifier when",
+    "optionsTriggerByPageLoadLabel": "Page loaded",
     "optionsTriggerByNewNodeLabel": "New elements added",
     "optionsTriggerByHoverLabel": "Mouse over",
     "optionsTriggerByClickLabel": "Mouse click",
