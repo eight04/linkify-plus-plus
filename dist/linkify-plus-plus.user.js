@@ -1581,32 +1581,6 @@ function supportHover() {
 var prefBody = getMessage => {
   return [
     {
-      type: "section",
-      label: getMessage("optionsTriggerLabel"),
-      children: [
-        {
-          key: "triggerByPageLoad",
-          type: "checkbox",
-          label: getMessage("optionsTriggerByPageLoadLabel")
-        },
-        {
-          key: "triggerByNewNode",
-          type: "checkbox",
-          label: getMessage("optionsTriggerByNewNodeLabel")
-        },
-        {
-          key: "triggerByHover",
-          type: "checkbox",
-          label: getMessage("optionsTriggerByHoverLabel")
-        },
-        {
-          key: "triggerByClick",
-          type: "checkbox",
-          label: getMessage("optionsTriggerByClickLabel")
-        }
-      ]
-    },
-    {
       key: "fuzzyIp",
       type: "checkbox",
       label: getMessage("optionsFuzzyIpLabel")
@@ -1689,7 +1663,33 @@ var prefBody = getMessage => {
       key: "customRules",
       type: "textarea",
       label: getMessage("optionsCustomRulesLabel")
-    }
+    },
+    {
+      type: "section",
+      label: getMessage("optionsTriggerLabel"),
+      children: [
+        {
+          key: "triggerByPageLoad",
+          type: "checkbox",
+          label: getMessage("optionsTriggerByPageLoadLabel")
+        },
+        {
+          key: "triggerByNewNode",
+          type: "checkbox",
+          label: getMessage("optionsTriggerByNewNodeLabel")
+        },
+        {
+          key: "triggerByHover",
+          type: "checkbox",
+          label: getMessage("optionsTriggerByHoverLabel")
+        },
+        {
+          key: "triggerByClick",
+          type: "checkbox",
+          label: getMessage("optionsTriggerByClickLabel")
+        }
+      ]
+    },
   ];
   
   function validateSelector(value) {
@@ -3454,7 +3454,7 @@ class Linkifier extends Events {
 		this.aborted = true;
 	}
 	*generateRanges() {
-		var {validator} = this.options;
+		var {validator, recursive} = this.options;
 		var filter = {
 			acceptNode: function(node) {
 				if (validator && !validator(node)) {
@@ -3469,7 +3469,7 @@ class Linkifier extends Events {
 				if (node.nodeType == 3) {
 					return NodeFilter.FILTER_ACCEPT;
 				}
-				return this.options.recursive ? NodeFilter.FILTER_SKIP : NodeFilter.FILTER_REJECT;
+				return recursive ? NodeFilter.FILTER_SKIP : NodeFilter.FILTER_REJECT;
 			}
 		};
 		// Generate linkified ranges.
@@ -3580,153 +3580,8 @@ function linkify(...args) {
 	});
 }
 
-let _module_exports_ = {};
-(function(root, factory) {
-  if (typeof define === 'function' && define.amd) {
-    define([], factory);
-  } else if (typeof _module_exports_ === 'object') {
-    _module_exports_ = factory();
-  } else {
-    root.sentinel = factory();
-  }
-}(undefined, function() {
-var isArray = Array.isArray,
-    selectorToAnimationMap = {},
-    animationCallbacks = {},
-    styleEl,
-    styleSheet,
-    cssRules;
-
-
-return {
-  /**
-   * Add watcher.
-   * @param {array} cssSelectors - List of CSS selector strings
-   * @param {Function} callback - The callback function
-   */
-  on: function(cssSelectors, callback) {
-    if (!callback) return;
-
-    // initialize animationstart event listener
-    if (!styleEl) {
-      var doc = document,
-          head = doc.head;
-
-      // add animationstart event listener
-      doc.addEventListener('animationstart', function(ev, callbacks, l, i) {
-        callbacks = animationCallbacks[ev.animationName];
-
-        // exit if callbacks haven't been registered
-        if (!callbacks) return;
-
-        // stop other callbacks from firing
-        ev.stopImmediatePropagation();
-
-        // iterate through callbacks
-        l = callbacks.length;
-        for (i=0; i < l; i++) callbacks[i](ev.target);
-      }, true);
-      
-      // add stylesheet to document
-      styleEl = doc.getElementById("sentinel-css");
-      if (!styleEl) {
-        styleEl = doc.createElement('style');
-        head.insertBefore(styleEl, head.firstChild);
-      }
-      styleSheet = styleEl.sheet;
-      cssRules = styleSheet.cssRules;
-    }
-    
-    // listify argument and add css rules/ cache callbacks
-    (isArray(cssSelectors) ? cssSelectors : [cssSelectors])
-      .map(function(selector, animId, isCustomName) {
-        animId = selectorToAnimationMap[selector];
-        
-        if (!animId) {
-          isCustomName = selector[0] == '!';
-
-          // define animation name and add to map
-          selectorToAnimationMap[selector] = animId = 
-            isCustomName ? selector.slice(1) : 'sentinel-' + 
-            Math.random().toString(16).slice(2);
-          
-          // add keyframe rule
-          cssRules[styleSheet.insertRule(
-            '@keyframes ' + animId + 
-              '{from{transform:none;}to{transform:none;}}',
-            cssRules.length)]
-            ._id = selector;
-            
-          // add selector animation rule
-          if (!isCustomName) {
-            cssRules[styleSheet.insertRule(
-              selector + '{animation-duration:0.0001s;animation-name:' + 
-                animId + ';}',
-              cssRules.length)]
-              ._id = selector;
-          }
-
-          // add to map
-          selectorToAnimationMap[selector] = animId;
-        }
-        
-        // add to callbacks
-        (animationCallbacks[animId] = animationCallbacks[animId] || [])
-          .push(callback);
-      });
-  },
-  /**
-   * Remove watcher.
-   * @param {array} cssSelectors - List of CSS selector strings
-   * @param {Function} callback - The callback function (optional)
-   */
-  off: function(cssSelectors, callback) {
-    // listify argument and iterate through rules
-    (isArray(cssSelectors) ? cssSelectors : [cssSelectors])
-      .map(function(selector, animId, callbackList, i) {
-        // get animId
-        if (!(animId = selectorToAnimationMap[selector])) return;
-
-        // get callbacks
-        callbackList = animationCallbacks[animId];
-
-        // remove callback from list
-        if (callback) {
-          i = callbackList.length;
-          
-          while (i--) {
-            if (callbackList[i] === callback) callbackList.splice(i, 1);
-          }
-        } else {
-          callbackList = [];
-        }
-        
-        // exit if callbacks still exist
-        if (callbackList.length) return;
-        
-        // clear cache and remove css rules
-        i = cssRules.length;
-        
-        while (i--) {
-          if (cssRules[i]._id == selector) styleSheet.deleteRule(i);
-        }
-        
-        delete selectorToAnimationMap[selector];
-        delete animationCallbacks[animId];
-      });
-  },
-  /**
-   * Reset watchers and cache
-   */
-  reset: function() {
-    selectorToAnimationMap = {};
-    animationCallbacks = {};
-    if (styleEl) styleEl.parentNode.removeChild(styleEl);
-    styleEl = 0;
-  }
-};
-
-}));
+// NOTE: there is a weird transition flickering with :hover on Firefox
+// const sentinel = require('sentinel-js'); // default
 
 const MAX_PROCESSES = 100;
 const processedNodes = new WeakSet;
@@ -3787,11 +3642,15 @@ const triggers = [
   {
     enabled: pref => pref.get("triggerByHover"),
     trigger: options => {
-      _module_exports_.on(":hover", el => {
+      document.addEventListener("mouseover", function(e){
+        const el = e.target;
+        console.log(el, processedNodes.has(el));
         if (validRoot(el, options.validator)) {
           processedNodes.add(el);
           linkify({...options, root: el, recursive: false});
         }
+      }, {
+        passive: true
       });
     }
   },
@@ -3844,7 +3703,7 @@ function createValidator({includeElement, excludeElement}) {
     if (processedNodes.has(node)) {
       return false;
     }
-    processedNodes.add(node);
+    // processedNodes.add(node);
 
     if (node.isContentEditable) {
       return false;

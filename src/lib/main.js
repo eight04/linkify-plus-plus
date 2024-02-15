@@ -1,5 +1,6 @@
 const {linkify, UrlMatcher, INVALID_TAGS} = require("linkify-plus-plus-core");
-const sentinel = require('sentinel-js'); // default
+// NOTE: there is a weird transition flickering with :hover on Firefox
+// const sentinel = require('sentinel-js'); // default
 
 const MAX_PROCESSES = 100;
 const processedNodes = new WeakSet;
@@ -60,11 +61,15 @@ const triggers = [
   {
     enabled: pref => pref.get("triggerByHover"),
     trigger: options => {
-      sentinel.on(":hover", el => {
+      document.addEventListener("mouseover", function(e){
+        const el = e.target;
+        console.log(el, processedNodes.has(el))
         if (validRoot(el, options.validator)) {
           processedNodes.add(el);
           linkify({...options, root: el, recursive: false});
         }
+      }, {
+        passive: true
       });
     }
   },
@@ -117,7 +122,6 @@ function createValidator({includeElement, excludeElement}) {
     if (processedNodes.has(node)) {
       return false;
     }
-    processedNodes.add(node);
 
     if (node.isContentEditable) {
       return false;
