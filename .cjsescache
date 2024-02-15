@@ -1,5 +1,6 @@
 [
   "node_modules/event-lite/event-lite.js",
+  "node_modules/sentinel-js/dist/sentinel.umd.js",
   "node_modules/webext-pref/lib/promisify.js",
   "node_modules/webextension-polyfill/dist/browser-polyfill.js",
   "src/lib/extension-pref.js",

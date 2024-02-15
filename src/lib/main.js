@@ -1,5 +1,5 @@
 const {linkify, UrlMatcher, INVALID_TAGS} = require("linkify-plus-plus-core");
-const sentinel = require('sentinel-js');
+const sentinel = require('sentinel-js'); // default
 
 const MAX_PROCESSES = 100;
 const processedNodes = new WeakSet;
@@ -137,6 +137,9 @@ function createValidator({includeElement, excludeElement}) {
     return includeElement && node.matches(includeElement);
   };
   f.isExcluded = node => {
+    if (INVALID_TAGS[node.localName]) {
+      return true;
+    }
     return excludeElement && node.matches(excludeElement);
   };
   return f;
