@@ -1,4 +1,3 @@
-/* global $inline */
 const translate = require("../static/_locales/en/messages.json"); // default
 const GM_webextPref = require("gm-webext-pref");
 const prefDefault = require("../lib/pref-default");
