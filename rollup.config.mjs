@@ -6,10 +6,9 @@ import glob from "tiny-glob";
 import copy from 'rollup-plugin-copy-glob';
 import cjs from "rollup-plugin-cjs-es";
 import iife from "rollup-plugin-iife";
-import inline from "rollup-plugin-inline-js";
-import json from "rollup-plugin-json";
+import json from "@rollup/plugin-json";
 import output from "rollup-plugin-write-output";
-import {terser} from "rollup-plugin-terser";
+import terser from "@rollup/plugin-terser";
 import resolve from "@rollup/plugin-node-resolve";
 import inject from "@rollup/plugin-inject";
 
@@ -78,8 +77,8 @@ export default async () => [
       dir: "dist"
     },
     plugins: [
+      cleanMessages(),
       ...commonPlugins(false),
-      inline()
     ]
   }
 ];
@@ -91,4 +90,30 @@ function metaDataBlock() {
     mimetype: "image/svg+xml"
   });
   return usm.stringify(meta);
+}
+
+function cleanMessages() {
+  return {
+    name: "clean-messages",
+    transform: (code, id) => {
+      if (!/messages.json/.test(id)) return;
+
+      const message = JSON.parse(code);
+      const newMessage = {};
+      for (const [key, value] of Object.entries(message)) {
+        if (value.placeholders) {
+          value.message = value.message.replace(/\$\w+\$/g, m => {
+            const name = m.slice(1, -1).toLowerCase();
+            return value.placeholders[name].content;
+          });
+        }
+        if (/^options/.test(key)) {
+          newMessage[key] = value.message;
+        } else if (/^pref/.test(key)) {
+          newMessage[key[4].toLowerCase() + key.slice(5)] = value.message;
+        }
+      }
+      return JSON.stringify(newMessage, null, 2);  
+    }
+  }
 }

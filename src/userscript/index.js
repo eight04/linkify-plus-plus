@@ -1,11 +1,10 @@
-/* global $inline */
+const translate = require("../static/_locales/en/messages.json"); // default
 const GM_webextPref = require("gm-webext-pref");
 const prefDefault = require("../lib/pref-default");
 const prefBody = require("../lib/pref-body");
 const {startLinkifyPlusPlus} = require("../lib/main");
 
 function getMessageFactory() {
-  const translate = $inline("../static/_locales/en/messages.json|cleanMessage|indent");
   return (key, params) => {
     if (!params) {
       return translate[key];

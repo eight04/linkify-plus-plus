@@ -12,13 +12,13 @@
     "message": "Based on Linkify Plus. Turn plain text URLs into links."
   },
   "optionsFuzzyIpLabel": {
-    "message": "Match IP with only 4 digits."
+    "message": "Match ambiguous IP addresses."
   },
   "optionsIgnoreMustacheLabel": {
     "message": "Ignore URLs inside mustaches e.g. {{ ... }}."
   },
   "optionsEmbedImageLabel": {
-    "message": "Embed images."
+    "message": "Create an image element if the URL looks like an image file."
   },
   "optionsEmbedImageExcludeElementLabel": {
     "message": "Exclude following elements. (CSS selector)"
@@ -33,7 +33,22 @@
     "message": "Open links in new tabs."
   },
   "optionsStandaloneLabel": {
-    "message": "The link must be surrounded by whitespaces."
+    "message": "The URL must be surrounded by whitespaces."
+  },
+  "optionsLinkifierLabel": {
+    "message": "Linkifier"
+  },
+  "optionsTriggerByPageLoadLabel": {
+    "message": "Trigger on page load."
+  },
+  "optionsTriggerByNewNodeLabel": {
+    "message": "Trigger on dynamically created elements."
+  },
+  "optionsTriggerByHoverLabel": {
+    "message": "Trigger on mouse over."
+  },
+  "optionsTriggerByClickLabel": {
+    "message": "Trigger on mouse click."
   },
   "optionsBoundaryLeftLabel": {
     "message": "Allowed characters between the whitespace and the link. (left side)"
@@ -48,7 +63,7 @@
     "message": "Always linkify following elements. Override above. (CSS selector)"
   },
   "optionsTimeoutLabel": {
-    "message": "Max executation time. (ms)"
+    "message": "Max execution time. (ms)"
   },
   "optionsTimeoutHelp": {
     "message": "The script will terminate if it takes too long to convert the entire page."
@@ -57,7 +72,10 @@
     "message": "Max script run time. (ms)"
   },
   "optionsMaxRunTimeHelp": {
-    "message": "Split the process into small chunks to avoid freezing the browser."
+    "message": "If the script takes too long to run, the process would be splitted into small chunks to avoid browser freeze."
+  },
+  "optionsUrlMatcherLabel": {
+    "message": "URL matcher"
   },
   "optionsCustomRulesLabel": {
     "message": "Custom rules. (RegExp per line)"

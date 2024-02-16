@@ -34,6 +34,75 @@
 // @icon data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDE2IDE2Ij4gPHBhdGggZmlsbD0iIzRjNGM0ZCIgZD0iTTMuNSAxYS41LjUgMCAxIDAgMCAxSDR2OWgtLjVhLjUuNSAwIDAgMCAwIDFoNy44NTVhLjUuNSAwIDAgMCAuNDc1LS4xODQuNS41IDAgMCAwIC4xMDYtLjM5OFYxMC41YS41LjUgMCAxIDAtMSAwdi41SDZWMmguNWEuNS41IDAgMSAwIDAtMWgtM3oiLz4gPHBhdGggZmlsbD0iIzQ1YTFmZiIgZD0iTTIuNSAxNGExIDEgMCAxIDAgMCAyaDExYTEgMSAwIDEgMCAwLTJoLTExeiIvPiA8L3N2Zz4=
 // ==/UserScript==
 
+var optionsFuzzyIpLabel = "Match ambiguous IP addresses.";
+var optionsIgnoreMustacheLabel = "Ignore URLs inside mustaches e.g. {{ ... }}.";
+var optionsEmbedImageLabel = "Create an image element if the URL looks like an image file.";
+var optionsEmbedImageExcludeElementLabel = "Exclude following elements. (CSS selector)";
+var optionsUnicodeLabel = "Match unicode characters.";
+var optionsMailLabel = "Match email address.";
+var optionsNewTabLabel = "Open links in new tabs.";
+var optionsStandaloneLabel = "The URL must be surrounded by whitespaces.";
+var optionsLinkifierLabel = "Linkifier";
+var optionsTriggerByPageLoadLabel = "Trigger on page load.";
+var optionsTriggerByNewNodeLabel = "Trigger on dynamically created elements.";
+var optionsTriggerByHoverLabel = "Trigger on mouse over.";
+var optionsTriggerByClickLabel = "Trigger on mouse click.";
+var optionsBoundaryLeftLabel = "Allowed characters between the whitespace and the link. (left side)";
+var optionsBoundaryRightLabel = "Allowed characters between the whitespace and the link. (right side)";
+var optionsExcludeElementLabel = "Do not linkify following elements. (CSS selector)";
+var optionsIncludeElementLabel = "Always linkify following elements. Override above. (CSS selector)";
+var optionsTimeoutLabel = "Max execution time. (ms)";
+var optionsTimeoutHelp = "The script will terminate if it takes too long to convert the entire page.";
+var optionsMaxRunTimeLabel = "Max script run time. (ms)";
+var optionsMaxRunTimeHelp = "If the script takes too long to run, the process would be splitted into small chunks to avoid browser freeze.";
+var optionsUrlMatcherLabel = "URL matcher";
+var optionsCustomRulesLabel = "Custom rules. (RegExp per line)";
+var currentScopeLabel = "Current domain";
+var addScopeLabel = "Add new domain";
+var addScopePrompt = "Add new domain";
+var deleteScopeLabel = "Delete current domain";
+var deleteScopeConfirm = "Delete domain $1?";
+var learnMoreButton = "Learn more";
+var importButton = "Import";
+var importPrompt = "Paste settings";
+var exportButton = "Export";
+var exportPrompt = "Copy settings";
+var translate = {
+	optionsFuzzyIpLabel: optionsFuzzyIpLabel,
+	optionsIgnoreMustacheLabel: optionsIgnoreMustacheLabel,
+	optionsEmbedImageLabel: optionsEmbedImageLabel,
+	optionsEmbedImageExcludeElementLabel: optionsEmbedImageExcludeElementLabel,
+	optionsUnicodeLabel: optionsUnicodeLabel,
+	optionsMailLabel: optionsMailLabel,
+	optionsNewTabLabel: optionsNewTabLabel,
+	optionsStandaloneLabel: optionsStandaloneLabel,
+	optionsLinkifierLabel: optionsLinkifierLabel,
+	optionsTriggerByPageLoadLabel: optionsTriggerByPageLoadLabel,
+	optionsTriggerByNewNodeLabel: optionsTriggerByNewNodeLabel,
+	optionsTriggerByHoverLabel: optionsTriggerByHoverLabel,
+	optionsTriggerByClickLabel: optionsTriggerByClickLabel,
+	optionsBoundaryLeftLabel: optionsBoundaryLeftLabel,
+	optionsBoundaryRightLabel: optionsBoundaryRightLabel,
+	optionsExcludeElementLabel: optionsExcludeElementLabel,
+	optionsIncludeElementLabel: optionsIncludeElementLabel,
+	optionsTimeoutLabel: optionsTimeoutLabel,
+	optionsTimeoutHelp: optionsTimeoutHelp,
+	optionsMaxRunTimeLabel: optionsMaxRunTimeLabel,
+	optionsMaxRunTimeHelp: optionsMaxRunTimeHelp,
+	optionsUrlMatcherLabel: optionsUrlMatcherLabel,
+	optionsCustomRulesLabel: optionsCustomRulesLabel,
+	currentScopeLabel: currentScopeLabel,
+	addScopeLabel: addScopeLabel,
+	addScopePrompt: addScopePrompt,
+	deleteScopeLabel: deleteScopeLabel,
+	deleteScopeConfirm: deleteScopeConfirm,
+	learnMoreButton: learnMoreButton,
+	importButton: importButton,
+	importPrompt: importPrompt,
+	exportButton: exportButton,
+	exportPrompt: exportPrompt
+};
+
 /**
  * event-lite.js - Light-weight EventEmitter (less than 1KB when gzipped)
  *
@@ -1565,97 +1634,139 @@ function prefDefault() {
     excludeElement: ".highlight, .editbox, .brush\\:, .bdsug, .spreadsheetinfo",
     includeElement: "",
     timeout: 10000,
+    triggerByPageLoad: false,
+    triggerByNewNode: false,
+    triggerByHover: true,
+    triggerByClick: !supportHover(),
     maxRunTime: 100,
     customRules: "",
   };
 }
 
+function supportHover() {
+  return window.matchMedia("(hover)").matches;
+}
+
 var prefBody = getMessage => {
   return [
     {
-      key: "fuzzyIp",
-      type: "checkbox",
-      label: getMessage("optionsFuzzyIpLabel")
-    },
-    {
-      key: "ignoreMustache",
-      type: "checkbox",
-      label: getMessage("optionsIgnoreMustacheLabel")
-    },
-    {
-      key: "embedImage",
-      type: "checkbox",
-      label: getMessage("optionsEmbedImageLabel"),
+      type: "section",
+      label: getMessage("optionsUrlMatcherLabel"),
       children: [
         {
-          key: "embedImageExcludeElement",
-          type: "textarea",
-          label: getMessage("optionsEmbedImageExcludeElementLabel"),
-          validate: validateSelector
-        }
-      ]
-    },
-    {
-      key: "unicode",
-      type: "checkbox",
-      label: getMessage("optionsUnicodeLabel")
-    },
-    {
-      key: "mail",
-      type: "checkbox",
-      label: getMessage("optionsMailLabel")
-    },
-    {
-      key: "newTab",
-      type: "checkbox",
-      label: getMessage("optionsNewTabLabel")
-    },
-    {
-      key: "standalone",
-      type: "checkbox",
-      label: getMessage("optionsStandaloneLabel"),
-      children: [
-        {
-          key: "boundaryLeft",
-          type: "text",
-          label: getMessage("optionsBoundaryLeftLabel")
+          key: "fuzzyIp",
+          type: "checkbox",
+          label: getMessage("optionsFuzzyIpLabel")
         },
         {
-          key: "boundaryRight",
-          type: "text",
-          label: getMessage("optionsBoundaryRightLabel")
-        }
+          key: "ignoreMustache",
+          type: "checkbox",
+          label: getMessage("optionsIgnoreMustacheLabel")
+        },
+        {
+          key: "unicode",
+          type: "checkbox",
+          label: getMessage("optionsUnicodeLabel")
+        },
+        {
+          key: "mail",
+          type: "checkbox",
+          label: getMessage("optionsMailLabel")
+        },
+        {
+          key: "standalone",
+          type: "checkbox",
+          label: getMessage("optionsStandaloneLabel"),
+          children: [
+            {
+              key: "boundaryLeft",
+              type: "text",
+              label: getMessage("optionsBoundaryLeftLabel")
+            },
+            {
+              key: "boundaryRight",
+              type: "text",
+              label: getMessage("optionsBoundaryRightLabel")
+            }
+          ]
+        },
+        {
+          key: "customRules",
+          type: "textarea",
+          label: getMessage("optionsCustomRulesLabel"),
+          learnMore: "https://github.com/eight04/linkify-plus-plus?tab=readme-ov-file#custom-rules"
+        },
+
       ]
     },
     {
-      key: "excludeElement",
-      type: "textarea",
-      label: getMessage("optionsExcludeElementLabel"),
-      validate: validateSelector
+      type: "section",
+      label: getMessage("optionsLinkifierLabel"),
+      children: [
+        {
+          key: "triggerByPageLoad",
+          type: "checkbox",
+          label: getMessage("optionsTriggerByPageLoadLabel")
+        },
+        {
+          key: "triggerByNewNode",
+          type: "checkbox",
+          label: getMessage("optionsTriggerByNewNodeLabel")
+        },
+        {
+          key: "triggerByHover",
+          type: "checkbox",
+          label: getMessage("optionsTriggerByHoverLabel")
+        },
+        {
+          key: "triggerByClick",
+          type: "checkbox",
+          label: getMessage("optionsTriggerByClickLabel")
+        },
+        {
+          key: "embedImage",
+          type: "checkbox",
+          label: getMessage("optionsEmbedImageLabel"),
+          children: [
+            {
+              key: "embedImageExcludeElement",
+              type: "textarea",
+              label: getMessage("optionsEmbedImageExcludeElementLabel"),
+              validate: validateSelector
+            }
+          ]
+        },
+        {
+          key: "newTab",
+          type: "checkbox",
+          label: getMessage("optionsNewTabLabel")
+        },
+        {
+          key: "excludeElement",
+          type: "textarea",
+          label: getMessage("optionsExcludeElementLabel"),
+          validate: validateSelector
+        },
+        {
+          key: "includeElement",
+          type: "textarea",
+          label: getMessage("optionsIncludeElementLabel"),
+          validate: validateSelector
+        },
+        {
+          key: "timeout",
+          type: "number",
+          label: getMessage("optionsTimeoutLabel"),
+          help: getMessage("optionsTimeoutHelp")
+        },
+        {
+          key: "maxRunTime",
+          type: "number",
+          label: getMessage("optionsMaxRunTimeLabel"),
+          help: getMessage("optionsMaxRunTimeHelp")
+        },
+      ]
     },
-    {
-      key: "includeElement",
-      type: "textarea",
-      label: getMessage("optionsIncludeElementLabel"),
-      validate: validateSelector
-    },
-    {
-      key: "timeout",
-      type: "number",
-      label: getMessage("optionsTimeoutLabel"),
-      help: getMessage("optionsTimeoutHelp")
-    },
-    {
-      key: "maxRunTime",
-      type: "number",
-      label: getMessage("optionsMaxRunTimeLabel"),
-      help: getMessage("optionsMaxRunTimeHelp")
-    },
-    {
-      key: "customRules",
-      type: "textarea",
-      label: getMessage("optionsCustomRulesLabel")
-    }
   ];
   
   function validateSelector(value) {
@@ -1665,8 +1776,8 @@ var prefBody = getMessage => {
   }
 };
 
-var maxLength = 22;
-var chars = "セール佛山ಭಾರತ慈善集团在线한국ଭାରତভাৰতর八卦ישראלموقعবংল公益司香格里拉网站移动我爱你москвақзнлйтрбгеקוםファッションストアマゾசிங்கபூர商标店城дию新闻家電中文信国國娱乐భారత్ලංකා购物クラウドભારતभारतम्ोसंगठन餐厅络у港亚马逊食品飞利浦台湾灣手机الجزئرنیتبيپکسدھغظحةڀ澳門닷컴شكგე构健康ไทย招聘фລາວみんなευλ世界書籍ഭാരതംਭਾਰਤ址넷コム游戏企业息嘉大酒صط广东இலைநதயாհայ加坡ف政务";
+var maxLength = 24;
+var chars = "セール佛山ಭಾರತ慈善集团在线한국ଭାରତভাৰতর八卦ישראלموقعবংল公益司网站移动我爱你москвақзнлйт联通рбгеקוםファッションストアசிங்கபூர商标店城дию新闻家電中文信国國娱乐భారత్ලංකා购物クラウドભારતभारतम्ोसंगठन餐厅络у香港食品飞利浦台湾灣手机الجزئرنیتبيپکسدغظحةڀ澳門닷컴شكგე构健康ไทย招聘фລາວみんなευλ世界書籍ഭാരതംਭਾਰਤ址넷コム游戏ö企业息صط广东இலைநதயாհայ加坡ف政务";
 var table = {
 	aaa: true,
 	aarp: true,
@@ -1679,20 +1790,17 @@ var table = {
 	abudhabi: true,
 	ac: true,
 	academy: true,
-	accenture: true,
 	accountant: true,
 	accountants: true,
 	aco: true,
 	actor: true,
 	ad: true,
-	adac: true,
 	adult: true,
 	ae: true,
 	aeg: true,
 	aero: true,
 	aetna: true,
 	af: true,
-	afamilycompany: true,
 	afl: true,
 	africa: true,
 	ag: true,
@@ -1701,10 +1809,13 @@ var table = {
 	aig: true,
 	airbus: true,
 	airforce: true,
+	akdn: true,
 	al: true,
 	allfinanz: true,
 	allstate: true,
+	ally: true,
 	alsace: true,
+	alstom: true,
 	am: true,
 	amazon: true,
 	americanexpress: true,
@@ -1713,16 +1824,15 @@ var table = {
 	amica: true,
 	amsterdam: true,
 	analytics: true,
+	android: true,
 	anz: true,
 	ao: true,
-	aol: true,
 	apartments: true,
 	app: true,
 	apple: true,
 	aq: true,
 	aquarelle: true,
 	ar: true,
-	aramco: true,
 	archi: true,
 	army: true,
 	arpa: true,
@@ -1754,14 +1864,12 @@ var table = {
 	barcelona: true,
 	barclaycard: true,
 	barclays: true,
-	barefoot: true,
 	bargains: true,
 	basketball: true,
 	bauhaus: true,
 	bayern: true,
 	bb: true,
 	bbc: true,
-	bbt: true,
 	bbva: true,
 	bd: true,
 	be: true,
@@ -1789,19 +1897,18 @@ var table = {
 	bloomberg: true,
 	blue: true,
 	bm: true,
-	bms: true,
 	bmw: true,
 	bn: true,
 	bnpparibas: true,
 	bo: true,
 	boats: true,
-	bofa: true,
 	bond: true,
-	bosch: true,
+	boo: true,
 	bostik: true,
 	boston: true,
 	bot: true,
 	boutique: true,
+	box: true,
 	br: true,
 	bradesco: true,
 	bridgestone: true,
@@ -1811,7 +1918,6 @@ var table = {
 	brussels: true,
 	bs: true,
 	bt: true,
-	bugatti: true,
 	build: true,
 	builders: true,
 	business: true,
@@ -1826,7 +1932,6 @@ var table = {
 	cam: true,
 	camera: true,
 	camp: true,
-	cancerresearch: true,
 	canon: true,
 	capetown: true,
 	capital: true,
@@ -1837,6 +1942,7 @@ var table = {
 	careers: true,
 	cars: true,
 	casa: true,
+	"case": true,
 	cash: true,
 	casino: true,
 	cat: true,
@@ -1844,7 +1950,6 @@ var table = {
 	catholic: true,
 	cba: true,
 	cbn: true,
-	cbs: true,
 	cc: true,
 	cd: true,
 	center: true,
@@ -1856,6 +1961,7 @@ var table = {
 	cg: true,
 	ch: true,
 	chanel: true,
+	channel: true,
 	charity: true,
 	chase: true,
 	chat: true,
@@ -1898,7 +2004,6 @@ var table = {
 	contact: true,
 	contractors: true,
 	cooking: true,
-	cookingchannel: true,
 	cool: true,
 	coop: true,
 	corsica: true,
@@ -1914,7 +2019,6 @@ var table = {
 	crown: true,
 	crs: true,
 	cruises: true,
-	csc: true,
 	cu: true,
 	cuisinella: true,
 	cv: true,
@@ -1925,9 +2029,11 @@ var table = {
 	cyou: true,
 	cz: true,
 	dabur: true,
+	dad: true,
 	dance: true,
 	date: true,
 	dating: true,
+	day: true,
 	de: true,
 	dealer: true,
 	deals: true,
@@ -1960,7 +2066,6 @@ var table = {
 	domains: true,
 	download: true,
 	dubai: true,
-	duck: true,
 	dupont: true,
 	durban: true,
 	dvag: true,
@@ -1979,12 +2084,12 @@ var table = {
 	engineer: true,
 	engineering: true,
 	enterprises: true,
-	epson: true,
 	equipment: true,
 	er: true,
 	ericsson: true,
 	erni: true,
 	es: true,
+	esq: true,
 	estate: true,
 	et: true,
 	eu: true,
@@ -2008,7 +2113,6 @@ var table = {
 	feedback: true,
 	ferrero: true,
 	fi: true,
-	fidelity: true,
 	film: true,
 	finance: true,
 	financial: true,
@@ -2019,6 +2123,7 @@ var table = {
 	fitness: true,
 	fj: true,
 	fk: true,
+	flickr: true,
 	flights: true,
 	florist: true,
 	flowers: true,
@@ -2026,7 +2131,6 @@ var table = {
 	fo: true,
 	foo: true,
 	food: true,
-	foodnetwork: true,
 	football: true,
 	ford: true,
 	forex: true,
@@ -2038,9 +2142,7 @@ var table = {
 	fresenius: true,
 	frl: true,
 	frogans: true,
-	frontdoor: true,
 	fujitsu: true,
-	fujixerox: true,
 	fun: true,
 	fund: true,
 	furniture: true,
@@ -2049,7 +2151,6 @@ var table = {
 	ga: true,
 	gal: true,
 	gallery: true,
-	gallo: true,
 	game: true,
 	games: true,
 	garden: true,
@@ -2067,8 +2168,8 @@ var table = {
 	gift: true,
 	gifts: true,
 	gives: true,
+	giving: true,
 	gl: true,
-	glade: true,
 	glass: true,
 	gle: true,
 	global: true,
@@ -2098,7 +2199,6 @@ var table = {
 	gs: true,
 	gt: true,
 	gu: true,
-	guardian: true,
 	gucci: true,
 	guide: true,
 	guitars: true,
@@ -2114,7 +2214,6 @@ var table = {
 	helsinki: true,
 	here: true,
 	hermes: true,
-	hgtv: true,
 	hiphop: true,
 	hisamitsu: true,
 	hitachi: true,
@@ -2131,7 +2230,6 @@ var table = {
 	hospital: true,
 	host: true,
 	hosting: true,
-	hoteles: true,
 	hotmail: true,
 	house: true,
 	how: true,
@@ -2140,6 +2238,7 @@ var table = {
 	ht: true,
 	hu: true,
 	hyatt: true,
+	hyundai: true,
 	ice: true,
 	icu: true,
 	id: true,
@@ -2149,12 +2248,14 @@ var table = {
 	ikano: true,
 	il: true,
 	im: true,
+	imamat: true,
 	immo: true,
 	immobilien: true,
 	"in": true,
 	inc: true,
 	industries: true,
 	info: true,
+	ing: true,
 	ink: true,
 	institute: true,
 	insurance: true,
@@ -2192,19 +2293,15 @@ var table = {
 	jpmorgan: true,
 	jprs: true,
 	juegos: true,
-	juniper: true,
 	kaufen: true,
 	ke: true,
-	kerryhotels: true,
-	kerrylogistics: true,
-	kerryproperties: true,
 	kfh: true,
 	kg: true,
 	kh: true,
 	ki: true,
 	kia: true,
+	kids: true,
 	kim: true,
-	kinder: true,
 	kitchen: true,
 	kiwi: true,
 	km: true,
@@ -2217,7 +2314,6 @@ var table = {
 	kr: true,
 	krd: true,
 	kred: true,
-	kuokgroup: true,
 	kw: true,
 	ky: true,
 	kyoto: true,
@@ -2236,22 +2332,22 @@ var table = {
 	lc: true,
 	lease: true,
 	leclerc: true,
-	lefrak: true,
 	legal: true,
-	lego: true,
 	lexus: true,
 	lgbt: true,
 	li: true,
 	lidl: true,
 	life: true,
+	lifestyle: true,
 	lighting: true,
 	lilly: true,
 	limited: true,
 	limo: true,
-	linde: true,
+	lincoln: true,
 	link: true,
 	lipsy: true,
 	live: true,
+	living: true,
 	lk: true,
 	llc: true,
 	loan: true,
@@ -2293,6 +2389,7 @@ var table = {
 	media: true,
 	meet: true,
 	melbourne: true,
+	meme: true,
 	memorial: true,
 	men: true,
 	menu: true,
@@ -2321,6 +2418,7 @@ var table = {
 	mortgage: true,
 	moscow: true,
 	motorcycles: true,
+	mov: true,
 	movie: true,
 	mp: true,
 	mq: true,
@@ -2331,7 +2429,7 @@ var table = {
 	mtr: true,
 	mu: true,
 	museum: true,
-	mutual: true,
+	music: true,
 	mv: true,
 	mw: true,
 	mx: true,
@@ -2341,8 +2439,6 @@ var table = {
 	nab: true,
 	nagoya: true,
 	name: true,
-	nationwide: true,
-	natura: true,
 	navy: true,
 	nc: true,
 	ne: true,
@@ -2354,21 +2450,18 @@ var table = {
 	"new": true,
 	news: true,
 	next: true,
-	nextdirect: true,
+	nexus: true,
 	nf: true,
 	ng: true,
 	ngo: true,
 	ni: true,
 	nico: true,
-	nikon: true,
+	nike: true,
 	ninja: true,
 	nissan: true,
-	nissay: true,
 	nl: true,
 	no: true,
 	nokia: true,
-	northwesternmutual: true,
-	norton: true,
 	nowruz: true,
 	np: true,
 	nr: true,
@@ -2378,9 +2471,7 @@ var table = {
 	nu: true,
 	nyc: true,
 	nz: true,
-	obi: true,
 	observer: true,
-	off: true,
 	office: true,
 	okinawa: true,
 	om: true,
@@ -2389,7 +2480,6 @@ var table = {
 	ong: true,
 	onl: true,
 	online: true,
-	onyourside: true,
 	ooo: true,
 	oracle: true,
 	orange: true,
@@ -2400,6 +2490,7 @@ var table = {
 	ovh: true,
 	pa: true,
 	page: true,
+	panasonic: true,
 	paris: true,
 	partners: true,
 	parts: true,
@@ -2411,6 +2502,7 @@ var table = {
 	pg: true,
 	ph: true,
 	pharmacy: true,
+	phd: true,
 	philips: true,
 	photo: true,
 	photography: true,
@@ -2438,8 +2530,10 @@ var table = {
 	pr: true,
 	praxi: true,
 	press: true,
+	prime: true,
 	pro: true,
 	productions: true,
+	prof: true,
 	promo: true,
 	properties: true,
 	property: true,
@@ -2450,6 +2544,7 @@ var table = {
 	pt: true,
 	pub: true,
 	pw: true,
+	pwc: true,
 	py: true,
 	qa: true,
 	qpon: true,
@@ -2457,7 +2552,6 @@ var table = {
 	quest: true,
 	racing: true,
 	radio: true,
-	raid: true,
 	re: true,
 	realestate: true,
 	realtor: true,
@@ -2484,17 +2578,17 @@ var table = {
 	ricoh: true,
 	rio: true,
 	rip: true,
-	rmit: true,
 	ro: true,
 	rocks: true,
 	rodeo: true,
+	rogers: true,
 	rs: true,
+	rsvp: true,
 	ru: true,
 	rugby: true,
 	ruhr: true,
 	run: true,
 	rw: true,
-	rwe: true,
 	ryukyu: true,
 	sa: true,
 	saarland: true,
@@ -2509,8 +2603,8 @@ var table = {
 	saxo: true,
 	sb: true,
 	sbi: true,
+	sbs: true,
 	sc: true,
-	sca: true,
 	scb: true,
 	schaeffler: true,
 	schmidt: true,
@@ -2518,7 +2612,6 @@ var table = {
 	schule: true,
 	schwarz: true,
 	science: true,
-	scjohnson: true,
 	scot: true,
 	sd: true,
 	se: true,
@@ -2527,7 +2620,6 @@ var table = {
 	select: true,
 	sener: true,
 	services: true,
-	ses: true,
 	seven: true,
 	sew: true,
 	sex: true,
@@ -2535,7 +2627,6 @@ var table = {
 	sfr: true,
 	sg: true,
 	sh: true,
-	shangrila: true,
 	sharp: true,
 	shell: true,
 	shiksha: true,
@@ -2569,7 +2660,6 @@ var table = {
 	spa: true,
 	space: true,
 	sport: true,
-	spreadbetting: true,
 	sr: true,
 	srl: true,
 	ss: true,
@@ -2602,6 +2692,7 @@ var table = {
 	systems: true,
 	sz: true,
 	taipei: true,
+	target: true,
 	tatamotors: true,
 	tatar: true,
 	tattoo: true,
@@ -2621,10 +2712,8 @@ var table = {
 	th: true,
 	theater: true,
 	theatre: true,
-	tiaa: true,
 	tickets: true,
 	tienda: true,
-	tiffany: true,
 	tips: true,
 	tires: true,
 	tirol: true,
@@ -2650,20 +2739,19 @@ var table = {
 	trading: true,
 	training: true,
 	travel: true,
-	travelchannel: true,
 	travelers: true,
 	trust: true,
 	tt: true,
 	tube: true,
 	tui: true,
 	tv: true,
+	tvs: true,
 	tw: true,
 	tz: true,
 	ua: true,
-	ubank: true,
-	ubs: true,
 	ug: true,
 	uk: true,
+	unicom: true,
 	university: true,
 	uno: true,
 	uol: true,
@@ -2672,6 +2760,7 @@ var table = {
 	uz: true,
 	va: true,
 	vacations: true,
+	vana: true,
 	vanguard: true,
 	vc: true,
 	ve: true,
@@ -2687,14 +2776,11 @@ var table = {
 	villas: true,
 	vin: true,
 	vip: true,
-	visa: true,
 	vision: true,
 	vivo: true,
 	vlaanderen: true,
 	vn: true,
 	vodka: true,
-	volkswagen: true,
-	volvo: true,
 	vote: true,
 	voting: true,
 	voto: true,
@@ -2704,6 +2790,7 @@ var table = {
 	walter: true,
 	wang: true,
 	watch: true,
+	watches: true,
 	webcam: true,
 	weber: true,
 	website: true,
@@ -2726,7 +2813,6 @@ var table = {
 	ws: true,
 	wtf: true,
 	xbox: true,
-	xerox: true,
 	xin: true,
 	"xn--1ck2e1b": true,
 	"xn--1qqw23a": true,
@@ -2744,7 +2830,6 @@ var table = {
 	"xn--54b7fta0cc": true,
 	"xn--55qw42g": true,
 	"xn--55qx5d": true,
-	"xn--5su34j936bgsg": true,
 	"xn--5tzm5g": true,
 	"xn--6frz82g": true,
 	"xn--6qq986b3xl": true,
@@ -2752,6 +2837,7 @@ var table = {
 	"xn--80ao21a": true,
 	"xn--80asehdb": true,
 	"xn--80aswg": true,
+	"xn--8y0a063a": true,
 	"xn--90a3ac": true,
 	"xn--90ae": true,
 	"xn--90ais": true,
@@ -2759,7 +2845,6 @@ var table = {
 	"xn--bck1b9a5dre4c": true,
 	"xn--c1avg": true,
 	"xn--cck2b3b": true,
-	"xn--cckwcxetd": true,
 	"xn--clchc0ea0b2g2a9gcd": true,
 	"xn--czr694b": true,
 	"xn--czrs0t": true,
@@ -2788,7 +2873,6 @@ var table = {
 	"xn--io0a7i": true,
 	"xn--j1amh": true,
 	"xn--j6w193g": true,
-	"xn--jlq480n2rg": true,
 	"xn--jvr189m": true,
 	"xn--kcrx77d1x4a": true,
 	"xn--kprw13d": true,
@@ -2804,7 +2888,6 @@ var table = {
 	"xn--mgbai9azgqp6j": true,
 	"xn--mgbayh7gpa": true,
 	"xn--mgbbh1a": true,
-	"xn--mgbbh1a71e": true,
 	"xn--mgbc0a9azcg": true,
 	"xn--mgbca7dzdo": true,
 	"xn--mgbcpq6gpa1a": true,
@@ -2837,10 +2920,9 @@ var table = {
 	"xn--t60b56a": true,
 	"xn--tckwe": true,
 	"xn--unup4y": true,
+	"xn--vermgensberatung-pwb": true,
 	"xn--vhquv": true,
 	"xn--vuq861b": true,
-	"xn--w4r85el8fhu5dnra": true,
-	"xn--w4rs40l": true,
 	"xn--wgbh1c": true,
 	"xn--wgbl6a": true,
 	"xn--xhq521b": true,
@@ -2853,14 +2935,18 @@ var table = {
 	xxx: true,
 	xyz: true,
 	yachts: true,
+	yahoo: true,
 	yandex: true,
 	ye: true,
+	yodobashi: true,
 	yoga: true,
 	yokohama: true,
 	youtube: true,
 	yt: true,
 	za: true,
+	zappos: true,
 	zara: true,
+	zip: true,
 	zm: true,
 	zone: true,
 	zuerich: true,
@@ -2881,7 +2967,6 @@ var table = {
 	"বাংলা": true,
 	"公益": true,
 	"公司": true,
-	"香格里拉": true,
 	"网站": true,
 	"移动": true,
 	"我爱你": true,
@@ -2889,6 +2974,7 @@ var table = {
 	"қаз": true,
 	"онлайн": true,
 	"сайт": true,
+	"联通": true,
 	"срб": true,
 	"бг": true,
 	"бел": true,
@@ -2896,7 +2982,6 @@ var table = {
 	"ファッション": true,
 	"орг": true,
 	"ストア": true,
-	"アマゾン": true,
 	"சிங்கப்பூர்": true,
 	"商标": true,
 	"商店": true,
@@ -2925,7 +3010,6 @@ var table = {
 	"网络": true,
 	"укр": true,
 	"香港": true,
-	"亚马逊": true,
 	"食品": true,
 	"飞利浦": true,
 	"台湾": true,
@@ -2941,7 +3025,6 @@ var table = {
 	"پاکستان": true,
 	"الاردن": true,
 	"بارت": true,
-	"بھارت": true,
 	"المغرب": true,
 	"ابوظبي": true,
 	"البحرين": true,
@@ -2974,10 +3057,9 @@ var table = {
 	"닷넷": true,
 	"コム": true,
 	"游戏": true,
+	"vermögensberatung": true,
 	"企业": true,
 	"信息": true,
-	"嘉里大酒店": true,
-	"嘉里": true,
 	"مصر": true,
 	"قطر": true,
 	"广东": true,
@@ -3328,6 +3410,7 @@ function getInvalidLabel(domain) {
 
 /* eslint-env browser */
 
+
 var INVALID_TAGS = {
 	a: true,
 	noscript: true,
@@ -3400,7 +3483,8 @@ var DEFAULT_OPTIONS = {
 	timeout: 10000,
 	newTab: true,
 	noOpener: true,
-	embedImage: true
+	embedImage: true,
+  recursive: true,
 };
 
 class Linkifier extends Events {
@@ -3448,7 +3532,7 @@ class Linkifier extends Events {
 		this.aborted = true;
 	}
 	*generateRanges() {
-		var {validator} = this.options;
+		var {validator, recursive} = this.options;
 		var filter = {
 			acceptNode: function(node) {
 				if (validator && !validator(node)) {
@@ -3463,7 +3547,7 @@ class Linkifier extends Events {
 				if (node.nodeType == 3) {
 					return NodeFilter.FILTER_ACCEPT;
 				}
-				return NodeFilter.FILTER_SKIP;
+				return recursive ? NodeFilter.FILTER_SKIP : NodeFilter.FILTER_REJECT;
 			}
 		};
 		// Generate linkified ranges.
@@ -3574,246 +3658,34 @@ function linkify(...args) {
 	});
 }
 
-// Valid root node before linkifing
+const processedNodes = new WeakSet;
+const nodeValidationCache = new WeakMap; // Node -> boolean
+
 function validRoot(node, validator) {
-  // Cache valid state in node.VALID
-  if (node.VALID !== undefined) {
-    return node.VALID;
+  if (processedNodes.has(node)) {
+    return false;
   }
+  return getValidation(node);
 
-  // Loop through ancestor
-  var cache = [], isValid;
-  while (node != document.documentElement) {
-    cache.push(node);
-
-    // It is invalid if it has invalid ancestor
-    if (!validator(node) || INVALID_TAGS[node.localName]) {
-      isValid = false;
-      break;
-    }
-
-    // The node was removed from DOM tree
-    if (!node.parentNode) {
+  function getValidation(p) {
+    if (!p.parentNode) {
       return false;
     }
-
-    node = node.parentNode;
-
-    if (node.VALID !== undefined) {
-      isValid = node.VALID;
-      break;
-    }
-  }
-
-  // All ancestors are fine
-  if (isValid === undefined) {
-    isValid = true;
-  }
-
-  // Cache the result
-  var i;
-  for (i = 0; i < cache.length; i++) {
-    cache[i].VALID = isValid;
-  }
-
-  return isValid;
-}
-
-function createValidator({includeElement, excludeElement}) {
-  return function(node) {
-    if (node.isContentEditable) {
-      return false;
-    }
-    if (node.matches) {
-      if (includeElement && node.matches(includeElement)) {
-        return true;
+    let r = nodeValidationCache.get(p);
+    if (r === undefined) {
+      if (validator.isIncluded(p)) {
+        r = true;
+      } else if (validator.isExcluded(p)) {
+        r = false;
+      } else if (p.parentNode != document.documentElement) {
+        r = getValidation(p.parentNode);
+      } else {
+        r = true;
       }
-      if (excludeElement && node.matches(excludeElement)) {
-        return false;
-      }
+      nodeValidationCache.set(p, r);
     }
-    return true;
-  };
-}
-
-function createBuffer(size) {
-  const set = new Set;
-  const buff = Array(size);
-  const eventBus = document.createElement("span");
-  let start = 0;
-  let end = 0;
-  return {push, eventBus, shift};
-  
-  function push(item) {
-    if (set.has(item)) {
-      return;
-    }
-    if (set.size && start === end) {
-      // overflow
-      eventBus.dispatchEvent(new CustomEvent("overflow"));
-      set.clear();
-      return;
-    }
-    set.add(item);
-    buff[end] = item;
-    end = (end + 1) % size;
-    eventBus.dispatchEvent(new CustomEvent("add"));
+    return r;
   }
-  
-  function shift() {
-    if (!set.size) {
-      return;
-    }
-    const item = buff[start];
-    set.delete(item);
-    buff[start] = null;
-    start = (start + 1) % size;
-    return item;
-  }
-}
-
-function createLinkifyProcess({options, bufferSize}) {
-  const buffer = createBuffer(bufferSize);
-  let overflowed = false;
-  let started = false;
-  buffer.eventBus.addEventListener("add", start);
-  buffer.eventBus.addEventListener("overflow", () => overflowed = true);
-  return {process};
-  
-  function process(root) {
-    if (overflowed) {
-      return false
-    }
-    if (validRoot(root, options.validator)) {
-      buffer.push(root);
-    }
-    return true;
-  }
-  
-  function start() {
-    if (started) {
-      return;
-    }
-    started = true;
-    deque();
-  }
-  
-  function deque() {
-    let root;
-    if (overflowed) {
-      root = document.body;
-      overflowed = false;
-    } else {
-      root = buffer.shift();
-    }
-    if (!root) {
-      started = false;
-      return;
-    }
-    
-    linkify(root, options)
-      .then(() => {
-        var p = Promise.resolve();
-        if (options.includeElement) {
-          for (var node of root.querySelectorAll(options.includeElement)) {
-            p = p.then(linkify.bind(null, node, options));
-          }
-        }
-        return p;
-      })
-      .catch(err => {
-        console.error(err);
-      })
-      .then(deque);
-  }
-}
-
-function stringToList(value) {
-  value = value.trim();
-  if (!value) {
-    return [];
-  }
-  return value.split(/\s*\n\s*/g);  
-}
-
-function createOptions(pref) {
-  const options = {};
-  pref.on("change", update);
-  update(pref.getAll());
-  return options;
-  
-  function update(changes) {
-    Object.assign(options, changes);
-    if (changes.includeElement != null || changes.excludeElement != null) {
-      options.validator = createValidator(options);
-    }
-    if (typeof options.customRules === "string") {
-      options.customRules = stringToList(options.customRules);
-    }
-    options.matcher = new UrlMatcher(options);
-    options.onlink = options.embedImageExcludeElement ? onlink : null;
-  }
-  
-  function onlink({link, range, content}) {
-    if (link.childNodes[0].localName !== "img" || !options.embedImageExcludeElement) {
-      return;
-    }
-    
-    var parent = range.startContainer;
-    // it might be a text node
-    if (!parent.closest) {
-      parent = parent.parentNode;
-    }
-    if (!parent.closest(options.embedImageExcludeElement)) return;
-    // remove image
-    link.innerHTML = "";
-    link.appendChild(content);
-  }
-}
-
-async function startLinkifyPlusPlus(getPref) {
-  // Limit contentType to specific content type
-  if (
-    document.contentType &&
-    !["text/plain", "text/html", "application/xhtml+xml"].includes(document.contentType)
-  ) {
-    return;
-  }
-  
-  const pref = await getPref();
-  const linkifyProcess = createLinkifyProcess({
-    options: createOptions(pref),
-    bufferSize: 100
-  });  
-  const observer = new MutationObserver(function(mutations){
-    // Filter out mutations generated by LPP
-    var lastRecord = mutations[mutations.length - 1],
-      nodes = lastRecord.addedNodes,
-      i;
-
-    if (nodes.length >= 2) {
-      for (i = 0; i < 2; i++) {
-        if (nodes[i].className == "linkifyplus") {
-          return;
-        }
-      }
-    }
-
-    for (var record of mutations) {
-      if (record.addedNodes.length) {
-        if (!linkifyProcess.process(record.target)) {
-          // it's full
-          break;
-        }
-      }
-    }
-  });
-  await prepareDocument();
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true
-  });
-  linkifyProcess.process(document.body);    
 }
 
 function prepareDocument() {
@@ -3848,38 +3720,244 @@ function prepareDocument() {
   }
 }
 
-/* global $inline */
+var load = {
+  key: "triggerByPageLoad",
+  enable: async options => {
+    await prepareDocument();
+    processedNodes.add(document.body);
+    await linkify({...options, root: document.body, recursive: true});
+  },
+  disable: () => {}
+};
+
+let options$1;
+
+const EVENTS$1 = [
+  ["click", handle$1, {passive: true}],
+];
+
+function handle$1(e) {
+  const el = e.target;
+  if (validRoot(el, options$1.validator)) {
+    processedNodes.add(el);
+    linkify({...options$1, root: el, recursive: false});
+  }
+} 
+
+function enable$2(_options) {
+  options$1 = _options;
+  for (const [event, handler, options] of EVENTS$1) {
+    document.addEventListener(event, handler, options);
+  }
+}
+
+function disable$2() {
+  for (const [event, handler, options] of EVENTS$1) {
+    document.removeEventListener(event, handler, options);
+  }
+}
+
+var click = {
+  key: "triggerByClick",
+  enable: enable$2,
+  disable: disable$2
+};
+
+let options;
+
+const EVENTS = [
+  // catch the first mousemove event since mouseover doesn't fire at page refresh
+  ["mousemove", handle, {passive: true, once: true}],
+  ["mouseover", handle, {passive: true}]
+];
+
+function handle(e) {
+  const el = e.target;
+  if (validRoot(el, options.validator)) {
+    processedNodes.add(el);
+    linkify({...options, root: el, recursive: false});
+  }
+} 
+
+function enable$1(_options) {
+  options = _options;
+  for (const [event, handler, options] of EVENTS) {
+    document.addEventListener(event, handler, options);
+  }
+}
+
+function disable$1() {
+  for (const [event, handler, options] of EVENTS) {
+    document.removeEventListener(event, handler, options);
+  }
+}
+
+var hover = {
+  key: "triggerByHover",
+  enable: enable$1,
+  disable: disable$1
+};
+
+const MAX_PROCESSES = 100;
+let processes = 0;
+let observer;
+
+async function enable(options) {
+  await prepareDocument();
+  observer = new MutationObserver(function(mutations){
+    // Filter out mutations generated by LPP
+    var lastRecord = mutations[mutations.length - 1],
+      nodes = lastRecord.addedNodes,
+      i;
+
+    if (nodes.length >= 2) {
+      for (i = 0; i < 2; i++) {
+        if (nodes[i].className == "linkifyplus") {
+          return;
+        }
+      }
+    }
+
+    for (var record of mutations) {
+      for (const node of record.addedNodes) {
+        if (node.nodeType === 1 && !processedNodes.has(node)) {
+          if (processes >= MAX_PROCESSES) {
+            throw new Error("Too many processes");
+          }
+          if (processedNodes.has(node)) {
+            continue;
+          }
+          processedNodes.add(node);
+          processes++;
+          linkify({...options, root: node, recursive: true})
+            .finally(() => {
+              processes--;
+            });
+        }
+      }
+    }
+  });
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+}
+
+async function disable() {
+  await prepareDocument();
+  observer && observer.disconnect();
+}
+
+var mutation = {
+  key: "triggerByNewNode",
+  enable,
+  disable
+};
+
+var triggers = [load, click, hover, mutation];
+
+function createValidator({includeElement, excludeElement}) {
+  const f = function(node) {
+    if (processedNodes.has(node)) {
+      return false;
+    }
+
+    if (node.isContentEditable) {
+      return false;
+    }
+
+    if (node.matches) {
+      if (includeElement && node.matches(includeElement)) {
+        return true;
+      }
+      if (excludeElement && node.matches(excludeElement)) {
+        return false;
+      }
+    }
+    return true;
+  };
+  f.isIncluded = node => {
+    return includeElement && node.matches(includeElement);
+  };
+  f.isExcluded = node => {
+    if (INVALID_TAGS[node.localName]) {
+      return true;
+    }
+    return excludeElement && node.matches(excludeElement);
+  };
+  return f;
+}
+
+function stringToList(value) {
+  value = value.trim();
+  if (!value) {
+    return [];
+  }
+  return value.split(/\s*\n\s*/g);  
+}
+
+function createOptions(pref) {
+  const options = {};
+  pref.on("change", update);
+  update(pref.getAll());
+  return options;
+  
+  function update(changes) {
+    Object.assign(options, changes);
+    options.validator = createValidator(options);
+    if (typeof options.customRules === "string") {
+      options.customRules = stringToList(options.customRules);
+    }
+    options.matcher = new UrlMatcher(options);
+    options.onlink = options.embedImageExcludeElement ? onlink : null;
+  }
+  
+  function onlink({link, range, content}) {
+    if (link.childNodes[0].localName !== "img" || !options.embedImageExcludeElement) {
+      return;
+    }
+    
+    var parent = range.startContainer;
+    // it might be a text node
+    if (!parent.closest) {
+      parent = parent.parentNode;
+    }
+    if (!parent.closest(options.embedImageExcludeElement)) return;
+    // remove image
+    link.innerHTML = "";
+    link.appendChild(content);
+  }
+}
+
+async function startLinkifyPlusPlus(getPref) {
+  // Limit contentType to specific content type
+  if (
+    document.contentType &&
+    !["text/plain", "text/html", "application/xhtml+xml"].includes(document.contentType)
+  ) {
+    return;
+  }
+  
+  const pref = await getPref();
+  const options = createOptions(pref);
+  for (const trigger of triggers) {
+    if (pref.get(trigger.key)) {
+      trigger.enable(options);
+    }
+  }
+  pref.on("change", changes => {
+    for (const trigger of triggers) {
+      if (changes[trigger.key] === true) {
+        trigger.enable(options);
+      }
+      if (changes[trigger.key] === false) {
+        trigger.disable();
+      }
+    }
+  });
+}
 
 function getMessageFactory() {
-  const translate = {
-    "optionsFuzzyIpLabel": "Match IP with only 4 digits.",
-    "optionsIgnoreMustacheLabel": "Ignore URLs inside mustaches e.g. {{ ... }}.",
-    "optionsEmbedImageLabel": "Embed images.",
-    "optionsEmbedImageExcludeElementLabel": "Exclude following elements. (CSS selector)",
-    "optionsUnicodeLabel": "Match unicode characters.",
-    "optionsMailLabel": "Match email address.",
-    "optionsNewTabLabel": "Open links in new tabs.",
-    "optionsStandaloneLabel": "The link must be surrounded by whitespaces.",
-    "optionsBoundaryLeftLabel": "Allowed characters between the whitespace and the link. (left side)",
-    "optionsBoundaryRightLabel": "Allowed characters between the whitespace and the link. (right side)",
-    "optionsExcludeElementLabel": "Do not linkify following elements. (CSS selector)",
-    "optionsIncludeElementLabel": "Always linkify following elements. Override above. (CSS selector)",
-    "optionsTimeoutLabel": "Max executation time. (ms)",
-    "optionsTimeoutHelp": "The script will terminate if it takes too long to convert the entire page.",
-    "optionsMaxRunTimeLabel": "Max script run time. (ms)",
-    "optionsMaxRunTimeHelp": "Split the process into small chunks to avoid freezing the browser.",
-    "optionsCustomRulesLabel": "Custom rules. (RegExp per line)",
-    "currentScopeLabel": "Current domain",
-    "addScopeLabel": "Add new domain",
-    "addScopePrompt": "Add new domain",
-    "deleteScopeLabel": "Delete current domain",
-    "deleteScopeConfirm": "Delete domain $1?",
-    "learnMoreButton": "Learn more",
-    "importButton": "Import",
-    "importPrompt": "Paste settings",
-    "exportButton": "Export",
-    "exportPrompt": "Copy settings"
-  };
   return (key, params) => {
     if (!params) {
       return translate[key];

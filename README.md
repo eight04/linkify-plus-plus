@@ -16,6 +16,7 @@ Features
 * Support custom rules.
 * Custom whitelist, blacklist.
 * Embed images.
+* Multiple methods to trigger the conversion.
 
 Installation
 ------------
