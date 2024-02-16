@@ -33,22 +33,22 @@
     "message": "Open links in new tabs."
   },
   "optionsStandaloneLabel": {
-    "message": "The link must be surrounded by whitespaces."
+    "message": "The URL must be surrounded by whitespaces."
   },
-  "optionsTriggerLabel": {
-    "message": "Trigger linkifier when"
+  "optionsLinkifierLabel": {
+    "message": "Linkifier"
   },
   "optionsTriggerByPageLoadLabel": {
-    "message": "Page loaded"
+    "message": "Trigger on page load."
   },
   "optionsTriggerByNewNodeLabel": {
-    "message": "New elements added"
+    "message": "Trigger on dynamically created elements."
   },
   "optionsTriggerByHoverLabel": {
-    "message": "Mouse over"
+    "message": "Trigger on mouse over."
   },
   "optionsTriggerByClickLabel": {
-    "message": "Mouse click"
+    "message": "Trigger on mouse click."
   },
   "optionsBoundaryLeftLabel": {
     "message": "Allowed characters between the whitespace and the link. (left side)"
@@ -73,6 +73,9 @@
   },
   "optionsMaxRunTimeHelp": {
     "message": "Split the process into small chunks to avoid freezing the browser."
+  },
+  "optionsUrlMatcherLabel": {
+    "message": "URL matcher"
   },
   "optionsCustomRulesLabel": {
     "message": "Custom rules. (RegExp per line)"

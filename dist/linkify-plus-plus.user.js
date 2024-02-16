@@ -1581,92 +1581,58 @@ function supportHover() {
 var prefBody = getMessage => {
   return [
     {
-      key: "fuzzyIp",
-      type: "checkbox",
-      label: getMessage("optionsFuzzyIpLabel")
-    },
-    {
-      key: "ignoreMustache",
-      type: "checkbox",
-      label: getMessage("optionsIgnoreMustacheLabel")
-    },
-    {
-      key: "embedImage",
-      type: "checkbox",
-      label: getMessage("optionsEmbedImageLabel"),
+      type: "section",
+      label: getMessage("optionsUrlMatcherLabel"),
       children: [
         {
-          key: "embedImageExcludeElement",
-          type: "textarea",
-          label: getMessage("optionsEmbedImageExcludeElementLabel"),
-          validate: validateSelector
-        }
-      ]
-    },
-    {
-      key: "unicode",
-      type: "checkbox",
-      label: getMessage("optionsUnicodeLabel")
-    },
-    {
-      key: "mail",
-      type: "checkbox",
-      label: getMessage("optionsMailLabel")
-    },
-    {
-      key: "newTab",
-      type: "checkbox",
-      label: getMessage("optionsNewTabLabel")
-    },
-    {
-      key: "standalone",
-      type: "checkbox",
-      label: getMessage("optionsStandaloneLabel"),
-      children: [
-        {
-          key: "boundaryLeft",
-          type: "text",
-          label: getMessage("optionsBoundaryLeftLabel")
+          key: "fuzzyIp",
+          type: "checkbox",
+          label: getMessage("optionsFuzzyIpLabel")
         },
         {
-          key: "boundaryRight",
-          type: "text",
-          label: getMessage("optionsBoundaryRightLabel")
-        }
+          key: "ignoreMustache",
+          type: "checkbox",
+          label: getMessage("optionsIgnoreMustacheLabel")
+        },
+        {
+          key: "unicode",
+          type: "checkbox",
+          label: getMessage("optionsUnicodeLabel")
+        },
+        {
+          key: "mail",
+          type: "checkbox",
+          label: getMessage("optionsMailLabel")
+        },
+        {
+          key: "standalone",
+          type: "checkbox",
+          label: getMessage("optionsStandaloneLabel"),
+          children: [
+            {
+              key: "boundaryLeft",
+              type: "text",
+              label: getMessage("optionsBoundaryLeftLabel")
+            },
+            {
+              key: "boundaryRight",
+              type: "text",
+              label: getMessage("optionsBoundaryRightLabel")
+            }
+          ]
+        },
+        {
+          key: "customRules",
+          type: "textarea",
+          label: getMessage("optionsCustomRulesLabel"),
+          learnMore: "https://github.com/eight04/linkify-plus-plus?tab=readme-ov-file#custom-rules"
+        },
+
       ]
-    },
-    {
-      key: "excludeElement",
-      type: "textarea",
-      label: getMessage("optionsExcludeElementLabel"),
-      validate: validateSelector
-    },
-    {
-      key: "includeElement",
-      type: "textarea",
-      label: getMessage("optionsIncludeElementLabel"),
-      validate: validateSelector
-    },
-    {
-      key: "timeout",
-      type: "number",
-      label: getMessage("optionsTimeoutLabel"),
-      help: getMessage("optionsTimeoutHelp")
-    },
-    {
-      key: "maxRunTime",
-      type: "number",
-      label: getMessage("optionsMaxRunTimeLabel"),
-      help: getMessage("optionsMaxRunTimeHelp")
-    },
-    {
-      key: "customRules",
-      type: "textarea",
-      label: getMessage("optionsCustomRulesLabel")
     },
     {
       type: "section",
-      label: getMessage("optionsTriggerLabel"),
+      label: getMessage("optionsLinkifierLabel"),
       children: [
         {
           key: "triggerByPageLoad",
@@ -1687,7 +1653,49 @@ var prefBody = getMessage => {
           key: "triggerByClick",
           type: "checkbox",
           label: getMessage("optionsTriggerByClickLabel")
-        }
+        },
+        {
+          key: "embedImage",
+          type: "checkbox",
+          label: getMessage("optionsEmbedImageLabel"),
+          children: [
+            {
+              key: "embedImageExcludeElement",
+              type: "textarea",
+              label: getMessage("optionsEmbedImageExcludeElementLabel"),
+              validate: validateSelector
+            }
+          ]
+        },
+        {
+          key: "newTab",
+          type: "checkbox",
+          label: getMessage("optionsNewTabLabel")
+        },
+        {
+          key: "excludeElement",
+          type: "textarea",
+          label: getMessage("optionsExcludeElementLabel"),
+          validate: validateSelector
+        },
+        {
+          key: "includeElement",
+          type: "textarea",
+          label: getMessage("optionsIncludeElementLabel"),
+          validate: validateSelector
+        },
+        {
+          key: "timeout",
+          type: "number",
+          label: getMessage("optionsTimeoutLabel"),
+          help: getMessage("optionsTimeoutHelp")
+        },
+        {
+          key: "maxRunTime",
+          type: "number",
+          label: getMessage("optionsMaxRunTimeLabel"),
+          help: getMessage("optionsMaxRunTimeHelp")
+        },
       ]
     },
   ];
@@ -3890,12 +3898,12 @@ function getMessageFactory() {
     "optionsUnicodeLabel": "Match unicode characters.",
     "optionsMailLabel": "Match email address.",
     "optionsNewTabLabel": "Open links in new tabs.",
-    "optionsStandaloneLabel": "The link must be surrounded by whitespaces.",
-    "optionsTriggerLabel": "Trigger linkifier when",
-    "optionsTriggerByPageLoadLabel": "Page loaded",
-    "optionsTriggerByNewNodeLabel": "New elements added",
-    "optionsTriggerByHoverLabel": "Mouse over",
-    "optionsTriggerByClickLabel": "Mouse click",
+    "optionsStandaloneLabel": "The URL must be surrounded by whitespaces.",
+    "optionsLinkifierLabel": "Linkifier",
+    "optionsTriggerByPageLoadLabel": "Trigger on page load.",
+    "optionsTriggerByNewNodeLabel": "Trigger on dynamically created elements.",
+    "optionsTriggerByHoverLabel": "Trigger on mouse over.",
+    "optionsTriggerByClickLabel": "Trigger on mouse click.",
     "optionsBoundaryLeftLabel": "Allowed characters between the whitespace and the link. (left side)",
     "optionsBoundaryRightLabel": "Allowed characters between the whitespace and the link. (right side)",
     "optionsExcludeElementLabel": "Do not linkify following elements. (CSS selector)",
@@ -3904,6 +3912,7 @@ function getMessageFactory() {
     "optionsTimeoutHelp": "The script will terminate if it takes too long to convert the entire page.",
     "optionsMaxRunTimeLabel": "Max script run time. (ms)",
     "optionsMaxRunTimeHelp": "Split the process into small chunks to avoid freezing the browser.",
+    "optionsUrlMatcherLabel": "URL matcher",
     "optionsCustomRulesLabel": "Custom rules. (RegExp per line)",
     "currentScopeLabel": "Current domain",
     "addScopeLabel": "Add new domain",
