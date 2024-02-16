@@ -93,6 +93,11 @@ File an issue if you think a site should be added/removed from the list.
 Changelog
 ---------
 
+* 11.0.0 (Feb 16, 2024)
+
+  - Add: multiple trigger methods in options.
+  - **Change: now the default trigger is mouse over. switch to page load + new elements for the old behavior.**
+
 * 10.1.0 (Dec 15, 2021)
 
   - Fix: allow empty selector in settings.
