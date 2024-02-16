@@ -34,9 +34,9 @@
 // @icon data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDE2IDE2Ij4gPHBhdGggZmlsbD0iIzRjNGM0ZCIgZD0iTTMuNSAxYS41LjUgMCAxIDAgMCAxSDR2OWgtLjVhLjUuNSAwIDAgMCAwIDFoNy44NTVhLjUuNSAwIDAgMCAuNDc1LS4xODQuNS41IDAgMCAwIC4xMDYtLjM5OFYxMC41YS41LjUgMCAxIDAtMSAwdi41SDZWMmguNWEuNS41IDAgMSAwIDAtMWgtM3oiLz4gPHBhdGggZmlsbD0iIzQ1YTFmZiIgZD0iTTIuNSAxNGExIDEgMCAxIDAgMCAyaDExYTEgMSAwIDEgMCAwLTJoLTExeiIvPiA8L3N2Zz4=
 // ==/UserScript==
 
-var optionsFuzzyIpLabel = "Match IP with only 4 digits.";
+var optionsFuzzyIpLabel = "Match ambiguous IP addresses.";
 var optionsIgnoreMustacheLabel = "Ignore URLs inside mustaches e.g. {{ ... }}.";
-var optionsEmbedImageLabel = "Embed images.";
+var optionsEmbedImageLabel = "Create an image element if the URL looks like an image file.";
 var optionsEmbedImageExcludeElementLabel = "Exclude following elements. (CSS selector)";
 var optionsUnicodeLabel = "Match unicode characters.";
 var optionsMailLabel = "Match email address.";
@@ -51,10 +51,10 @@ var optionsBoundaryLeftLabel = "Allowed characters between the whitespace and th
 var optionsBoundaryRightLabel = "Allowed characters between the whitespace and the link. (right side)";
 var optionsExcludeElementLabel = "Do not linkify following elements. (CSS selector)";
 var optionsIncludeElementLabel = "Always linkify following elements. Override above. (CSS selector)";
-var optionsTimeoutLabel = "Max executation time. (ms)";
+var optionsTimeoutLabel = "Max execution time. (ms)";
 var optionsTimeoutHelp = "The script will terminate if it takes too long to convert the entire page.";
 var optionsMaxRunTimeLabel = "Max script run time. (ms)";
-var optionsMaxRunTimeHelp = "Split the process into small chunks to avoid freezing the browser.";
+var optionsMaxRunTimeHelp = "If the script takes too long to run, the process would be splitted into small chunks to avoid browser freeze.";
 var optionsUrlMatcherLabel = "URL matcher";
 var optionsCustomRulesLabel = "Custom rules. (RegExp per line)";
 var currentScopeLabel = "Current domain";
@@ -3956,8 +3956,6 @@ async function startLinkifyPlusPlus(getPref) {
     }
   });
 }
-
-/* global $inline */
 
 function getMessageFactory() {
   return (key, params) => {
