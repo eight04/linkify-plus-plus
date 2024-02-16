@@ -77,8 +77,8 @@ export default async () => [
       dir: "dist"
     },
     plugins: [
+      cleanMessages(),
       ...commonPlugins(false),
-      cleanMessages()
     ]
   }
 ];

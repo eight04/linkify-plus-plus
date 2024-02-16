@@ -34,6 +34,75 @@
 // @icon data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDE2IDE2Ij4gPHBhdGggZmlsbD0iIzRjNGM0ZCIgZD0iTTMuNSAxYS41LjUgMCAxIDAgMCAxSDR2OWgtLjVhLjUuNSAwIDAgMCAwIDFoNy44NTVhLjUuNSAwIDAgMCAuNDc1LS4xODQuNS41IDAgMCAwIC4xMDYtLjM5OFYxMC41YS41LjUgMCAxIDAtMSAwdi41SDZWMmguNWEuNS41IDAgMSAwIDAtMWgtM3oiLz4gPHBhdGggZmlsbD0iIzQ1YTFmZiIgZD0iTTIuNSAxNGExIDEgMCAxIDAgMCAyaDExYTEgMSAwIDEgMCAwLTJoLTExeiIvPiA8L3N2Zz4=
 // ==/UserScript==
 
+var optionsFuzzyIpLabel = "Match IP with only 4 digits.";
+var optionsIgnoreMustacheLabel = "Ignore URLs inside mustaches e.g. {{ ... }}.";
+var optionsEmbedImageLabel = "Embed images.";
+var optionsEmbedImageExcludeElementLabel = "Exclude following elements. (CSS selector)";
+var optionsUnicodeLabel = "Match unicode characters.";
+var optionsMailLabel = "Match email address.";
+var optionsNewTabLabel = "Open links in new tabs.";
+var optionsStandaloneLabel = "The URL must be surrounded by whitespaces.";
+var optionsLinkifierLabel = "Linkifier";
+var optionsTriggerByPageLoadLabel = "Trigger on page load.";
+var optionsTriggerByNewNodeLabel = "Trigger on dynamically created elements.";
+var optionsTriggerByHoverLabel = "Trigger on mouse over.";
+var optionsTriggerByClickLabel = "Trigger on mouse click.";
+var optionsBoundaryLeftLabel = "Allowed characters between the whitespace and the link. (left side)";
+var optionsBoundaryRightLabel = "Allowed characters between the whitespace and the link. (right side)";
+var optionsExcludeElementLabel = "Do not linkify following elements. (CSS selector)";
+var optionsIncludeElementLabel = "Always linkify following elements. Override above. (CSS selector)";
+var optionsTimeoutLabel = "Max executation time. (ms)";
+var optionsTimeoutHelp = "The script will terminate if it takes too long to convert the entire page.";
+var optionsMaxRunTimeLabel = "Max script run time. (ms)";
+var optionsMaxRunTimeHelp = "Split the process into small chunks to avoid freezing the browser.";
+var optionsUrlMatcherLabel = "URL matcher";
+var optionsCustomRulesLabel = "Custom rules. (RegExp per line)";
+var currentScopeLabel = "Current domain";
+var addScopeLabel = "Add new domain";
+var addScopePrompt = "Add new domain";
+var deleteScopeLabel = "Delete current domain";
+var deleteScopeConfirm = "Delete domain $1?";
+var learnMoreButton = "Learn more";
+var importButton = "Import";
+var importPrompt = "Paste settings";
+var exportButton = "Export";
+var exportPrompt = "Copy settings";
+var translate = {
+	optionsFuzzyIpLabel: optionsFuzzyIpLabel,
+	optionsIgnoreMustacheLabel: optionsIgnoreMustacheLabel,
+	optionsEmbedImageLabel: optionsEmbedImageLabel,
+	optionsEmbedImageExcludeElementLabel: optionsEmbedImageExcludeElementLabel,
+	optionsUnicodeLabel: optionsUnicodeLabel,
+	optionsMailLabel: optionsMailLabel,
+	optionsNewTabLabel: optionsNewTabLabel,
+	optionsStandaloneLabel: optionsStandaloneLabel,
+	optionsLinkifierLabel: optionsLinkifierLabel,
+	optionsTriggerByPageLoadLabel: optionsTriggerByPageLoadLabel,
+	optionsTriggerByNewNodeLabel: optionsTriggerByNewNodeLabel,
+	optionsTriggerByHoverLabel: optionsTriggerByHoverLabel,
+	optionsTriggerByClickLabel: optionsTriggerByClickLabel,
+	optionsBoundaryLeftLabel: optionsBoundaryLeftLabel,
+	optionsBoundaryRightLabel: optionsBoundaryRightLabel,
+	optionsExcludeElementLabel: optionsExcludeElementLabel,
+	optionsIncludeElementLabel: optionsIncludeElementLabel,
+	optionsTimeoutLabel: optionsTimeoutLabel,
+	optionsTimeoutHelp: optionsTimeoutHelp,
+	optionsMaxRunTimeLabel: optionsMaxRunTimeLabel,
+	optionsMaxRunTimeHelp: optionsMaxRunTimeHelp,
+	optionsUrlMatcherLabel: optionsUrlMatcherLabel,
+	optionsCustomRulesLabel: optionsCustomRulesLabel,
+	currentScopeLabel: currentScopeLabel,
+	addScopeLabel: addScopeLabel,
+	addScopePrompt: addScopePrompt,
+	deleteScopeLabel: deleteScopeLabel,
+	deleteScopeConfirm: deleteScopeConfirm,
+	learnMoreButton: learnMoreButton,
+	importButton: importButton,
+	importPrompt: importPrompt,
+	exportButton: exportButton,
+	exportPrompt: exportPrompt
+};
+
 /**
  * event-lite.js - Light-weight EventEmitter (less than 1KB when gzipped)
  *
@@ -3341,6 +3410,7 @@ function getInvalidLabel(domain) {
 
 /* eslint-env browser */
 
+
 var INVALID_TAGS = {
 	a: true,
 	noscript: true,
@@ -3890,41 +3960,6 @@ async function startLinkifyPlusPlus(getPref) {
 /* global $inline */
 
 function getMessageFactory() {
-  const translate = {
-    "optionsFuzzyIpLabel": "Match IP with only 4 digits.",
-    "optionsIgnoreMustacheLabel": "Ignore URLs inside mustaches e.g. {{ ... }}.",
-    "optionsEmbedImageLabel": "Embed images.",
-    "optionsEmbedImageExcludeElementLabel": "Exclude following elements. (CSS selector)",
-    "optionsUnicodeLabel": "Match unicode characters.",
-    "optionsMailLabel": "Match email address.",
-    "optionsNewTabLabel": "Open links in new tabs.",
-    "optionsStandaloneLabel": "The URL must be surrounded by whitespaces.",
-    "optionsLinkifierLabel": "Linkifier",
-    "optionsTriggerByPageLoadLabel": "Trigger on page load.",
-    "optionsTriggerByNewNodeLabel": "Trigger on dynamically created elements.",
-    "optionsTriggerByHoverLabel": "Trigger on mouse over.",
-    "optionsTriggerByClickLabel": "Trigger on mouse click.",
-    "optionsBoundaryLeftLabel": "Allowed characters between the whitespace and the link. (left side)",
-    "optionsBoundaryRightLabel": "Allowed characters between the whitespace and the link. (right side)",
-    "optionsExcludeElementLabel": "Do not linkify following elements. (CSS selector)",
-    "optionsIncludeElementLabel": "Always linkify following elements. Override above. (CSS selector)",
-    "optionsTimeoutLabel": "Max executation time. (ms)",
-    "optionsTimeoutHelp": "The script will terminate if it takes too long to convert the entire page.",
-    "optionsMaxRunTimeLabel": "Max script run time. (ms)",
-    "optionsMaxRunTimeHelp": "Split the process into small chunks to avoid freezing the browser.",
-    "optionsUrlMatcherLabel": "URL matcher",
-    "optionsCustomRulesLabel": "Custom rules. (RegExp per line)",
-    "currentScopeLabel": "Current domain",
-    "addScopeLabel": "Add new domain",
-    "addScopePrompt": "Add new domain",
-    "deleteScopeLabel": "Delete current domain",
-    "deleteScopeConfirm": "Delete domain $1?",
-    "learnMoreButton": "Learn more",
-    "importButton": "Import",
-    "importPrompt": "Paste settings",
-    "exportButton": "Export",
-    "exportPrompt": "Copy settings"
-  };
   return (key, params) => {
     if (!params) {
       return translate[key];
