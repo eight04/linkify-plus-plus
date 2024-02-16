@@ -13,10 +13,10 @@ module.exports = {
   },
   overrides: [
     {
-      files: ["rollup.config.js"],
+      files: ["rollup.config.js", "**/*.mjs"],
       parserOptions: {
         sourceType: "module"
       }
-    }
+    },
   ]
 };
