@@ -46,7 +46,7 @@ export default async () => [
         {
           test: /(options|dialog)\.js$/,
           target: "dist-extension/$1.html",
-          handle: (content, {htmlScripts}) => content.replace("</body>", `${htmlScripts}</body>`)
+          handle: (content, {htmlScripts}) => content.replace(/.*<\/body>/, `${htmlScripts}</body>`)
         },
         {
           test: /background\.js$/,

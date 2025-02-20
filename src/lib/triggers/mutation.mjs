@@ -28,15 +28,25 @@ async function enable(options) {
           if (processes >= MAX_PROCESSES) {
             throw new Error("Too many processes");
           }
-          if (!validRoot(node, options.validator)) {
-            continue;
+          const linkifyIncludedElements = () => {
+            if (options.includeElement) {
+              for (const el of node.querySelectorAll(options.includeElement)) {
+                processedNodes.add(el);
+                return linkify({...options, root: el, recursive: true});
+              }
+            }
           }
-          processedNodes.add(node);
-          processes++;
-          linkify({...options, root: node, recursive: true})
-            .finally(() => {
-              processes--;
-            });
+          if (validRoot(node, options.validator)) {
+            processedNodes.add(node);
+            processes++;
+            linkify({...options, root: node, recursive: true})
+              .then(linkifyIncludedElements)
+              .finally(() => {
+                processes--;
+              });
+          } else {
+            linkifyIncludedElements();
+          }
         }
       }
     }

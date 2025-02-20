@@ -11,6 +11,15 @@
 			node.textContent = document.querySelector(".testcase").textContent;
 			document.querySelector(".main").appendChild(node);
 		}
+    function dupBlocked() {
+      const html = `
+<p class="brush:">
+  http://example.com
+  <span class="bbcode_code">http://example.com</span>
+</p>
+      `
+      document.querySelector(".main").insertAdjacentHTML("beforeend", html);
+    }
 		function interval() {
 			var p = document.createElement("p");
 			p.className = "leaker";
@@ -909,6 +918,7 @@ mailto:bar
 		<p>
 			<button class="btn-default" onclick="dup()">Dynamic inserted content</button>
 			<button class="btn-default" onclick="interval()">Leak test</button>
+      <button class="btn-default" onclick="dupBlocked()">Insert blocked text</button>
 		</p>
 	</div>
 </body>
