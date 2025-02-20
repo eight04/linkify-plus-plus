@@ -1,4 +1,4 @@
-/* eslint-env webextensions */
+const browser = require("webextension-polyfill");
 const {createUI, createBinding} = require("webext-pref-ui");
 const {createDialogService} = require("webext-dialog");
 

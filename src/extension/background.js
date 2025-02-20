@@ -1,4 +1,5 @@
-/* eslint-env webextensions */
+import browser from "webextension-polyfill"
+
 let domain = "";
 const ports = new Set;
 
