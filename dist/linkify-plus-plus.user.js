@@ -3661,6 +3661,18 @@ function linkify(...args) {
 const processedNodes = new WeakSet;
 const nodeValidationCache = new WeakMap; // Node -> boolean
 
+async function linkifyRoot(root, options, useIncludeElement = true) {
+  if (validRoot(root, options.validator)) {
+    processedNodes.add(root);
+    await linkify({...options, root, recursive: true});
+  }
+  if (options.includeElement && useIncludeElement) {
+    for (const el of root.querySelectorAll(options.includeElement)) {
+      await linkifyRoot(el, options, false);
+    }
+  }
+}
+
 function validRoot(node, validator) {
   if (processedNodes.has(node)) {
     return false;
@@ -3720,20 +3732,13 @@ function prepareDocument() {
   }
 }
 
+// import {processedNodes} from "./cache.mjs";
+
 var load = {
   key: "triggerByPageLoad",
   enable: async options => {
     await prepareDocument();
-    if (validRoot(document.body, options.validator)) {
-      processedNodes.add(document.body);
-      await linkify({...options, root: document.body, recursive: true});
-    }
-    if (options.includeElement) {
-      for (const el of document.querySelectorAll(options.includeElement)) {
-        processedNodes.add(el);
-        await linkify({...options, root: el, recursive: true});
-      }
-    }
+    await linkifyRoot(document.body, options);
   },
   disable: () => {}
 };
@@ -3832,25 +3837,11 @@ async function enable(options) {
           if (processes >= MAX_PROCESSES) {
             throw new Error("Too many processes");
           }
-          const linkifyIncludedElements = () => {
-            if (options.includeElement) {
-              for (const el of node.querySelectorAll(options.includeElement)) {
-                processedNodes.add(el);
-                return linkify({...options, root: el, recursive: true});
-              }
-            }
-          };
-          if (validRoot(node, options.validator)) {
-            processedNodes.add(node);
-            processes++;
-            linkify({...options, root: node, recursive: true})
-              .then(linkifyIncludedElements)
-              .finally(() => {
-                processes--;
-              });
-          } else {
-            linkifyIncludedElements();
-          }
+          processes++;
+          linkifyRoot(node, options)
+            .finally(() => {
+              processes--;
+            });
         }
       }
     }

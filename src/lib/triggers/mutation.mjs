@@ -1,5 +1,5 @@
 import {linkify} from "linkify-plus-plus-core";
-import {prepareDocument, validRoot} from "./util.mjs";
+import {prepareDocument, linkifyRoot} from "./util.mjs";
 import {processedNodes} from "./cache.mjs";
 
 const MAX_PROCESSES = 100;
@@ -28,25 +28,11 @@ async function enable(options) {
           if (processes >= MAX_PROCESSES) {
             throw new Error("Too many processes");
           }
-          const linkifyIncludedElements = () => {
-            if (options.includeElement) {
-              for (const el of node.querySelectorAll(options.includeElement)) {
-                processedNodes.add(el);
-                return linkify({...options, root: el, recursive: true});
-              }
-            }
-          }
-          if (validRoot(node, options.validator)) {
-            processedNodes.add(node);
-            processes++;
-            linkify({...options, root: node, recursive: true})
-              .then(linkifyIncludedElements)
-              .finally(() => {
-                processes--;
-              });
-          } else {
-            linkifyIncludedElements();
-          }
+          processes++;
+          linkifyRoot(node, options)
+            .finally(() => {
+              processes--;
+            });
         }
       }
     }
