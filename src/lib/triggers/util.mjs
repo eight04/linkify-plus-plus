@@ -1,4 +1,19 @@
+import {linkify} from "linkify-plus-plus-core";
+
 import { processedNodes, nodeValidationCache } from "./cache.mjs";
+
+export async function linkifyRoot(root, options, useIncludeElement = true) {
+  if (validRoot(root, options.validator)) {
+    processedNodes.add(root);
+    await linkify({...options, root, recursive: true});
+  }
+  if (options.includeElement && useIncludeElement) {
+    for (const el of root.querySelectorAll(options.includeElement)) {
+      await linkifyRoot(el, options, false);
+    }
+  }
+}
+
 export function validRoot(node, validator) {
   if (processedNodes.has(node)) {
     return false;

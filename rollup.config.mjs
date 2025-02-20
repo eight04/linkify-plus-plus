@@ -12,6 +12,8 @@ import terser from "@rollup/plugin-terser";
 import resolve from "@rollup/plugin-node-resolve";
 import inject from "@rollup/plugin-inject";
 
+const DEV = process.env.ROLLUP_WATCH;
+
 function commonPlugins(cache) {
   return [
     resolve(),
@@ -44,7 +46,7 @@ export default async () => [
         {
           test: /(options|dialog)\.js$/,
           target: "dist-extension/$1.html",
-          handle: (content, {htmlScripts}) => content.replace("</body>", `${htmlScripts}</body>`)
+          handle: (content, {htmlScripts}) => content.replace(/.*<\/body>/, `${htmlScripts}</body>`)
         },
         {
           test: /background\.js$/,
@@ -64,7 +66,7 @@ export default async () => [
           }
         }
       ]),
-      terser({module: false})
+      !DEV && terser({module: false})
     ]
   },
   {

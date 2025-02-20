@@ -3661,6 +3661,18 @@ function linkify(...args) {
 const processedNodes = new WeakSet;
 const nodeValidationCache = new WeakMap; // Node -> boolean
 
+async function linkifyRoot(root, options, useIncludeElement = true) {
+  if (validRoot(root, options.validator)) {
+    processedNodes.add(root);
+    await linkify({...options, root, recursive: true});
+  }
+  if (options.includeElement && useIncludeElement) {
+    for (const el of root.querySelectorAll(options.includeElement)) {
+      await linkifyRoot(el, options, false);
+    }
+  }
+}
+
 function validRoot(node, validator) {
   if (processedNodes.has(node)) {
     return false;
@@ -3720,12 +3732,13 @@ function prepareDocument() {
   }
 }
 
+// import {processedNodes} from "./cache.mjs";
+
 var load = {
   key: "triggerByPageLoad",
   enable: async options => {
     await prepareDocument();
-    processedNodes.add(document.body);
-    await linkify({...options, root: document.body, recursive: true});
+    await linkifyRoot(document.body, options);
   },
   disable: () => {}
 };
@@ -3824,12 +3837,8 @@ async function enable(options) {
           if (processes >= MAX_PROCESSES) {
             throw new Error("Too many processes");
           }
-          if (processedNodes.has(node)) {
-            continue;
-          }
-          processedNodes.add(node);
           processes++;
-          linkify({...options, root: node, recursive: true})
+          linkifyRoot(node, options)
             .finally(() => {
               processes--;
             });

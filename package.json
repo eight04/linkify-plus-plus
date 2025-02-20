@@ -8,23 +8,24 @@
   "devDependencies": {
     "@rollup/plugin-inject": "^5.0.5",
     "@rollup/plugin-json": "^6.1.0",
-    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-node-resolve": "^16.0.0",
     "@rollup/plugin-terser": "^0.4.4",
     "dataurl": "^0.1.0",
-    "eslint": "^8.56.0",
-    "rollup": "^4.11.0",
+    "eslint": "^9.20.1",
+    "rollup": "^4.34.8",
     "rollup-plugin-cjs-es": "^3.0.0",
-    "rollup-plugin-copy-glob": "^0.3.2",
+    "rollup-plugin-copy-glob": "^0.4.1",
     "rollup-plugin-iife": "^0.7.1",
     "rollup-plugin-write-output": "^0.2.1",
     "shx": "^0.3.4",
     "sync-version": "^1.0.1",
     "tiny-glob": "^0.2.9",
     "userscript-meta-cli": "^0.4.2",
-    "web-ext": "^7.11.0"
+    "web-ext": "^8.4.0"
   },
   "scripts": {
     "build": "sync-version src/static/manifest.json && shx rm -rf dist-extension/* && rollup -c && web-ext build",
+    "build-dev": "rollup -cw",
     "build-git": "git archive --output web-ext-artifacts/source.zip master",
     "test": "eslint . --cache && web-ext lint",
     "preversion": "npm test",
@@ -32,10 +33,6 @@
     "postversion": "git push --follow-tags && npm run build-git",
     "start": "web-ext run"
   },
-  "eslintIgnore": [
-    "dist-extension",
-    "dist"
-  ],
   "userscript": {
     "name": "Linkify Plus Plus",
     "namespace": "eight04.blogspot.com",
@@ -78,7 +75,7 @@
     "sentinel-js": "^0.0.7",
     "webext-dialog": "^0.1.1",
     "webext-pref": "^0.6.0",
-    "webextension-polyfill": "^0.10.0"
+    "webextension-polyfill": "^0.12.0"
   },
   "webExt": {
     "sourceDir": "dist-extension",
