@@ -1,4 +1,3 @@
-import {linkify} from "linkify-plus-plus-core";
 import {prepareDocument, linkifyRoot} from "./util.mjs";
 import {processedNodes} from "./cache.mjs";
 
