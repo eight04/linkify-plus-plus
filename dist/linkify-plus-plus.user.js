@@ -3724,8 +3724,16 @@ var load = {
   key: "triggerByPageLoad",
   enable: async options => {
     await prepareDocument();
-    processedNodes.add(document.body);
-    await linkify({...options, root: document.body, recursive: true});
+    if (validRoot(document.body, options.validator)) {
+      processedNodes.add(document.body);
+      await linkify({...options, root: document.body, recursive: true});
+    }
+    if (options.includeElement) {
+      for (const el of document.querySelectorAll(options.includeElement)) {
+        processedNodes.add(el);
+        await linkify({...options, root: el, recursive: true});
+      }
+    }
   },
   disable: () => {}
 };
@@ -3824,7 +3832,7 @@ async function enable(options) {
           if (processes >= MAX_PROCESSES) {
             throw new Error("Too many processes");
           }
-          if (processedNodes.has(node)) {
+          if (!validRoot(node, options.validator)) {
             continue;
           }
           processedNodes.add(node);

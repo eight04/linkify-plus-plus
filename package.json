@@ -25,6 +25,7 @@
   },
   "scripts": {
     "build": "sync-version src/static/manifest.json && shx rm -rf dist-extension/* && rollup -c && web-ext build",
+    "build-dev": "rollup -cw",
     "build-git": "git archive --output web-ext-artifacts/source.zip master",
     "test": "eslint . --cache && web-ext lint",
     "preversion": "npm test",
