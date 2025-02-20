@@ -93,6 +93,13 @@ File an issue if you think a site should be added/removed from the list.
 Changelog
 ---------
 
+* 12.0.0 (Feb 21, 2025)
+
+  - Fix: blacklist and whitelist doesn't work with load and mutations triggers.
+  - Add: onion TLD.
+  - Change: update Firefox Android version range to 113+.
+  - Update TLD list.
+
 * 11.0.0 (Feb 16, 2024)
 
   - Add: multiple trigger methods in options.
