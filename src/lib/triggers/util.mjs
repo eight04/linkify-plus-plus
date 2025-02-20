@@ -1,4 +1,5 @@
 import { processedNodes, nodeValidationCache } from "./cache.mjs";
+
 export function validRoot(node, validator) {
   if (processedNodes.has(node)) {
     return false;

@@ -1,5 +1,5 @@
 import {linkify} from "linkify-plus-plus-core";
-import {prepareDocument} from "./util.mjs";
+import {prepareDocument, validRoot} from "./util.mjs";
 import {processedNodes} from "./cache.mjs";
 
 const MAX_PROCESSES = 100;
@@ -28,7 +28,7 @@ async function enable(options) {
           if (processes >= MAX_PROCESSES) {
             throw new Error("Too many processes");
           }
-          if (processedNodes.has(node)) {
+          if (!validRoot(node, options.validator)) {
             continue;
           }
           processedNodes.add(node);
