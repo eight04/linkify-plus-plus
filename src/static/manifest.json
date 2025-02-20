@@ -39,7 +39,6 @@
   ],
   "browser_specific_settings": {
     "gecko": {
-      "strict_min_version": "52.0"
     },
     "gecko_android": {
       "strict_min_version": "113.0"
