@@ -93,6 +93,10 @@ File an issue if you think a site should be added/removed from the list.
 Changelog
 ---------
 
+* 12.0.1 (Feb 21, 2025)
+
+  - Fix: remove `strict_min_version` in Firefox extension.
+
 * 12.0.0 (Feb 21, 2025)
 
   - Fix: blacklist and whitelist doesn't work with load and mutations triggers.
