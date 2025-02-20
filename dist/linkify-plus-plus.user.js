@@ -130,10 +130,9 @@ function EventLite() {
   if (!(this instanceof EventLite)) return new EventLite();
 }
 
-const _module_ = {exports: {}};
-(function(EventLite) {
+// (function(EventLite) {
   // export the class for node.js
-  if ("undefined" !== typeof _module_) _module_.exports = EventLite;
+  // if ("undefined" !== typeof module) module.exports = EventLite;
 
   // property name to hold listeners
   var LISTENERS = "listeners";
@@ -283,14 +282,13 @@ const _module_ = {exports: {}};
     return listeners[type] || (listeners[type] = []);
   }
 
-})(EventLite);
-var Events = _module_.exports;
+// })(EventLite);
 
 function createPref(DEFAULT, sep = "/") {
   let storage;
   let currentScope = "global";
   let scopeList = ["global"];
-  const events = new Events;
+  const events = new EventLite;
   const globalCache = {};
   let scopedCache = {};
   let currentCache = Object.assign({}, DEFAULT);
@@ -1433,7 +1431,7 @@ function createGMStorage() {
     promisify(GM_getValue) : GM.getValue.bind(GM);
   const deleteValue = typeof GM_deleteValue === "function" ?
     promisify(GM_deleteValue) : GM.deleteValue.bind(GM);
-  const events = new Events;
+  const events = new EventLite;
   
   if (typeof GM_addValueChangeListener === "function") {
     GM_addValueChangeListener("webext-pref-message", (name, oldValue, newValue) => {
@@ -1777,7 +1775,7 @@ var prefBody = getMessage => {
 };
 
 var maxLength = 24;
-var chars = "セール佛山ಭಾರತ慈善集团在线한국ଭାରତভাৰতর八卦ישראלموقعবংল公益司网站移动我爱你москвақзнлйт联通рбгеקוםファッションストアசிங்கபூர商标店城дию新闻家電中文信国國娱乐భారత్ලංකා购物クラウドભારતभारतम्ोसंगठन餐厅络у香港食品飞利浦台湾灣手机الجزئرنیتبيپکسدغظحةڀ澳門닷컴شكგე构健康ไทย招聘фລາວみんなευλ世界書籍ഭാരതംਭਾਰਤ址넷コム游戏ö企业息صط广东இலைநதயாհայ加坡ف政务";
+var chars = "セール佛山ಭಾರತ集团在线한국ଭାରତভাৰতর八卦ישראלموقعবংল公司网站移动我爱你москвақзнлйт联通рбгеקוםファッションストアசிங்கபூர商标店城дию家電中文信国國娱乐భారత్ලංකා购物クラウドભારતभारतम्ोसंगठन餐厅络у香港食品飞利浦台湾灣手机الجزئرنیتبيپکسدغظحةڀ澳門닷컴شكგე构健康ไทย招聘фລາວみんなευλ世界書籍ഭാരതംਭਾਰਤ址넷コム游戏ö企业息صط广东இலைநதயாհայ新加坡ف政务";
 var table = {
 	aaa: true,
 	aarp: true,
@@ -1871,6 +1869,7 @@ var table = {
 	bb: true,
 	bbc: true,
 	bbva: true,
+	bcn: true,
 	bd: true,
 	be: true,
 	beauty: true,
@@ -2028,13 +2027,13 @@ var table = {
 	cymru: true,
 	cyou: true,
 	cz: true,
-	dabur: true,
 	dad: true,
 	dance: true,
 	date: true,
 	dating: true,
 	day: true,
 	de: true,
+	deal: true,
 	dealer: true,
 	deals: true,
 	degree: true,
@@ -2059,7 +2058,6 @@ var table = {
 	dj: true,
 	dk: true,
 	dm: true,
-	dnp: true,
 	"do": true,
 	doctor: true,
 	dog: true,
@@ -2125,6 +2123,7 @@ var table = {
 	fk: true,
 	flickr: true,
 	flights: true,
+	flir: true,
 	florist: true,
 	flowers: true,
 	fm: true,
@@ -2345,13 +2344,13 @@ var table = {
 	limo: true,
 	lincoln: true,
 	link: true,
-	lipsy: true,
 	live: true,
 	living: true,
 	lk: true,
 	llc: true,
 	loan: true,
 	loans: true,
+	locker: true,
 	locus: true,
 	lol: true,
 	london: true,
@@ -2454,6 +2453,7 @@ var table = {
 	nf: true,
 	ng: true,
 	ngo: true,
+	nhk: true,
 	ni: true,
 	nico: true,
 	nike: true,
@@ -2462,6 +2462,7 @@ var table = {
 	nl: true,
 	no: true,
 	nokia: true,
+	now: true,
 	nowruz: true,
 	np: true,
 	nr: true,
@@ -2518,6 +2519,7 @@ var table = {
 	pk: true,
 	pl: true,
 	place: true,
+	play: true,
 	plumbing: true,
 	plus: true,
 	pm: true,
@@ -2817,7 +2819,6 @@ var table = {
 	"xn--1ck2e1b": true,
 	"xn--1qqw23a": true,
 	"xn--2scrj9c": true,
-	"xn--30rr7y": true,
 	"xn--3bst00m": true,
 	"xn--3ds443g": true,
 	"xn--3e0b707e": true,
@@ -2828,7 +2829,6 @@ var table = {
 	"xn--4dbrk0ce": true,
 	"xn--4gbrim": true,
 	"xn--54b7fta0cc": true,
-	"xn--55qw42g": true,
 	"xn--55qx5d": true,
 	"xn--5tzm5g": true,
 	"xn--6frz82g": true,
@@ -2852,7 +2852,6 @@ var table = {
 	"xn--d1acj3b": true,
 	"xn--d1alf": true,
 	"xn--e1a4c": true,
-	"xn--efvy88h": true,
 	"xn--fct429k": true,
 	"xn--fiq228c5hs": true,
 	"xn--fiq64b": true,
@@ -2954,7 +2953,6 @@ var table = {
 	"セール": true,
 	"佛山": true,
 	"ಭಾರತ": true,
-	"慈善": true,
 	"集团": true,
 	"在线": true,
 	"한국": true,
@@ -2965,7 +2963,6 @@ var table = {
 	"ישראל": true,
 	"موقع": true,
 	"বাংলা": true,
-	"公益": true,
 	"公司": true,
 	"网站": true,
 	"移动": true,
@@ -2989,7 +2986,6 @@ var table = {
 	"дети": true,
 	"мкд": true,
 	"ею": true,
-	"新闻": true,
 	"家電": true,
 	"中文网": true,
 	"中信": true,
@@ -3068,7 +3064,8 @@ var table = {
 	"հայ": true,
 	"新加坡": true,
 	"فلسطين": true,
-	"政务": true
+	"政务": true,
+	onion: true
 };
 
 var RE = {
@@ -3487,7 +3484,7 @@ var DEFAULT_OPTIONS = {
   recursive: true,
 };
 
-class Linkifier extends Events {
+class Linkifier extends EventLite {
 	constructor(root, options = {}) {
 		super();
 		if (!(root instanceof Node)) {

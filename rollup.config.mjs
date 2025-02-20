@@ -16,7 +16,9 @@ const DEV = process.env.ROLLUP_WATCH;
 
 function commonPlugins(cache) {
   return [
-    resolve(),
+    resolve({
+      dedupe: ["event-lite"]
+    }),
     json(),
     cjs({nested: true, cache})
   ];
