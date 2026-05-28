@@ -72,6 +72,7 @@ A list of regex pattern that will be likified, which is aimed to linkify non-htt
 ```
 magnet:\?xt=\S+
 evernote:///\S+
+(\bbv[a-z0-9]{10}\b) https://www.bilibili.com/video/$1
 ```
 
 Build the extension

@@ -35,12 +35,24 @@ function createValidator({includeElement, excludeElement}) {
   return f;
 }
 
-function stringToList(value) {
+function parseCustomRules(value) {
   value = value.trim();
   if (!value) {
     return [];
   }
-  return value.split(/\s*\n\s*/g);  
+  const lines = value.split(/\s*\n\s*/g);  
+  const result = [];
+  for (const line of lines) {
+    const r = line.split(/\s+/);
+    if (r.length < 2) {
+      result.push({pattern: line});
+    } else if (r.length === 2) {
+      result.push({pattern: r[0], replace: r[1]});
+    } else {
+      console.warn("Invalid custom rule:", line);
+    }
+  }
+  return result;
 }
 
 function createOptions(pref) {
@@ -53,7 +65,7 @@ function createOptions(pref) {
     Object.assign(options, changes);
     options.validator = createValidator(options);
     if (typeof options.customRules === "string") {
-      options.customRules = stringToList(options.customRules);
+      options.customRules = parseCustomRules(options.customRules);
     }
     options.matcher = new UrlMatcher(options);
     options.onlink = options.embedImageExcludeElement ? onlink : null;

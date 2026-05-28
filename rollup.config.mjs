@@ -3,7 +3,7 @@ import fs from "fs";
 import usm from "userscript-meta-cli";
 import glob from "tiny-glob";
 
-import copy from 'rollup-plugin-copy-glob';
+import {copy} from '@web/rollup-plugin-copy';
 import cjs from "rollup-plugin-cjs-es";
 import iife from "rollup-plugin-iife";
 import json from "@rollup/plugin-json";
@@ -29,15 +29,13 @@ export default async () => [
     input: await glob("src/extension/*.js"),
     output: {
       format: "es",
-      dir: "dist-extension/js"
+      dir: "dist-extension"
     },
     plugins: [
-      copy([
-        {
-          files: "src/static/**/*",
-          dest: "dist-extension"
-        }
-      ]),
+      copy({
+        patterns: "**/*",
+        rootDir: "src/static",
+      }),
       ...commonPlugins(),
       inject({
         exclude: ["**/*/browser-polyfill.js"],
