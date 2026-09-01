@@ -5,6 +5,8 @@ const {createDialogService} = require("webext-dialog");
 const prefBody = require("../lib/pref-body");
 const pref = require("../lib/extension-pref");
 
+const isMobile = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
 const dialog = createDialogService({
   path: "dialog.html",
   getMessage: key => browser.i18n.getMessage(`dialog${cap(key)}`)
@@ -25,15 +27,20 @@ pref.ready.then(() => {
     body: prefBody(browser.i18n.getMessage),
     getMessage
   }));
+
+  // NOTE: webext-dialog is not supported on mobile, so we don't pass dialog options to createBinding on mobile
+  const dialogOptions = isMobile ? {} : {
+    alert: dialog.alert,
+    confirm: dialog.confirm,
+    prompt: dialog.prompt
+  };
   
   createBinding({
     pref,
     root,
     getNewScope: () => domain,
     getMessage,
-    alert: dialog.alert,
-    confirm: dialog.confirm,
-    prompt: dialog.prompt
+    ...dialogOptions
   });
   
   const port = browser.runtime.connect({
